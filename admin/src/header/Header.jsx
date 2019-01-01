@@ -4,7 +4,6 @@ import "./header.css";
 import { HiOutlineMenuAlt2 } from "react-icons/hi";
 import { LuSearch } from "react-icons/lu";
 import { MdOutlineDarkMode, MdOutlineLightMode } from "react-icons/md";
-import Icon from "../components/icon/Icon.jsx";
 
 function Header({ user, theme, setTheme, isSidebarOpen, setIsSidebarOpen }) {
   return (

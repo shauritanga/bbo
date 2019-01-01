@@ -1,7 +1,9 @@
 import mongoose from "mongoose";
 import { hash, compare } from "bcrypt";
+import CustomerCounter from "./customerCounter.js";
 
 const customerSchema = mongoose.Schema({
+  customerId: { type: String, unique: true },
   account: {
     type: String,
   },
@@ -32,11 +34,34 @@ const customerSchema = mongoose.Schema({
   password: {
     type: String,
   },
+  dob: {
+    type: Date,
+  },
+  active: {
+    type: Boolean,
+    default: false,
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
 });
 
 customerSchema.pre("save", async function (next) {
+  const doc = this;
   if (!this.isModified("password")) return next();
   this.password = await hash(this.password, 10);
+
+ //custom id
+  if (doc.isNew) {
+    const customerCounter = await CustomerCounter.findByIdAndUpdate(
+      { _id: "customerId" },
+      { $inc: { seq: 1 } },
+      { new: true, upsert: true }
+    );
+    const seq = String(customerCounter.seq).padStart(5, "0");
+    doc.customerId = `ACL${seq}`;
+  }
   next();
 });
 

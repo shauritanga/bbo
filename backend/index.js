@@ -54,7 +54,7 @@ app.use("/activate", (req, res) => {
     res.status(400).send("Invalid request");
   }
 });
-app.use("/api/v1/login", authRoute);
+app.use("/api/v1/auth", authRoute);
 app.use("/api/payments", paymentRoute);
 app.use("/api/categories", categoryRoute);
 app.use("/api/reports", reportsRoute);
