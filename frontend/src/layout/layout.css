@@ -1,0 +1,42 @@
+.layout{
+    display: flex;
+    width: 80%;
+    margin: 0 auto;
+    flex-direction: column;
+}
+.container{
+    display: flex;
+}
+.aside{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 250px;
+    height: 100%;
+    position: relative; 
+    margin-bottom: 20px;
+    padding: var(--card-padding);
+    background-color: var(--color-white);
+    box-shadow: var(--box-shadow);
+}
+.aside:hover{
+    box-shadow: none;
+}
+.aside .item{
+    display: flex;
+    gap: 10px;
+    padding: 10px 20px;
+    color: var(--color-dark);
+    border-radius: var(--border-radius-1);
+    transition: all 0.3s ease-in-out;
+}
+.aside .item:hover{
+    background-color: var(--color-background);
+}
+.contentContainer{
+  flex: 1;
+}
+.aside .active{
+    background-color: var(--color-background);
+}
+

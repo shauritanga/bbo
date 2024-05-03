@@ -1,0 +1,58 @@
+.modal{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.4);
+    width: 100vw;
+    height: 100vh;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+.modal .form-container{
+    display: flex;
+    flex-direction: column;
+    background-color:white;
+    padding: 16px;
+}
+.modal .form-container .header{
+    display: flex;
+    flex: 1;
+}
+.modal .form-container .form{
+    display: flex;
+    flex: 1;
+}
+.modal .form-container .form .row{
+    display: flex;
+    gap: 20px;
+}
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+.form-group{
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.actions{
+    margin: 20px 0;
+    display: flex;
+    justify-content: end;
+    gap: 20px;
+}
+.form-container .header span{
+    background-color: rgba(45, 45, 45, 0.5);
+    width: 25px;
+    height: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    border-radius: var(--border-radius-1);
+    cursor: pointer;
+}
