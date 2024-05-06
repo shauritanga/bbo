@@ -1,19 +1,21 @@
 .dashboard{
     display: flex;
+    flex: 1;
     flex-direction: column;
 }
-.summary{
+.dashboard .summary{
     flex: 1;
     display: flex;
+    justify-content: space-between;
     gap: 30px;
     padding: 20px; 
 }
-.charts{
+.dashboard .charts{
     display: flex;
     gap:30px;
     padding: 20px;
 }
-.line{
+.dashboard .line{
     flex: 6;
     background-color: var(--color-background);
     padding: var(--card-padding);

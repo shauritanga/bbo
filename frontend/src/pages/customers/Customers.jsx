@@ -2,6 +2,10 @@ import React, { useEffect, useState } from 'react'
 import Table from '../../components/table/Table';
 import './custmers.css';
 import { Typography } from '@mui/material';
+import { green } from '@mui/material/colors';
+import { FaRegEdit } from 'react-icons/fa';
+import { AiOutlineDelete } from 'react-icons/ai';
+import { MdOutlineDeleteSweep } from 'react-icons/md';
 
 function Customers() {
 
@@ -30,12 +34,19 @@ function Customers() {
         field: 'status',
         headerName: 'STATUS',
         width: 160,
+        renderCell:(params) => (<div style={{color:"green"}}>active</div>),
       },
     
       {
         field: 'actions',
         headerName: 'ACTIONS',
         width: 160,
+        renderCell:(params) => (
+        <div style={{display:"flex", alignItems:"center",gap:"15px", padding:"15px 0px"}}>
+            <FaRegEdit style={{fontSize:"1.2rem", cursor:"pointer"}}/>
+            <MdOutlineDeleteSweep style={{fontSize:"1.4rem", color:"red", cursor:"pointer"}}/>
+        </div>
+    ),
       },
   ];
 

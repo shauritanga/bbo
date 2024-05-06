@@ -2,12 +2,12 @@ import React from 'react';
 import './dashboard.css';
 import SummaryCard from '../../components/summary-card/SummaryCard';
 import { CartesianGrid, Legend, Line, LineChart, Tooltip, XAxis, YAxis } from 'recharts';
+import { FiShoppingBag } from 'react-icons/fi';
+import { BsExclamationOctagon } from 'react-icons/bs';
+import { VscServerProcess } from 'react-icons/vsc';
+import { IoCheckmarkDoneCircleOutline, IoTimerOutline } from 'react-icons/io5';
+import { TiCancelOutline } from 'react-icons/ti';
 
-const summary = [
-  {"name":"Expenses"},
-  {"name":"Salaries"},
-  {"name":"Purchases"},
-]
 const data = [
   {
     "name": "Jan",
@@ -95,12 +95,18 @@ const data = [
   }
 
 ]
+const summary = [
+  {"name":"Completed orders","total":34, "icon":<IoCheckmarkDoneCircleOutline  style={{"font-size":"1.8rem"}} />},
+  {"name":"Dealing","total":74, "icon":<VscServerProcess  style={{"font-size":"1.8rem"}} />},
+  {"name":"Cancelled","total":10, "icon":<TiCancelOutline  style={{"font-size":"1.8rem"}} />},
+  {"name":"All orders","total":349, "icon":<FiShoppingBag  style={{"font-size":"1.8rem"}} />},
+]
 
 const Dashboard = () => {
   return (
     <div className='dashboard'>
       <div className="summary">
-        {summary.map((item) => <SummaryCard />)}
+        {summary.map((item) => <SummaryCard info={item.name} total={item.total} icon={item.icon}/>)}
       </div>
       <div className="charts">
         <div className="line">
@@ -108,7 +114,7 @@ const Dashboard = () => {
             <h2>Business trading</h2>
             <p>Monthly comparisons in a year</p>
           </div>
-        <LineChart height={500} width={900} data={data}
+        <LineChart height={500} width={500} data={data}
             margin={{ top: 30, right: 30, left: 20, bottom: 5 }}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="name" />

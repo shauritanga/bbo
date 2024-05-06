@@ -58,6 +58,7 @@ const Orders = () => {
         field: 'status',
         headerName: 'STATUS',
         width: 160,
+        valueGetter:(value, row)=> "Completed",
       },
   ];
 

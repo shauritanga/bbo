@@ -1,16 +1,18 @@
 .order{
     display: flex;
+    flex: 1;
     flex-direction: column;
 }
 .order-summary{
     flex: 1;
     display: flex;
+    justify-content: space-between;
     gap: 30px;
     padding: 20px;
     margin-bottom: 40px;
 }
 .order .action{
-    flex: 1;
+    /* flex: 1; */
     display: flex;
     margin: 8px 0px;
     align-items: center;
@@ -44,7 +46,7 @@
     border-radius: var(--border-radius-1);
 }
 .orders{
-    flex: 1;
+    /* flex: 1; */
     display: flex;
     margin: 0 30px;
     background-color: var(--color-white);

@@ -20,7 +20,7 @@ function CustomToolbar() {
 const Table = ({columns, rows}) => {
 
   return (
-    <div style={{ height: 500, width: '100%' }}>
+    <div style={{ height: 500, width:"60vw" }}>
     <DataGrid
       getRowId={(row) => row?._id}
       toolbar={{}}
