@@ -1,12 +1,14 @@
 .layout{
     display: flex;
     width: 90vw;
+    height: 100vh;
     margin: 0 auto;
     flex-direction: column;
 }
 .container{
     display: flex;
     flex:1;
+    gap: 20px;
 }
 .container .menuContainer{
     display: flex;
@@ -14,7 +16,8 @@
 }
 .container .contentContainer{
     display: flex;
-    flex: 3;
+    flex: 5;
+    /* padding: 2rem; */
 }
 .aside{
     display: flex;

@@ -1,0 +1,19 @@
+.custom{
+  background-color: white;
+}
+.custom table{
+  border-collapse: collapse;
+  border: 2px solid var(--color-background);
+  font-family: sans-serif;
+  font-size: 0.8rem;
+  width: 100%;
+  letter-spacing: 1px;
+}
+.custom th,td {
+  border: 1px solid var(--color-background);
+  padding: 8px 10px;
+  height: 50px;
+}
+.custom tbody > tr:nth-of-type(even) {
+  background-color: rgb(220, 221, 225);
+  }

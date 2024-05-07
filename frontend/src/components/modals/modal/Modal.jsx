@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import './modal.css'
-import ComboBox from '../combo/CustomerSelection'
+import ComboBox from '../../combo/CustomerSelection'
 import { Button, TextField } from '@mui/material'
-import TypeSelection from '../combo/TypeSelection'
-import ActionSelection from '../combo/ActionSelection'
-import SecuritySelection from '../combo/SecuritySelection'
+import TypeSelection from '../../combo/TypeSelection'
+import ActionSelection from '../../combo/ActionSelection'
+import SecuritySelection from '../../combo/SecuritySelection'
 
 const Modal = ({close}) =>{
 
@@ -90,7 +90,7 @@ const Modal = ({close}) =>{
                 <div className="row">
                     <div className="form-group">
                         <label htmlFor="customer">Customer</label>
-                        <ComboBox label="hi" data={customer} setCustomerId = {setCustomerId}/>
+                        <ComboBox label="Select Customer" data={customer} setCustomerId = {setCustomerId}/>
                     </div>
                     <div className="form-group">
                         <label htmlFor="customer">Volume</label>

@@ -26,6 +26,8 @@ import Role from './pages/role/Role.jsx';
 import Transaction from './pages/transaction/Transaction.jsx';
 import Security from './pages/security/Security.jsx';
 import HumanResource from './pages/resources/HumanResource.jsx';
+import PayrollEmployee from './pages/payrollEmployee/PayrollEmployee.jsx';
+import Employee from './pages/employee/Employee.jsx';
 
 const router = createBrowserRouter([
   {
@@ -86,8 +88,13 @@ const router = createBrowserRouter([
         element: <Role />
       },
       {
-        path: "/payroll",
-        element: <Payroll />
+        path:"/employees",
+        element: <Employee />
+
+      },
+      {
+        path: "/payroll/employees",
+        element: <PayrollEmployee />
       },
       {
         path: "/securities",

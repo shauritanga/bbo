@@ -19,6 +19,7 @@ import { Card, CardContent, CardHeader, Collapse, Container, IconButton, List, L
 import {KeyboardArrowUp, KeyboardArrowDown, FaceRetouchingNatural, Article, Edit, ExpandMore, ExpandLess} from  "@mui/icons-material"; 
 import { FiChevronDown, FiChevronUp } from 'react-icons/fi';
 import CollapseButton from '../components/collapse/CollapseButton';
+import { GoDot } from 'react-icons/go';
 
 const Layout =  () => {
   (function(){
@@ -48,7 +49,7 @@ const Layout =  () => {
               <CollapseButton  icon={<MdOutlineSell />}  name="Orders" className="item">
                 <div>
                   <Link to="/orders" className="item">
-                    <BiSpreadsheet />
+                    <GoDot />
                     <span>All orders</span>
                   </Link>
                 </div>
@@ -68,9 +69,13 @@ const Layout =  () => {
               <CollapseButton icon={<SlPeople/>} name="CRM">
                 <>
                   <Link to="/customers" className="item">
-                  <SlPeople />
-                  <span>Customers</span>
-              </Link>
+                    <GoDot />
+                    <span>Customers</span>
+                  </Link>
+                  <Link to="/categories" className="item">
+                    <GoDot />
+                    <span>Categories</span>
+                  </Link>
                 </>
               </CollapseButton>
               
@@ -86,27 +91,56 @@ const Layout =  () => {
               <CollapseButton icon={<MdOutlineAccountBalanceWallet />} name="Accounting" className='item'>
                 <div>
                     <Link to="/transactions" className="item">
-                      <GrResources /> 
+                    <GoDot /> 
                       <span>Transactions</span>
                     </Link>
                     <Link to="/expenses" className="item">
-                      <GrResources /> 
+                    <GoDot /> 
                       <span>Expenses</span>
                     </Link>
                     <Link to="/receipts" className="item">
-                      <GrResources /> 
+                    <GoDot /> 
                       <span>Receipts</span>
                     </Link>
                 </div>
               </CollapseButton>
-              <Link to="/payroll" className="item">
-              <LuLayoutList />
-                <span>Payroll</span>
-              </Link>
-              <Link to="/resources" className="item">
-              <GrResources /> 
-                <span>Human Resourses</span>
-              </Link>
+              <CollapseButton icon={<LuLayoutList />} name="Payroll">
+                  <>
+                    <Link to="/payroll" className="item">
+                      <GoDot/>
+                      <span>Paylist</span>
+                    </Link>
+                    <Link to="/Generate" className="item">
+                      <GoDot/>
+                      <span>Generate</span>
+                    </Link>
+                    <Link to="/Process" className="item">
+                      <GoDot/>
+                      <span>Process</span>
+                    </Link>
+                    <Link to="/payroll/employees" className="item">
+                      <GoDot/>
+                      <span>Employees</span>
+                    </Link>
+                    <Link to="/payroll" className="item">
+                      <GoDot/>
+                      <span>Setup</span>
+                    </Link>
+                  </>
+              </CollapseButton>
+             
+              <CollapseButton icon={<GrResources />} name="Human Resources">
+              <div>
+                    <Link to="/employees" className="item">
+                    <GoDot /> 
+                      <span>Employees</span>
+                    </Link>
+                    <Link to="/departments" className="item">
+                    <GoDot /> 
+                      <span>Departments</span>
+                    </Link>
+                </div>
+              </CollapseButton>
               <Link to="/securities" className="item">
               <BsShieldLock /> 
                 <span>Securities</span>

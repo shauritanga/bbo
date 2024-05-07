@@ -6,7 +6,8 @@ import customerRoute from './routes/customer.js'
 import orderRoute  from './routes/order.js';
 import securityRoute from './routes/security.js';
 import expenseRoute from './routes/expense.js';
-import paymentMethodRoutes from './routes/payment_method.js'
+import paymentMethodRoute from './routes/payment_method.js';
+import employeeRoute from './routes/employee.js';
 import helmet from 'helmet';
 import logger from 'morgan';
 
@@ -35,7 +36,8 @@ app.use("/api/customers", customerRoute);
 app.use("/api/orders", orderRoute);
 app.use("/api/securities", securityRoute);
 app.use("/api/expenses", expenseRoute);
-app.use("/api/paymethods", paymentMethodRoutes);
+app.use("/api/paymethods", paymentMethodRoute);
+app.use("/api/employees", employeeRoute);
 
 
 app.listen(PORT, console.log(`server is running on port ${PORT}`));
