@@ -4,15 +4,23 @@ const route = express.Router();
 
 
 route.get("/", async(req, res) => {
-    const receipts = await Receipt.find({});
-    res.send(receipts);
+    try {
+        const receipts = await Receipt.find({},{__v:0});
+        res.status(200).json(receipts);
+    } catch (error) {
+        res.status(404).json(error);
+    }
 });
 route.post("/", async(req, res) => {
     const receipt = Receipt({
         ...req.body
     });
-    await receipt.save();
-    res.send({"message":"Success"});
+    try {
+        const response = await receipt.save();
+        res.status(200).json(response);
+    } catch (error) {
+        res.status(500).json(error);
+    }
 });
 
 route.get("/:id", async(req, res) => {
@@ -20,7 +28,7 @@ route.get("/:id", async(req, res) => {
     res.send(receipt);
 });
 
-route.patch("/:id", async(req, res) => {
+route.post("/:id", async(req, res) => {
     const response = await Receipt.updateOne({_id:req.params.id}, {...req.body});
     res.send(response.acknowledged);
 });

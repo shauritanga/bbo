@@ -17,6 +17,8 @@
 .container .contentContainer{
     display: flex;
     flex: 5;
+    /* overflow: scroll;
+    height: 100vh; */
     /* padding: 2rem; */
 }
 .aside{
@@ -24,8 +26,6 @@
     flex-direction: column;
     gap: 10px;
     flex: 1;
-    /* width: 100%; */
-    /* width: 250px; */
     height: 100%;
     position: relative; 
     margin-bottom: 20px;

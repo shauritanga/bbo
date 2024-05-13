@@ -20,7 +20,7 @@ route.get("/:id", async(req, res) => {
     res.send(expense);
 });
 
-route.patch("/:id", async(req, res) => {
+route.post("/:id", async(req, res) => {
     const response = await Expense.updateOne({_id:req.params.id}, {...req.body});
     res.send(response.acknowledged);
 });

@@ -3,7 +3,6 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    /* height: 150px; */
     background-color: var(--color-white);
     border-radius:var(--card-border-radius);
     padding: var(--padding-1);

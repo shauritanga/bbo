@@ -21,6 +21,9 @@ const expenseSchema = mongoose.Schema({
     },
     description:{
         type:String
+    },
+    status:{
+        type:String
     }
 });
 

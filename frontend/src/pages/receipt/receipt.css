@@ -1,0 +1,62 @@
+.receipt{
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 16px;
+}
+.receipt-header{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 10px 20px;
+    background-color: white;
+}
+.receipt-header form {
+    display: flex;
+    gap: 16px;
+}
+.receipt-header form > select{
+    width: 200px;
+}
+.receipt-header form > button{
+    padding: 10px 20px;
+    border-radius: 0.25rem;
+    cursor: pointer;
+}
+.receipt-header-right{
+    display: flex;
+    gap: 16px;
+}
+.receipt-header-right > button{
+    padding: 10px 20px;
+    border-radius: 0.25rem;
+    cursor: pointer;
+}
+.receipt-header > button{
+    padding: 10px 20px;
+    border-radius: 0.25rem;
+    cursor: pointer;
+}
+.receipt-actions{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 20px;
+    background-color: white;
+    box-shadow: var(--boxs-shadow);
+}
+.receipt-actions_hiden{
+    display: flex;
+    gap: 10px;
+    visibility: hidden;
+}
+.receipt-actions_hiden > button{
+    padding: 10px 20px;
+    border-radius: 0.25rem;
+    cursor: pointer;
+}
+.receipt-table{
+    flex: 1;
+    background-color: white;
+}

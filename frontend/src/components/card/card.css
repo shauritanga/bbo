@@ -1,0 +1,22 @@
+.card{
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    flex: 1;
+    flex-basis: 200px;
+    background-color: white;
+    padding: 20px;
+    border-radius: 0.35rem;
+    box-shadow: var(--box-shadow);
+}
+.card > p{
+    font-size: 2rem;
+}
+.card_title, .card_info{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.card_info span:first-of-type{
+    font-style: italic;
+}

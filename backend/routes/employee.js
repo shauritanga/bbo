@@ -4,7 +4,7 @@ const router = express.Router();
 
 router.get("/", async(req,res) => {
     try {
-        const employees = await Employee.find({});
+        const employees = await Employee.find({},{_id:0,__v:0});
         res.status(200).json(employees);
     } catch (error) {
         res.status(500).json(error);
@@ -24,13 +24,14 @@ router.get("/:id", async(req, res) => {
 router.post("/", async(req, res)=>{
     
     try {
-        const epmloyee = Employee({
+        const employee = Employee({
             ...req.body
         });
         const res = await employee.save();
         res.status(201).json(res);
     } catch (error) {
-        res.status(500).json(error);
+        console.log(error);
+        res.json(error);
     }
 });
 

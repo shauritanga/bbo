@@ -23,41 +23,36 @@ const Orders = () => {
    const [data, setData] = useState(null);
 
    const columns = [
-    { field: '_id', headerName: 'ID', width: 200 },
-    { field: 'date', headerName: 'DATE', width: 180,valueFormatter: (value,row) => dayjs(row.date).format('DD-MM-YYYY'), },
-    { field: 'customer', headerName: 'CUSTOMER', width: 180,valueGetter: (value, row ) => row.customer.name, },
+    { field: '_id', headerName: 'ID'},
+    { field: 'date', headerName: 'DATE',valueFormatter: (value,row) => dayjs(row.date).format('DD-MM-YYYY'), },
+    { field: 'customer', headerName: 'CUSTOMER',valueGetter: (value, row ) => row.customer.name, },
     {
       field: 'security',
       headerName: 'SECURITY',
       type: 'string',
-      width: 100,
       valueGetter: (value, row ) => row.security.name,
     },
     {
       field: 'type',
       headerName: 'TYPE',
-      width: 160,
     },
     {
         field: 'volume',
         headerName: 'VOLUME',
-        width: 160,
       },
       {
         field: 'amount',
         headerName: 'AMOUNT',
-        width: 160,
       },
       {
         field: 'balance',
         headerName: 'BALANCE',
-        width: 160,
         valueGetter: (value, row) => `${row.amount * row.volume}`,
       },
       {
         field: 'status',
         headerName: 'STATUS',
-        width: 160,
+       
         valueGetter:(value, row)=> "Completed",
       },
   ];
@@ -83,21 +78,19 @@ const Orders = () => {
     </div>
   }
 
-  const rows = data;
-
   return (
     <div className='order'>
         <div className="order-summary">
             {summary.map((item) => <SummaryCard info={item.name} icon={item.icon} total={item.total}/>)}
         </div>
-        <div className="action">
+        <div className="order-action">
             <h1>Orders</h1>
             <Button variant="outlined" startIcon={<Add />} className='button' onClick={() => setOpenModal(true)}>
                 new order
             </Button>
         </div>
-        <div className="orders">
-            <Table columns={columns} rows = {data}/>
+        <div className="order-table">
+            {/* <Table columns={columns} rows = {data}/> */}
         </div>
         {openModal && <Modal  close={setOpenModal}/>} 
     </div>

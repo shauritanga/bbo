@@ -8,7 +8,9 @@ import securityRoute from './routes/security.js';
 import expenseRoute from './routes/expense.js';
 import paymentMethodRoute from './routes/payment_method.js';
 import employeeRoute from './routes/employee.js';
-import helmet from 'helmet';
+import roleRoute from './routes/role.js';
+import receiptRoute from './routes/receipt.js';
+import paymentRoute from './routes/payment.js';
 import logger from 'morgan';
 
 const app = express();
@@ -30,14 +32,15 @@ app.use(function(req, res, next){
     next();
 });
 app.use(cors());
-app.use(helmet());
-
+app.use("/api/payments", paymentRoute);
 app.use("/api/customers", customerRoute);
 app.use("/api/orders", orderRoute);
 app.use("/api/securities", securityRoute);
 app.use("/api/expenses", expenseRoute);
 app.use("/api/paymethods", paymentMethodRoute);
 app.use("/api/employees", employeeRoute);
+app.use("/api/receipts", receiptRoute);
+app.use("/api/roles", roleRoute);
 
 
 app.listen(PORT, console.log(`server is running on port ${PORT}`));

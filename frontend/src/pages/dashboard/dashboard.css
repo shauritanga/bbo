@@ -1,36 +1,44 @@
-.dashboard{
+.dashboard {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 20px;
+}
+
+.dashboard-summary{
+    display: flex;
+    gap: 20px;
+}
+
+.dashboard-card-summary{
     display: flex;
     flex: 1;
+    gap: 20px;
+    flex-wrap: wrap; 
+}
+.dashboard-graph-summary{
+    display: flex;
+    flex: 2;
+    background-color: white;
+    border-radius: var(--border-radius-1);
+    box-shadow: var(--box-shadow);
+}
+.dashboard-table-pie{
+    display: flex;
+    flex: 1;
+    gap: 20px;
+}
+.dashboard-table{
+    flex: 3;
+    border-radius: var(--border-radius-1);
+    background-color: red;
+    box-shadow: var(--box-shadow);
+}
+.dashboard-pie{
+    display: flex;
     flex-direction: column;
-}
-.dashboard .summary{
     flex: 1;
-    display: flex;
-    justify-content: space-between;
-    gap: 30px;
-    padding: 20px; 
+    height: 300px;
+    gap: 20px;
 }
-.dashboard .charts{
-    display: flex;
-    gap:30px;
-    padding: 20px;
-}
-.dashboard .line{
-    flex: 6;
-    background-color: var(--color-background);
-    padding: var(--card-padding);
-    box-shadow: var(--box-shadow);
-    border-radius:var(--card-border-radius);
-}
-.heading{
-    margin-left: 4.8rem;
-}
-.heading p {
-    color: var(--color-info-dark);
-    margin-top: 5px;
-}
-.pie{
-    flex:2;
-    height: 600px;
-    box-shadow: var(--box-shadow);
-}
+

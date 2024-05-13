@@ -22,16 +22,7 @@ import CollapseButton from '../components/collapse/CollapseButton';
 import { GoDot } from 'react-icons/go';
 
 const Layout =  () => {
-  (function(){
-    document.querySelectorAll('.aside .item').forEach(function(ele, idx) {
-      ele.addEventListener('click', function(e) {
-          var clickedEle = document.querySelector('.aside .active');
-          if (clickedEle != null)
-              clickedEle.classList.remove('active');
-          this.classList.add('active');
-      })
-  });
-  }());
+ 
   const user = {
     "name":"Athanas Shauritanga",
     "isadmin":true
@@ -97,6 +88,10 @@ const Layout =  () => {
                     <Link to="/expenses" className="item">
                     <GoDot /> 
                       <span>Expenses</span>
+                    </Link>
+                    <Link to="/payments" className="item">
+                    <GoDot /> 
+                      <span>Payments</span>
                     </Link>
                     <Link to="/receipts" className="item">
                     <GoDot /> 

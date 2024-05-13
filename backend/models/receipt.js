@@ -11,7 +11,8 @@ const receipSchema = mongoose.Schema({
         type:String 
     },
     method:{
-        type:String
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"PaymentMethod"
     },
     realAccount:{
         type:String
@@ -24,8 +25,11 @@ const receipSchema = mongoose.Schema({
     },
     description:{
         type:String
+    },
+    status:{
+        type:String
     }
 });
 
-const Receipt = mongoose.model("Receipt", expenseSchema);
+const Receipt = mongoose.model("Receipt", receipSchema);
 export default Receipt;
