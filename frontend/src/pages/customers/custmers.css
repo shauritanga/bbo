@@ -1,4 +1,5 @@
 .customer-table{
     display: flex;
+    flex: 1;
     margin: 20px 30px;
 }

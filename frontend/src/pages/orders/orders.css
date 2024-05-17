@@ -11,12 +11,17 @@
 }
 .order-action{
     display: flex;
+    align-items: center;
+    justify-content: space-between;
     flex: 1;
-    background-color: green;
+    padding: 15px;
+    background-color: var(--color-background);
+    box-shadow: var(--box-shadow);
 }
 .order-table{
     display: flex;
-    flex: 9;
-    background-color: cyan;
+    flex: 15;
+    background-color: var(--color-background);
+    box-shadow: var(--box-shadow);
 }
 

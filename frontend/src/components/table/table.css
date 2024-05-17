@@ -3,7 +3,7 @@ table{
     
 }
 table th{
-    color: var(--color-info-dark);
+    color: var(--color-dark);
     text-transform: uppercase;
     text-align: left;
 }

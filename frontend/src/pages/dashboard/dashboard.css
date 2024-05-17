@@ -19,7 +19,9 @@
 .dashboard-graph-summary{
     display: flex;
     flex: 2;
-    background-color: white;
+    height: 430px;
+    color: var(--color-dark);
+    background-color: var(--color-background);
     border-radius: var(--border-radius-1);
     box-shadow: var(--box-shadow);
 }
@@ -29,10 +31,12 @@
     gap: 20px;
 }
 .dashboard-table{
+    display: flex;
     flex: 3;
     border-radius: var(--border-radius-1);
-    background-color: red;
+    padding: 20px;
     box-shadow: var(--box-shadow);
+    background-color: var(--color-background);
 }
 .dashboard-pie{
     display: flex;
@@ -40,5 +44,6 @@
     flex: 1;
     height: 300px;
     gap: 20px;
+
 }
 

@@ -1,5 +1,5 @@
 .custom{
-  background-color: white;
+  background-color: var(--color-background);
 }
 .custom table{
   border-collapse: collapse;

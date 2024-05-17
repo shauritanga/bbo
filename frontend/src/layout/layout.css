@@ -1,53 +1,15 @@
 .layout{
     display: flex;
-    width: 90vw;
-    height: 100vh;
-    margin: 0 auto;
-    flex-direction: column;
-}
-.container{
-    display: flex;
-    flex:1;
-    gap: 20px;
-}
-.container .menuContainer{
-    display: flex;
-    flex: 1;
-}
-.container .contentContainer{
-    display: flex;
-    flex: 5;
-    /* overflow: scroll;
-    height: 100vh; */
-    /* padding: 2rem; */
-}
-.aside{
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    flex: 1;
+    width: 90%;
     height: 100%;
-    position: relative; 
-    margin-bottom: 20px;
-    padding: var(--card-padding);
-    background-color: var(--color-white);
-    box-shadow: var(--box-shadow);
+    gap: 20px;
+    margin: 0 auto;
 }
-.aside:hover{
-    box-shadow: none;
-}
-.aside .item{
+.left{
     display: flex;
-    gap: 10px;
-    padding: 10px 20px;
-    color: var(--color-dark);
-    border-radius: var(--border-radius-1);
-    transition: all 0.3s ease-in-out;
 }
-.aside .item:hover{
-    background-color: var(--color-background);
+.right{
+    display: flex;
+    flex: 1;
+    flex-direction: column;
 }
-.aside .active{
-    background-color: var(--color-background);
-}
-

@@ -10,7 +10,7 @@
     justify-content: space-between;
     gap: 16px;
     padding: 10px 20px;
-    background-color: white;
+    background-color: var(--color-background);
 }
 .expense-header > button{
     padding: 10px 20px;
@@ -43,7 +43,7 @@
     align-items: center;
     justify-content: space-between;
     padding: 15px 20px;
-    background-color: white;
+    background-color: var(--color-background);
     box-shadow: var(--boxs-shadow);
 }
 .expense-actions_hiden{
@@ -58,5 +58,5 @@
 }
 .expense-table{
     flex: 1;
-    background-color: white;
+    background-color: var(--color-background);
 }

@@ -1,10 +1,8 @@
 .pie{
     display: flex;
-    /* flex: 1; */
     flex-direction: column;
-    /* gap: 20px; */
     padding: 20px;
-    background-color: white;
+    background-color: var(--color-background);
     border-radius: var(--border-radius-1);
     box-shadow: var(--box-shadow);
 }

@@ -4,8 +4,9 @@
     gap: 40px;
     flex: 1;
     flex-basis: 200px;
-    background-color: white;
+    background-color: var(--color-background);
     padding: 20px;
+    color: var(--color-dark);
     border-radius: 0.35rem;
     box-shadow: var(--box-shadow);
 }
