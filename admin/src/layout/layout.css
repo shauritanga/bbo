@@ -1,0 +1,15 @@
+.layout{
+    display: flex;
+    height: 100%;
+    gap: 20px;
+}
+.left{
+    display: flex;
+}
+.right{
+    display: flex;
+    flex: 1;
+    padding-right: 30px;
+    flex-direction: column;
+    overflow-y: scroll;
+}
