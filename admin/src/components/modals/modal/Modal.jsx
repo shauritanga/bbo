@@ -20,26 +20,14 @@ const Modal = ({ close }) => {
   const [securityId, setSecurityId] = useState("");
 
   useEffect(() => {
-    fetch("http://localhost:3000/api/customers", {
-      mode: "cors",
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Content-Type": "application/json",
-      },
-    })
+    fetch("http://localhost:5001/api/customers")
       .then((response) => response.json())
       .then((data) => setCustomer(data))
       .catch((error) => console.log(error));
   }, []);
 
   useEffect(() => {
-    fetch("http://localhost:3000/api/securities", {
-      mode: "cors",
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Content-Type": "application/json",
-      },
-    })
+    fetch("http://localhost:5001/api/securities")
       .then((response) => response.json())
       .then((data) => setSecurity(data))
       .catch((error) => console.log(error));
@@ -60,13 +48,8 @@ const Modal = ({ close }) => {
       amount,
       total,
     };
-    fetch("http://localhost:3000/api/orders", {
-      mode: "cors",
+    fetch("http://localhost:5001/api/orders", {
       method: "POST",
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Content-Type": "application/json",
-      },
       body: JSON.stringify(postData),
     })
       .then((response) => response.json())

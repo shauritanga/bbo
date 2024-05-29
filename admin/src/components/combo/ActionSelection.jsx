@@ -1,12 +1,12 @@
-import * as React from 'react';
-import TextField from '@mui/material/TextField';
-import Autocomplete from '@mui/material/Autocomplete';
+import * as React from "react";
+import TextField from "@mui/material/TextField";
+import Autocomplete from "@mui/material/Autocomplete";
 
-export default function ActionSelection({label, data, setAction}) {
+export default function ActionSelection({ label, data, setAction }) {
   return (
     <Autocomplete
       disablePortal
-      onChange={(value,reason)=>setAction(reason.name)}
+      onChange={(value, reason) => setAction(reason.name)}
       id="combo-box-demo"
       options={data}
       getOptionLabel={(option) => `${option.name}`}

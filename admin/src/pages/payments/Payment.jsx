@@ -17,7 +17,7 @@ function Payment() {
   const updatePayment = async (selected, status) => {
     for (let item in selected) {
       const response = await fetch(
-        `http://localhost:3000/api/payments/${selected[item]._id}`,
+        `http://localhost:5001/api/payments/${selected[item]._id}`,
         {
           mode: "cors",
           method: "POST",
@@ -50,26 +50,14 @@ function Payment() {
   };
 
   useEffect(() => {
-    fetch("http://localhost:3000/api/payments", {
-      mode: "cors",
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Content-Type": "application/json",
-      },
-    })
+    fetch("http://localhost:5001/api/payments")
       .then((response) => response.json())
       .then((data) => setPayments(data))
       .catch((error) => console.log(error));
   }, []);
 
   useEffect(() => {
-    fetch("http://localhost:3000/api/customers", {
-      mode: "cors",
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Content-Type": "application/json",
-      },
-    })
+    fetch("http://localhost:5001/api/customers")
       .then((response) => response.json())
       .then((data) => setClients(data))
       .catch((error) => console.log(error));

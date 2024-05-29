@@ -8,7 +8,8 @@
 --color-dark:#363949;
 --color-light:rgba(132, 139,200,0.18);
 --color-dark-variant:#677483;
---color-background:#f6f6f9;
+--color-background:hsl(250deg 20% 90%);
+/* --color-background:#f6f6f9; */
 --card-border-radius:0.87rem;
 --border-radius-1:0.4rem;
 --border-radius-2:1.2rem;

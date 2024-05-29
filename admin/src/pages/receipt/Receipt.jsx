@@ -4,6 +4,7 @@ import Search from "../../components/search/Search";
 import ReceiptModal from "../../components/modals/receipt/ReceiptModal";
 import dayjs from "dayjs";
 import CheckBox from "../../components/checkbox/CheckBox";
+import CustomInputGroupWidthButton from "../../components/search-icon/InputSearchWithIcon";
 
 function Receipt() {
   const [checked, setChecked] = useState(false);
@@ -19,9 +20,8 @@ function Receipt() {
     for (let item in selected) {
       console.log(selected[item]);
       const response = await fetch(
-        `http://localhost:3000/api/receipts/${selected[item]._id}`,
+        `http://localhost:5001/api/receipts/${selected[item]._id}`,
         {
-          mode: "cors",
           method: "POST",
           headers: {
             "Access-Control-Allow-Origin": "*",
@@ -52,26 +52,14 @@ function Receipt() {
   };
 
   useEffect(() => {
-    fetch("http://localhost:3000/api/receipts", {
-      mode: "cors",
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Content-Type": "application/json",
-      },
-    })
+    fetch("http://localhost:5001/api/receipts")
       .then((response) => response.json())
       .then((data) => setReceipts(data))
       .catch((error) => console.log(error));
   }, []);
 
   useEffect(() => {
-    fetch("http://localhost:3000/api/customers", {
-      mode: "cors",
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Content-Type": "application/json",
-      },
-    })
+    fetch("http://localhost:5001/api/customers")
       .then((response) => response.json())
       .then((data) => setClients(data))
       .catch((error) => console.log(error));

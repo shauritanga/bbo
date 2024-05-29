@@ -21,6 +21,9 @@ import { BsShieldLock } from "react-icons/bs";
 import { HiOutlineSquaresPlus } from "react-icons/hi2";
 
 const Sidebar = ({ isActive, user, isSidebarOpen, setIsSidebarOpen }) => {
+  const regx = new RegExp(`^customers(\/.*)?$`);
+
+  console.log(isActive, regx.test(isActive));
   return (
     <div className="aside">
       <div className="close">
@@ -46,20 +49,6 @@ const Sidebar = ({ isActive, user, isSidebarOpen, setIsSidebarOpen }) => {
             <GoDot />
             <span>All orders</span>
           </Link>
-          {/* <Link
-            to="/orders?q=pending"
-            className={`item ${isActive === "orders" ? "active" : ""}`}
-          >
-            <GoDot />
-            <span>Pending</span>
-          </Link>
-          <Link
-            to="/orders?q=cancelled"
-            className={`item ${isActive === "orders" ? "active" : ""}`}
-          >
-            <GoDot />
-            <span>Cancelled</span>
-          </Link> */}
         </div>
       </CollapseButton>
       <Link
@@ -87,7 +76,7 @@ const Sidebar = ({ isActive, user, isSidebarOpen, setIsSidebarOpen }) => {
         <>
           <Link
             to="/customers"
-            className={`item ${isActive === "customers" ? "active" : ""}`}
+            className={`item ${regx.test(isActive) ? "active" : ""}`}
           >
             <GoDot />
             <span>Customers</span>
@@ -156,48 +145,6 @@ const Sidebar = ({ isActive, user, isSidebarOpen, setIsSidebarOpen }) => {
               </Link>
             </div>
           </CollapseButton>
-          <CollapseButton icon={<LuLayoutList />} name="Payroll">
-            <>
-              <Link
-                to="/paylist"
-                className={`item ${isActive === "paylist" ? "active" : ""}`}
-              >
-                <GoDot />
-                <span>Paylist</span>
-              </Link>
-              <Link
-                to="/generate"
-                className={`item ${isActive === "generate" ? "active" : ""}`}
-              >
-                <GoDot />
-                <span>Generate</span>
-              </Link>
-              <Link
-                to="/process"
-                className={`item ${isActive === "process" ? "active" : ""}`}
-              >
-                <GoDot />
-                <span>Process</span>
-              </Link>
-              <Link
-                to="/payroll/employees"
-                className={`item ${
-                  isActive === "payroll/employees" ? "active" : ""
-                }`}
-              >
-                <GoDot />
-                <span>Employees</span>
-              </Link>
-              <Link
-                to="/setup"
-                className={`item ${isActive === "setup" ? "active" : ""}`}
-              >
-                <GoDot />
-                <span>Setup</span>
-              </Link>
-            </>
-          </CollapseButton>
-
           <CollapseButton icon={<GrResources />} name="Human Resources">
             <div>
               <Link

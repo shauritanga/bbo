@@ -11,13 +11,7 @@ function EmployeeForm({ setOpenForm }) {
   const [data, setData] = useState(null);
 
   useEffect(() => {
-    fetch("http://localhost:3000/api/roles", {
-      mode: "cors",
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Content-Type": "application/json",
-      },
-    })
+    fetch("http://localhost:5001/api/roles")
       .then((response) => response.json())
       .then((data) => setRoles(data))
       .catch((error) => console.log(error));
@@ -33,8 +27,7 @@ function EmployeeForm({ setOpenForm }) {
     };
     console.log(postData);
 
-    fetch("http://localhost:3000/api/employees", {
-      mode: "cors",
+    fetch("http://localhost:5001/api/employees", {
       method: "POST",
       headers: {
         "Access-Control-Allow-Origin": "*",

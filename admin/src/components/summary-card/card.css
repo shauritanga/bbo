@@ -4,26 +4,31 @@
     align-items: center;
     justify-content: space-between;
     background-color: var(--color-white);
-    border-radius:var(--card-border-radius);
-    padding: var(--padding-1);
+    border-radius:7px;
+    padding: 20px;
     box-shadow: var(--box-shadow);
     cursor: pointer;
+    transition: all 0.3s ease-in-out;
 }
 .summary-card:hover{
  box-shadow: none;
+ transform: translateY(-3px);
 }
 .summary-card .detail{
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 8px;
 }
 .summary-card .detail span{
-    font-size: 2rem;
+    font-size: 1.5rem;
 }
 
 .summary-card .icon{
+    display: flex;
+    align-items: center;
+    justify-content: center;
     background-color: var(--color-background);
-    padding: var(--padding-1);
+    padding:15px;
     border-radius: 50%;
     
 }

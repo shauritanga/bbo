@@ -3,6 +3,7 @@ import "./expense.css";
 import Search from "../../components/search/Search";
 import CheckBox from "../../components/checkbox/CheckBox";
 import ExpenseModal from "../../components/modals/expense/ExpenseModal";
+import ModalView from "../../components/modals/Modal";
 
 function Expense() {
   const [query, setQuery] = useState("");
@@ -11,14 +12,13 @@ function Expense() {
   const [expenses, setExpenses] = useState(null);
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState([]);
-  const [openExpenseForm, setOpenExpenseForm] = useState(false);
+  const [open, setOpen] = useState(false);
 
   const updatePayment = async (selected, status) => {
     for (let item in selected) {
       const response = await fetch(
-        `http://localhost:3000/api/expenses/${selected[item]._id}`,
+        `http://localhost:5001/api/expenses/${selected[item]._id}`,
         {
-          mode: "cors",
           method: "POST",
           headers: {
             "Access-Control-Allow-Origin": "*",
@@ -48,26 +48,14 @@ function Expense() {
   };
 
   useEffect(() => {
-    fetch("http://localhost:3000/api/expenses", {
-      mode: "cors",
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Content-Type": "application/json",
-      },
-    })
+    fetch("http://localhost:5001/api/expenses")
       .then((response) => response.json())
       .then((data) => setExpenses(data))
       .catch((error) => console.log(error));
   }, []);
 
   useEffect(() => {
-    fetch("http://localhost:3000/api/customers", {
-      mode: "cors",
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Content-Type": "application/json",
-      },
-    })
+    fetch("http://localhost:5001/api/customers")
       .then((response) => response.json())
       .then((data) => setClients(data))
       .catch((error) => console.log(error));
@@ -87,7 +75,7 @@ function Expense() {
   return (
     <div className="expense">
       <div className="expense-header">
-        <button onClick={() => setOpenExpenseForm(true)}>New Expense</button>
+        <button onClick={() => setOpen(true)}>New Expense</button>
         <div className="expense-header-right">
           <form>
             <select
@@ -171,9 +159,14 @@ function Expense() {
           </tbody>
         </table>
       </div>
-      {openExpenseForm && (
-        <ExpenseModal setOpenReceiptForm={setOpenExpenseForm} />
-      )}
+
+      <ModalView
+        title="New Expense"
+        open={open}
+        setOpen={setOpen}
+        body={<ExpenseModal />}
+        height={560}
+      />
     </div>
   );
 }

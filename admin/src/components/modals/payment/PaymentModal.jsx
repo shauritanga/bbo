@@ -24,13 +24,7 @@ function PaymentModal({ setOpenReceiptForm }) {
   };
 
   useEffect(() => {
-    fetch("http://localhost:3000/api/paymethods", {
-      mode: "cors",
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Content-Type": "application/json",
-      },
-    })
+    fetch("http://localhost:5001/api/paymethods")
       .then((response) => response.json())
       .then((data) => setPaymentMethod(data))
       .catch((error) => console.log(error));
@@ -42,8 +36,7 @@ function PaymentModal({ setOpenReceiptForm }) {
 
   const handleFormSubmit = async (event) => {
     event.preventDefault();
-    const response = await fetch("http://localhost:3000/api/payments", {
-      mode: "cors",
+    const response = await fetch("http://localhost:5001/api/payments", {
       method: "post",
       headers: {
         "Access-Control-Allow-Origin": "*",

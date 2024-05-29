@@ -15,7 +15,6 @@ const Layout = () => {
     () => window.localStorage.getItem("theme") || "light"
   );
   const { pathname } = useLocation();
-  console.log(pathname);
 
   useEffect(() => {
     setIsActive(pathname.substring(1));

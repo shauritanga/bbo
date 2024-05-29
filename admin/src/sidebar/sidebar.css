@@ -33,9 +33,11 @@
     transition: all 0.3s ease-in-out;
 }
 .aside .item:hover{
-    background-color: var(--color-background);
+    background-color: hsl(243deg 50% 21%);
+    color:white;
 }
 .aside .active{
-    background-color: var(--color-background);
+    background-color: hsl(243deg 50% 21%);
+    color:white;
 }
 

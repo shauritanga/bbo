@@ -20,11 +20,9 @@ import Security from "./pages/security/Security";
 import Business from "./pages/business/Business";
 import HumanResource from "./pages/resources/HumanResource";
 import Department from "./pages/department/Department";
-import Process from "./pages/process/Process";
-import PayrollEmployee from "./pages/payrollEmployee/PayrollEmployee";
-import Setup from "./pages/setup/Setup";
-import Paylist from "./pages/paylist/Paylist";
-import Generate from "./pages/generate/Generate";
+import PDF from "./components/pdf/PDF";
+import CustomerView from "./views/customer/Customer";
+import OrderView from "./views/order/Order";
 
 function App() {
   return (
@@ -35,19 +33,17 @@ function App() {
           <Route path="/assets" element={<Assets />} />
           <Route path="/business" element={<Business />} />
           <Route path="/customers" element={<Customers />} />
+          <Route path="/customers/:customerId" element={<CustomerView />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/dealing" element={<DealingSheet />} />
           <Route path="/departments" element={<Department />} />
           <Route path="/employees" element={<Employee />} />
           <Route path="/expenses" element={<Expense />} />
           <Route path="/files" element={<Files />} />
-          <Route path="/generate" element={<Generate />} />
           <Route path="/messages" element={<Messages />} />
           <Route path="/orders" element={<Orders />} />
-          <Route path="/paylist" element={<Paylist />} />
+          <Route path="/orders/:orderId" element={<OrderView />} />
           <Route path="/payments" element={<Payment />} />
-          <Route path="/payroll/employees" element={<PayrollEmployee />} />
-          <Route path="/process" element={<Process />} />
           <Route path="/receipts" element={<Receipt />} />
           <Route path="/reports" element={<Reports />} />
           <Route path="/resources" element={<HumanResource />} />
@@ -56,9 +52,9 @@ function App() {
             path="/securities"
             element={<Security backgroundColor="var(--color-white)" />}
           />
-          <Route path="/setup" element={<Setup />} />
           <Route path="/transactions" element={<Transaction />} />
         </Route>
+        <Route path="/statement" element={<PDF />} />
       </Routes>
     </BrowserRouter>
   );
