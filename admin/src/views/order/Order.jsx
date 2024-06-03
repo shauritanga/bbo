@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router";
-import { DatePicker, Input, InputNumber, InputPicker, Stack } from "rsuite";
+import { DatePicker, Input, InputPicker } from "rsuite";
 import styled from "styled-components";
 import "rsuite/InputNumber/styles/index.css";
 import Select from "../../components/select";
@@ -12,15 +12,23 @@ const data = ["Eugenia", "Bryan", "Linda", "Nancy", "Lloyd"].map((item) => ({
 
 const OrderView = () => {
   const { state } = useLocation();
+  const [client, setClient] = useState(null);
   const [customer, setCustomer] = useState(state.customer?.name);
   const [volume, setVolume] = useState(state.volume);
   const [price, setPrice] = useState(state.price);
   const [amount, setAmount] = useState(state.price * state.volume);
   const [type, setType] = useState(state.type);
   const [security, setSecurity] = useState(state.security?.name);
-  console.log(customer);
-  console.log(state.date);
 
+  useEffect(() => {
+    fetch("http://localhost:5001/api/customers")
+      .then((res) => res.json())
+      .then((data) => setClient(data))
+      .catch((err) => console.log(err));
+  }, []);
+  if (client === null) {
+    return <div>Loading...</div>;
+  }
   return (
     <Wrapper>
       <Main>
@@ -35,13 +43,11 @@ const OrderView = () => {
                   onChange={(e) => setCustomer(e.target.value)}
                 >
                   <option value="">Select Customer</option>
-                  <option value="Salim Abu">Salim Abu</option>
-                  <option value="Athanas Shauritanga">
-                    Athanas Shauritanga
-                  </option>
-                  <option value="Daudi Ramadhani">Daudi Ramadhani</option>
-                  <option value="Doreen Masaki">Doreen Masaki</option>
-                  <option value="James Mwang'amba">James Mwang'amba</option>
+                  {client?.map((item, index) => (
+                    <option key={index} value={item.name}>
+                      {item.name}
+                    </option>
+                  ))}
                 </Select>
               </FormController>
               <FormController>
@@ -122,32 +128,34 @@ const OrderView = () => {
         <Portfolio>
           <Avatar></Avatar>
           <Table>
-            <tr>
-              <TableDataCell colSpan={2} style={{ textAlign: "center" }}>
-                Customer Portfolio
-              </TableDataCell>
-            </tr>
-            <tr>
-              <TableDataCell colSpan={2} style={{ textAlign: "center" }}>
-                Athanas Shauritanga
-              </TableDataCell>
-            </tr>
-            <tr>
-              <TableDataCell>CDS</TableDataCell>
-              <TableDataCell>6754009</TableDataCell>
-            </tr>
-            <tr>
-              <TableDataCell>Balance</TableDataCell>
-              <TableDataCell>69000</TableDataCell>
-            </tr>
-            <tr>
-              <TableDataCell>Shares</TableDataCell>
-              <TableDataCell>540</TableDataCell>
-            </tr>
-            <tr>
-              <TableDataCell>Status</TableDataCell>
-              <TableDataCell>Active</TableDataCell>
-            </tr>
+            <tbody>
+              <tr>
+                <TableDataCell colSpan={2} style={{ textAlign: "center" }}>
+                  Customer Portfolio
+                </TableDataCell>
+              </tr>
+              <tr>
+                <TableDataCell colSpan={2} style={{ textAlign: "center" }}>
+                  Athanas Shauritanga
+                </TableDataCell>
+              </tr>
+              <tr>
+                <TableDataCell>CDS</TableDataCell>
+                <TableDataCell>6754009</TableDataCell>
+              </tr>
+              <tr>
+                <TableDataCell>Balance</TableDataCell>
+                <TableDataCell>69000</TableDataCell>
+              </tr>
+              <tr>
+                <TableDataCell>Shares</TableDataCell>
+                <TableDataCell>540</TableDataCell>
+              </tr>
+              <tr>
+                <TableDataCell>Status</TableDataCell>
+                <TableDataCell>Active</TableDataCell>
+              </tr>
+            </tbody>
           </Table>
         </Portfolio>
         <Actions>

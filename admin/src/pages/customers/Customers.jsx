@@ -7,11 +7,46 @@ import "rsuite/DateRangePicker/styles/index.css";
 import styled from "styled-components";
 import Select from "../../components/select";
 import Spacer from "../../components/spacer/Spacer";
+import Breadcrumbs from "../../components/breadcrumbs/Breadcrumbs";
+import { GrCalendar } from "react-icons/gr";
+import ModalView from "../../components/modals/Modal";
+import { IoTimerOutline } from "react-icons/io5";
+import { VscServerProcess } from "react-icons/vsc";
+import { BsExclamationOctagon } from "react-icons/bs";
+import { FiShoppingBag } from "react-icons/fi";
+import SummaryCard from "../../components/summary-card/SummaryCard";
+import CustomerForm from "../../components/forms/customer/CustomerForm";
 const fetcher = (url) => fetch(url).then((res) => res.json());
+
+const summary = [
+  {
+    name: "New orders",
+    total: 34,
+    icon: <IoTimerOutline />,
+  },
+  {
+    name: "Processing",
+    total: 74,
+    icon: <VscServerProcess />,
+  },
+  {
+    name: "Unmatched",
+    total: 0,
+    icon: <BsExclamationOctagon />,
+  },
+  {
+    name: "All orders",
+    total: 349,
+    icon: <FiShoppingBag />,
+  },
+];
 
 function Customers() {
   const [customers, setCustomers] = useState(null);
   const [customerFilter, setCustomerFilter] = useState("all");
+  const [active, setActive] = useState("today");
+  const [dateRage, setDateRage] = useState(false);
+  const [customerForm, setCustomerForm] = useState(false);
   const [dateSelected, setDateSelected] = useState(() => {
     return { startDate: Date.now(), endDate: Date.now() };
   });
@@ -28,7 +63,6 @@ function Customers() {
   }
 
   if (!error && !loading) {
-    console.log(data);
   }
 
   useEffect(() => {
@@ -43,6 +77,68 @@ function Customers() {
   }
   return (
     <Wrapper>
+      <TopFilters>
+        <Breadcrumbs data={["Home", "Customers", "all"]} />
+        <Filters>
+          <FilterButton
+            name="today"
+            onClick={(e) => setActive(e.target.name)}
+            style={
+              active === "today"
+                ? { backgroundColor: "hsl(243deg, 20%, 70%)" }
+                : {}
+            }
+          >
+            Today
+          </FilterButton>
+          <FilterButton
+            name="weekly"
+            onClick={(e) => setActive(e.target.name)}
+            style={
+              active === "weekly"
+                ? { backgroundColor: "hsl(243deg, 20%, 70%)" }
+                : {}
+            }
+          >
+            Weekly
+          </FilterButton>
+          <FilterButton
+            name="monthly"
+            onClick={(e) => setActive(e.target.name)}
+            style={
+              active === "monthly"
+                ? { backgroundColor: "hsl(243deg, 20%, 70%)" }
+                : {}
+            }
+          >
+            Monthly
+          </FilterButton>
+          <FilterButton
+            name="annually"
+            onClick={(e) => setActive(e.target.name)}
+            style={
+              active === "annually"
+                ? { backgroundColor: "hsl(243deg, 20%, 70%)" }
+                : {}
+            }
+          >
+            Annually
+          </FilterButton>
+          <FilterButton onClick={() => setDateRage(true)}>
+            <GrCalendar />
+          </FilterButton>
+        </Filters>
+      </TopFilters>
+      <SummaryWrapper>
+        {summary.map((item, index) => (
+          <SummaryCard
+            key={index}
+            info={item.name}
+            icon={item.icon}
+            total={item.total}
+          />
+        ))}
+      </SummaryWrapper>
       <Actions>
         <DateRangePicker
           placeholder="Select Date Range"
@@ -68,7 +164,7 @@ function Customers() {
         <Button>Export</Button>
         <Spacer />
         <Button>Filter Customer</Button>
-        <Button>Create Customer</Button>
+        <Button onClick={() => setCustomerForm(true)}>Create Customer</Button>
       </Actions>
       <TableWrapper>
         <Table>
@@ -109,6 +205,19 @@ function Customers() {
           </tbody>
         </Table>
       </TableWrapper>
+      <ModalView
+        title="Select Date Range"
+        open={dateRage}
+        size="xs"
+        setOpen={setDateRage}
+        body={<DateRangePicker style={{ width: "100%" }} />}
+      />
+      <CustomerForm
+        open={customerForm}
+        setOpen={setCustomerForm}
+        size={750}
+        title="New Customer"
+      />
     </Wrapper>
   );
 }
@@ -116,6 +225,38 @@ function Customers() {
 const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
+  gap: 30px;
+`;
+const TopFilters = styled.div`
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 20px;
+`;
+const Filters = styled.div`
+  display: flex;
+`;
+const FilterButton = styled.button`
+  display: flex;
+  align-items: center;
+
+  padding: 8px 20px;
+  background-color: inherit;
+  border: 1px solid hsl(243deg, 50%, 50%);
+  &:not(:first-of-type) {
+    border-left: 0;
+  }
+  &:first-of-type {
+    border-radius: 5px 0 0 5px;
+  }
+  &:last-of-type {
+    border-radius: 0 5px 5px 0;
+    padding: 8px 10px;
+  }
+`;
+
+const SummaryWrapper = styled.div`
+  display: flex;
   gap: 30px;
 `;
 const Actions = styled.div`

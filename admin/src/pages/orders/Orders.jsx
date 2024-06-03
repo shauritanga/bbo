@@ -19,6 +19,8 @@ import {
 import "rsuite/dist/rsuite.css";
 import { GrCalendar } from "react-icons/gr";
 import ModalView from "../../components/modals/Modal";
+import Breadcrumbs from "../../components/breadcrumbs/Breadcrumbs";
+import OrderForm from "../../components/forms/order/OrderForm";
 
 const summary = [
   {
@@ -43,32 +45,14 @@ const summary = [
   },
 ];
 
-const customers = [
-  "Eugenia",
-  "Bryan",
-  "Linda",
-  "Nancy",
-  "Lloyd",
-  "Alice",
-  "Julia",
-  "Albert",
-  "Louisa",
-  "Lester",
-  "Lola",
-  "Lydia",
-  "Hal",
-  "Hannah",
-  "Harriet",
-  "Hattie",
-  "Hazel",
-  "Hilda",
-].map((item) => ({ label: item, value: item }));
-
 const Orders = () => {
-  const [openModal, setOpenModal] = useState(false);
   const [data, setData] = useState(null);
+  const [client, setClient] = useState([]);
   const [active, setActive] = useState("today");
-  const [open, setOpen] = useState(false);
+  const [dateRage, setDateRage] = useState(false);
+  const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
+  const [filter, setFilter] = useState(null);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -78,9 +62,27 @@ const Orders = () => {
       .catch((error) => console.log(error));
   }, []);
 
+  useEffect(() => {
+    fetch("http://localhost:5001/api/customers", {})
+      .then((response) => response.json())
+      .then((data) => setClient(data))
+      .catch((error) => console.log(error));
+  }, []);
+
   if (!data) {
     return <div>Loading ...</div>;
   }
+  const customers = client?.map((item) => ({
+    label: item.name,
+    value: item.name,
+  }));
+
+  const filters = (value) => {
+    const filtered = data.filter((item) => {
+      item.name === value;
+    });
+    setData(filtered);
+  };
 
   const renderButton = (props, ref) => {
     return (
@@ -97,11 +99,7 @@ const Orders = () => {
   return (
     <Wrapper>
       <TopFilters>
-        <Breadcrrumbs>
-          <ListItem>Home</ListItem>
-          <ListItem>CRM</ListItem>
-          <ListItem>Orders</ListItem>
-        </Breadcrrumbs>
+        <Breadcrumbs data={["Home", "CRM", "Orders"]} />
         <Filters>
           <FilterButton
             name="today"
@@ -147,14 +145,19 @@ const Orders = () => {
           >
             Annually
           </FilterButton>
-          <FilterButton onClick={() => setOpen(true)}>
+          <FilterButton onClick={() => setDateRage(true)}>
             <GrCalendar />
           </FilterButton>
         </Filters>
       </TopFilters>
       <SummaryWrapper>
-        {summary.map((item) => (
-          <SummaryCard info={item.name} icon={item.icon} total={item.total} />
+        {summary.map((item, index) => (
+          <SummaryCard
+            key={index}
+            info={item.name}
+            icon={item.icon}
+            total={item.total}
+          />
         ))}
       </SummaryWrapper>
       <OrderAction>
@@ -162,6 +165,7 @@ const Orders = () => {
           data={customers}
           style={{ width: 250 }}
           placeholder="Select Client"
+          onChange={(value) => setFilter(value)}
         />
         <Input
           size="small"
@@ -187,7 +191,7 @@ const Orders = () => {
             color: "#fff",
             backgroundColor: "hsl(243deg, 50%, 50%)",
           }}
-          onClick={() => setOpenModal(true)}
+          onClick={() => setIsOrderModalOpen(true)}
         >
           New Order
         </Button>
@@ -255,9 +259,16 @@ const Orders = () => {
       <Pagination></Pagination>
       <ModalView
         title="Select Date Range"
-        open={open}
-        setOpen={setOpen}
+        open={dateRage}
+        size="xs"
+        setOpen={setDateRage}
         body={<DateRangePicker style={{ width: "100%" }} />}
+      />
+      <OrderForm
+        title="New Order"
+        open={isOrderModalOpen}
+        size={750}
+        setOpen={setIsOrderModalOpen}
       />
     </Wrapper>
   );
@@ -272,28 +283,6 @@ const TopFilters = styled.div`
   align-items: baseline;
   justify-content: space-between;
   padding: 20px;
-`;
-const Breadcrrumbs = styled.ol`
-  display: flex;
-  align-items: center;
-  list-style: none;
-`;
-
-const ListItem = styled.li`
-  color: hsl(0deg 0% 45%);
-  &:not(:first-of-type)::before {
-    display: inline-block;
-    border: 0.5px solid hsl(0deg 0% 70%);
-    transform: rotate(0.6turn) translateY(-5px);
-    margin-left: 16px;
-    margin-right: 8px;
-    height: 1rem;
-    content: "";
-  }
-  &:not(:last-of-type):hover {
-    color: red;
-    cursor: pointer;
-  }
 `;
 const Filters = styled.div`
   display: flex;

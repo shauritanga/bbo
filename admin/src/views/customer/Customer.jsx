@@ -89,24 +89,24 @@ const CustomerView = () => {
           <Avatar></Avatar>
           <Table>
             <tbody>
-              <tr>
+              <TableDataRow>
                 <TableRowCell colSpan={2}>Customer Portfolio</TableRowCell>
-              </tr>
-              <tr>
+              </TableDataRow>
+              <TableDataRow>
                 <TableRowCell colSpan={2}>Athanas Shauritanga</TableRowCell>
-              </tr>
-              <tr>
+              </TableDataRow>
+              <TableDataRow>
                 <TableRowCell>CDS</TableRowCell>
                 <TableRowCell>647482</TableRowCell>
-              </tr>
-              <tr>
+              </TableDataRow>
+              <TableDataRow>
                 <TableRowCell>Shares</TableRowCell>
                 <TableRowCell>56</TableRowCell>
-              </tr>
-              <tr>
+              </TableDataRow>
+              <TableDataRow>
                 <TableRowCell>Status</TableRowCell>
                 <TableRowCell>active</TableRowCell>
-              </tr>
+              </TableDataRow>
             </tbody>
           </Table>
         </CustomerInfo>
@@ -183,6 +183,7 @@ const Table = styled.table`
   width: 100%;
   border-collapse: collapse;
 `;
+const TableDataRow = styled.tr``;
 const TableRowCell = styled.td`
   text-align: center;
   border: 0.2px solid hsl(0deg 20% 10%);

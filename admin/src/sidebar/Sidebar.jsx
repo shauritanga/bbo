@@ -21,9 +21,8 @@ import { BsShieldLock } from "react-icons/bs";
 import { HiOutlineSquaresPlus } from "react-icons/hi2";
 
 const Sidebar = ({ isActive, user, isSidebarOpen, setIsSidebarOpen }) => {
-  const regx = new RegExp(`^customers(\/.*)?$`);
-
-  console.log(isActive, regx.test(isActive));
+  const customersPath = new RegExp(`^customers(\/.*)?$`);
+  const ordersPath = new RegExp(`^orders(\/.*)?$`);
   return (
     <div className="aside">
       <div className="close">
@@ -44,7 +43,7 @@ const Sidebar = ({ isActive, user, isSidebarOpen, setIsSidebarOpen }) => {
         <div>
           <Link
             to="/orders"
-            className={`item ${isActive === "orders" ? "active" : ""}`}
+            className={`item ${ordersPath.test(isActive) ? "active" : ""}`}
           >
             <GoDot />
             <span>All orders</span>
@@ -76,7 +75,7 @@ const Sidebar = ({ isActive, user, isSidebarOpen, setIsSidebarOpen }) => {
         <>
           <Link
             to="/customers"
-            className={`item ${regx.test(isActive) ? "active" : ""}`}
+            className={`item ${customersPath.test(isActive) ? "active" : ""}`}
           >
             <GoDot />
             <span>Customers</span>
@@ -105,7 +104,7 @@ const Sidebar = ({ isActive, user, isSidebarOpen, setIsSidebarOpen }) => {
         <FaRegMessage />
         <span>Messaging</span>
       </Link>
-      {user.isadmin && (
+      {user.isAdmin && (
         <>
           <CollapseButton
             icon={<MdOutlineAccountBalanceWallet />}

@@ -1,12 +1,13 @@
 import React, { useCallback, useEffect, useState } from "react";
 import Footer from "../footer/Footer";
 import Navbar from "../header/Header";
-import { Outlet } from "react-router";
+import { Navigate, Outlet } from "react-router";
 import "./layout.css";
 
 import { useLocation } from "react-router-dom";
 
 import Sidebar from "../sidebar/Sidebar";
+import { useAuth } from "../provider/AuthProvider";
 
 const Layout = () => {
   const [isActive, setIsActive] = useState("");
@@ -15,6 +16,7 @@ const Layout = () => {
     () => window.localStorage.getItem("theme") || "light"
   );
   const { pathname } = useLocation();
+  const { user } = useAuth();
 
   useEffect(() => {
     setIsActive(pathname.substring(1));
@@ -24,10 +26,8 @@ const Layout = () => {
     window.localStorage.setItem("theme", theme);
     document.body.setAttribute("dark-theme", theme);
   }, [theme]);
-  const user = {
-    name: "Athanas Shauritanga",
-    isadmin: true,
-  };
+
+  if (!user) return <Navigate to="/login" />;
 
   return (
     <div className="layout">
