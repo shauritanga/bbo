@@ -195,97 +195,114 @@ const rows = [
 const Dashboard = () => {
   return (
     <div className="dashboard">
-      <div className="dashboard-summary">
-        <div className="dashboard-card-summary">
-          {summary.map((item) => (
-            <Card title={item.name} percent={item.percent} size={item.total} />
-          ))}
-        </div>
-        <div className="dashboard-graph-summary">
-          <ResponsiveLine
-            data={lineData}
-            margin={{ top: 50, right: 110, bottom: 50, left: 60 }}
-            xScale={{ type: "point" }}
-            yScale={{
-              type: "linear",
-              min: "auto",
-              max: "auto",
-              stacked: true,
-              reverse: false,
-            }}
-            yFormat=" >-.2f"
-            axisTop={null}
-            axisRight={null}
-            axisBottom={{
-              tickSize: 5,
-              tickPadding: 5,
-              tickRotation: 0,
-              legend: "Months",
-              legendOffset: 36,
-              legendPosition: "middle",
-              truncateTickAt: 0,
-            }}
-            axisLeft={{
-              tickSize: 5,
-              tickPadding: 5,
-              tickRotation: 0,
-              legend: "Amount (thousands)",
-              legendOffset: -40,
-              legendPosition: "middle",
-              truncateTickAt: 0,
-            }}
-            pointSize={10}
-            pointColor={{ theme: "background" }}
-            pointBorderWidth={2}
-            pointBorderColor={{ from: "serieColor" }}
-            pointLabel="data.yFormatted"
-            pointLabelYOffset={-12}
-            enableTouchCrosshair={true}
-            useMesh={true}
-            legends={[
-              {
-                anchor: "bottom-right",
-                direction: "column",
-                justify: false,
-                translateX: 100,
-                translateY: 0,
-                itemsSpacing: 0,
-                itemDirection: "left-to-right",
-                itemWidth: 80,
-                itemHeight: 20,
-                itemOpacity: 0.75,
-                symbolSize: 12,
-                symbolShape: "circle",
-                symbolBorderColor: "rgba(0, 0, 0, .5)",
-                effects: [
-                  {
-                    on: "hover",
-                    style: {
-                      itemBackground: "rgba(0, 0, 0, .03)",
-                      itemOpacity: 1,
-                    },
+      {/* <div className="dashboard-summary"> */}
+      <div className="dashboard-card-summary">
+        <Card
+          title={summary[0].name}
+          percent={summary[0].percent}
+          size={summary[0].total}
+        />
+        <Card
+          title={summary[1].name}
+          percent={summary[1].percent}
+          size={summary[1].total}
+        />
+        <Card
+          title={summary[2].name}
+          percent={summary[2].percent}
+          size={summary[2].total}
+        />
+        <Card
+          title={summary[3].name}
+          percent={summary[3].percent}
+          size={summary[3].total}
+        />
+      </div>
+      <div className="dashboard-graph-summary">
+        <ResponsiveLine
+          data={lineData}
+          margin={{ top: 50, right: 110, bottom: 50, left: 60 }}
+          xScale={{ type: "point" }}
+          yScale={{
+            type: "linear",
+            min: "auto",
+            max: "auto",
+            stacked: true,
+            reverse: false,
+          }}
+          yFormat=" >-.2f"
+          axisTop={null}
+          axisRight={null}
+          axisBottom={{
+            tickSize: 5,
+            tickPadding: 5,
+            tickRotation: 0,
+            legend: "Months",
+            legendOffset: 36,
+            legendPosition: "middle",
+            truncateTickAt: 0,
+          }}
+          axisLeft={{
+            tickSize: 5,
+            tickPadding: 5,
+            tickRotation: 0,
+            legend: "Amount (thousands)",
+            legendOffset: -40,
+            legendPosition: "middle",
+            truncateTickAt: 0,
+          }}
+          pointSize={10}
+          pointColor={{ theme: "background" }}
+          pointBorderWidth={2}
+          pointBorderColor={{ from: "serieColor" }}
+          pointLabel="data.yFormatted"
+          pointLabelYOffset={-12}
+          enableTouchCrosshair={true}
+          useMesh={true}
+          legends={[
+            {
+              anchor: "bottom-right",
+              direction: "column",
+              justify: false,
+              translateX: 100,
+              translateY: 0,
+              itemsSpacing: 0,
+              itemDirection: "left-to-right",
+              itemWidth: 80,
+              itemHeight: 20,
+              itemOpacity: 0.75,
+              symbolSize: 12,
+              symbolShape: "circle",
+              symbolBorderColor: "rgba(0, 0, 0, .5)",
+              effects: [
+                {
+                  on: "hover",
+                  style: {
+                    itemBackground: "rgba(0, 0, 0, .03)",
+                    itemOpacity: 1,
                   },
-                ],
-              },
-            ]}
-          />
-        </div>
+                },
+              ],
+            },
+          ]}
+        />
       </div>
-      <div className="dashboard-table-pie">
-        <div className="dashboard-table">
-          <EmployeeTable
-            style={{ width: "100%", borderCollapse: "collapse" }}
-            columns={columns}
-            rows={rows}
-          />
-        </div>
-        <div className="dashboard-pie">
-          {pieData.map((data, index) => {
-            const title = names[index];
-            return <PieCard title={title} percent={23} data={data} />;
-          })}
-        </div>
+      {/* </div> */}
+      {/* <div className="dashboard-table-pie"> */}
+      <div className="dashboard-table">
+        <EmployeeTable
+          style={{ width: "100%", borderCollapse: "collapse" }}
+          columns={columns}
+          rows={rows}
+        />
       </div>
+      <div className="dashboard-pie">
+        {pieData.map((data, index) => {
+          const title = names[index];
+          return <PieCard title={title} percent={23} data={data} />;
+        })}
+      </div>
+      {/* </div> */}
     </div>
   );
 };

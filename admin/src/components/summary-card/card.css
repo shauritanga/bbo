@@ -6,6 +6,7 @@
     background-color: var(--color-white);
     border-radius:7px;
     padding: 20px;
+    /* width:180px; */
     box-shadow: var(--box-shadow);
     cursor: pointer;
     transition: all 0.3s ease-in-out;

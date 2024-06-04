@@ -4,6 +4,7 @@ import Search from "../../components/search/Search";
 import dayjs from "dayjs";
 import PaymentModal from "../../components/modals/payment/PaymentModal";
 import CheckBox from "../../components/checkbox/CheckBox";
+import styled from "styled-components";
 
 function Payment() {
   const [query, setQuery] = useState("");
@@ -122,7 +123,7 @@ function Payment() {
         <table style={{ width: "100%" }}>
           <thead>
             <tr>
-              <th style={{ width: "50px" }}>
+              <TableHeaderCell style={{ width: "50px" }}>
                 <CheckBox
                   name="all"
                   value={selected.length === payments.length}
@@ -130,19 +131,19 @@ function Payment() {
                   setVisible={setVisible}
                   updateValue={selectAll}
                 />
-              </th>
-              <th>id</th>
-              <th>payee</th>
-              <th>Description</th>
-              <th>amount</th>
-              <th>date</th>
-              <th>status</th>
+              </TableHeaderCell>
+              <TableHeaderCell>id</TableHeaderCell>
+              <TableHeaderCell>payee</TableHeaderCell>
+              <TableHeaderCell>Description</TableHeaderCell>
+              <TableHeaderCell>amount</TableHeaderCell>
+              <TableHeaderCell>date</TableHeaderCell>
+              <TableHeaderCell>status</TableHeaderCell>
             </tr>
           </thead>
           <tbody>
             {data.map((expense, index) => (
               <tr key={expense._id}>
-                <td style={{ width: "50px" }}>
+                <TableDataCell style={{ width: "50px" }}>
                   <CheckBox
                     name={expense}
                     value={selected.includes(expense)}
@@ -150,13 +151,15 @@ function Payment() {
                     setVisible={setVisible}
                     updateValue={handleSelect}
                   />
-                </td>
-                <td>{expense._id}</td>
-                <td>{expense.payee}</td>
-                <td>{expense.description}</td>
-                <td>{expense.amount}</td>
-                <td>{dayjs(expense.date).format("DD-MM-YYYY")}</td>
-                <td>{expense.status}</td>
+                </TableDataCell>
+                <TableDataCell>{expense._id}</TableDataCell>
+                <TableDataCell>{expense.payee}</TableDataCell>
+                <TableDataCell>{expense.description}</TableDataCell>
+                <TableDataCell>{expense.amount}</TableDataCell>
+                <TableDataCell>
+                  {dayjs(expense.date).format("DD-MM-YYYY")}
+                </TableDataCell>
+                <TableDataCell>{expense.status}</TableDataCell>
               </tr>
             ))}
           </tbody>
@@ -168,5 +171,15 @@ function Payment() {
     </div>
   );
 }
+
+const TableHeaderCell = styled.th`
+  text-align: left;
+  padding: 8px;
+  text-transform: uppercase;
+`;
+const TableDataCell = styled.td`
+  text-align: left;
+  padding: 8px;
+`;
 
 export default Payment;

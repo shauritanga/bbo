@@ -59,4 +59,5 @@
 .expense-table{
     flex: 1;
     background-color: var(--color-background);
+    box-shadow: var(--boxs-shadow);
 }

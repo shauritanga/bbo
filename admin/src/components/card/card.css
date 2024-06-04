@@ -1,17 +1,16 @@
 .card{
     display: flex;
     flex-direction: column;
-    gap: 40px;
-    min-width: 250px;
-    max-width: 250px;
+    justify-content: space-between;
+    flex:1;
     background-color: var(--color-background);
-    padding: 20px;
+    padding: 10px;
     color: var(--color-dark);
     border-radius: 0.35rem;
     box-shadow: var(--box-shadow);
 }
 .card > p{
-    font-size: 2rem;
+    font-size: 1.3rem;
 }
 .card_title, .card_info{
     display: flex;

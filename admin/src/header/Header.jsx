@@ -1,5 +1,4 @@
 import React from "react";
-import { FiMoon } from "react-icons/fi";
 import { IoMdNotificationsOutline } from "react-icons/io";
 import "./header.css";
 import { HiOutlineMenuAlt2 } from "react-icons/hi";
@@ -38,7 +37,7 @@ function Header({ user, theme, setTheme, isSidebarOpen, setIsSidebarOpen }) {
           <div className="user-name">
             <h3>{user.name}</h3>
             <span className="text-muted">
-              {user.isadmin ? "Admin" : "Normal"}
+              {user.role?.name === "admin" ? "Admin" : "Normal"}
             </span>
           </div>
           <img

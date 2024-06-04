@@ -23,6 +23,33 @@ const CustomerForm = ({ open, setOpen, size, title }) => {
   const [idNumber, setIdNumber] = useState("");
   const [email, setEmail] = useState("");
   const [visible, setVisible] = React.useState(false);
+  const [cdsAccount, setCdsAccount] = useState("");
+
+  const handleFormSubmit = () => {
+    const { _id: customerId } = customer.find((c) => c.name === client) || {};
+    const { _id: securityId } = security.find((s) => s.name === holding) || {};
+    const postData = {
+      customer: customerId,
+      security: securityId,
+      type: action,
+      volume,
+      price,
+      fees,
+      amount,
+      total,
+    };
+    fetch("http://localhost:5001/api/orders", {
+      mode: "cors",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      method: "POST",
+      body: JSON.stringify(postData),
+    })
+      .then((response) => response.json())
+      .then((data) => setOpen(false))
+      .catch((error) => console.log(error));
+  };
 
   const customStyles = {
     control: (base) => ({
@@ -75,7 +102,9 @@ const CustomerForm = ({ open, setOpen, size, title }) => {
               <TextInput
                 id="cds"
                 type="text"
+                value={cdsAccount}
                 placeholder="CDS Account Number"
+                onChange={(e) => setCdsAccount(e.target.value)}
               />
             </FormGroup>
             <FormGroup>

@@ -52,7 +52,6 @@ const OrderForm = ({ open, setOpen, size, title }) => {
       amount,
       total,
     };
-    console.log(postData);
     fetch("http://localhost:5001/api/orders", {
       mode: "cors",
       headers: {

@@ -1,15 +1,18 @@
 .layout{
     display: flex;
-    height: 100%;
+    flex:1;
     gap: 20px;
 }
 .left{
     display: flex;
+    min-height: 100%;
 }
 .right{
     display: flex;
-    flex: 1;
+    flex: 6;
+    min-height: 100%;
     padding-right: 30px;
     flex-direction: column;
+    margin-bottom: 50px;;
     overflow-y: scroll;
 }

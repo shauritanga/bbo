@@ -7,6 +7,7 @@ const Login = () => {
     username: "",
     password: "",
   });
+  const [show, setShow] = useState(false);
 
   const auth = useAuth();
   const handleSubmitEvent = (e) => {
@@ -25,14 +26,10 @@ const Login = () => {
       [name]: value,
     }));
   };
-  console.log(input);
   return (
     <Wrapper>
       <Banner>
-        <img
-          src="../../public/large.png"
-          style={{ width: "50%", margin: "auto" }}
-        />
+        <img src="../../large.png" style={{ width: "50%", margin: "auto" }} />
       </Banner>
       <FormWrapper>
         <Form onSubmit={handleSubmitEvent}>
@@ -44,7 +41,7 @@ const Login = () => {
             onChange={handleInput}
           />
           <TextInput
-            type="password"
+            type={show ? "text" : "password"}
             name="password"
             id="password"
             placeholder="Password"
@@ -55,7 +52,7 @@ const Login = () => {
               <input type="checkbox" name="remember" id="remember" />
               <label htmlFor="remember">Remember me</label>
             </RememberMe>
-            <a href="">Forrgot password?</a>
+            <a href="">Forgot password?</a>
           </Help>
           <Button type="submit">Sign in</Button>
         </Form>

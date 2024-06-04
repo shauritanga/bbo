@@ -226,6 +226,7 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 30px;
+  margin-bottom: 50px;
 `;
 const TopFilters = styled.div`
   display: flex;

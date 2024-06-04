@@ -8,8 +8,21 @@ const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(localStorage.getItem("site") || "");
   const navigate = useNavigate();
 
-  const loginAction = (data) => {
-    setUser(data);
+  const loginAction = async (data) => {
+    const response = await fetch("http://localhost:5001/api/v1/login", {
+      method: "post",
+      body: JSON.stringify(data),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const result = await response.json();
+    console.log(result);
+    if (!result.ok) {
+      alert(result.message);
+      return;
+    }
+    setUser(result.user);
     navigate("/dashboard");
   };
 

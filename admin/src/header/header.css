@@ -5,6 +5,10 @@
     justify-content: space-between;
     padding: 10px;
     margin-bottom: 40px;
+    background-color: var(--color-white);
+    z-index: 999;
+    box-shadow: var(--box-shadow);
+    border-radius: var(--border-radius-1);
 }
 .logo{
     display: flex;
@@ -52,8 +56,9 @@
 .user-name{
     display: flex;
     flex-direction: column;
-    align-items: end;
+    align-items:flex-end;
 }
 .user-name h3{
     font-weight: 600;
+    line-height:10px;
 }

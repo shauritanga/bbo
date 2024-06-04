@@ -4,6 +4,7 @@ import Search from "../../components/search/Search";
 import CheckBox from "../../components/checkbox/CheckBox";
 import ExpenseModal from "../../components/modals/expense/ExpenseModal";
 import ModalView from "../../components/modals/Modal";
+import styled from "styled-components";
 
 function Expense() {
   const [query, setQuery] = useState("");
@@ -119,7 +120,7 @@ function Expense() {
         <table style={{ width: "100%" }}>
           <thead>
             <tr>
-              <th style={{ width: 70 }}>
+              <TableHeaderCell style={{ width: 70, textAlign: "left" }}>
                 <CheckBox
                   name="all"
                   value={selected.length === expenses.length}
@@ -127,19 +128,19 @@ function Expense() {
                   setVisible={setVisible}
                   updateValue={selectAll}
                 />
-              </th>
-              <th>id</th>
-              <th>payee</th>
-              <th>Description</th>
-              <th>amount</th>
-              <th>date</th>
-              <th>status</th>
+              </TableHeaderCell>
+              <TableHeaderCell>id</TableHeaderCell>
+              <TableHeaderCell>payee</TableHeaderCell>
+              <TableHeaderCell>Description</TableHeaderCell>
+              <TableHeaderCell>amount</TableHeaderCell>
+              <TableHeaderCell>date</TableHeaderCell>
+              <TableHeaderCell>status</TableHeaderCell>
             </tr>
           </thead>
           <tbody>
             {data.map((expense) => (
               <tr key={expense._id}>
-                <td>
+                <TableDataCell>
                   <CheckBox
                     name={expense}
                     value={selected.includes(expense)}
@@ -147,13 +148,13 @@ function Expense() {
                     setVisible={setVisible}
                     updateValue={handleSelect}
                   />
-                </td>
-                <td>{expense._id}</td>
-                <td>{expense.payee}</td>
-                <td>{expense.description}</td>
-                <td>{expense.amount}</td>
-                <td>{expense.date}</td>
-                <td>{expense.status}</td>
+                </TableDataCell>
+                <TableDataCell>{expense._id}</TableDataCell>
+                <TableDataCell>{expense.payee}</TableDataCell>
+                <TableDataCell>{expense.description}</TableDataCell>
+                <TableDataCell>{expense.amount}</TableDataCell>
+                <TableDataCell>{expense.date}</TableDataCell>
+                <TableDataCell>{expense.status}</TableDataCell>
               </tr>
             ))}
           </tbody>
@@ -171,4 +172,13 @@ function Expense() {
   );
 }
 
+const TableHeaderCell = styled.th`
+  text-align: left;
+  padding: 8px;
+  text-transform: uppercase;
+`;
+const TableDataCell = styled.td`
+  text-align: left;
+  padding: 8px;
+`;
 export default Expense;

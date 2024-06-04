@@ -16,12 +16,14 @@ const PieCard = ({ title, percent, data }) => {
         </div>
         <div className="pie-details-graph">
           <ResponsivePie
+            width={110}
+            height={110}
             data={data}
-            margin={{ top: 10, right: 10, bottom: 10, left: 10 }}
+            margin={{ top: 5, right: 5, bottom: 5, left: 5 }}
             innerRadius={0.5}
             padAngle={2}
             cornerRadius={3}
-            activeOuterRadiusOffset={8}
+            activeOuterRadiusOffset={5}
             borderWidth={1}
             borderColor={{
               from: "color",
@@ -38,7 +40,6 @@ const PieCard = ({ title, percent, data }) => {
               modifiers: [["darker", 2]],
             }}
             tooltip={({ datum }) => {
-              console.log(datum);
               return (
                 <div
                   style={{

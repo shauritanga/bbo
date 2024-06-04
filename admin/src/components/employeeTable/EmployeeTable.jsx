@@ -5,7 +5,11 @@ function EmployeeTable({ columns, rows, style }) {
   const deducedRows = (row) => {
     const list = [];
     for (let key in row) {
-      list.push(<td key={key}>{row[key]}</td>);
+      list.push(
+        <td style={{ padding: "8px" }} key={key}>
+          {row[key]}
+        </td>
+      );
     }
     return list;
   };
@@ -15,7 +19,15 @@ function EmployeeTable({ columns, rows, style }) {
         <thead>
           <tr>
             {columns.map((column) => (
-              <th style={{ width: `${column.width}px` }} key={column.id}>
+              <th
+                style={{
+                  width: `${column.width}px`,
+                  textAlign: "left",
+                  padding: "8px",
+                  backgroundColor: "hsl(0deg 0% 90%",
+                }}
+                key={column.id}
+              >
                 {column.name}
               </th>
             ))}

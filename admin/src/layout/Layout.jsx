@@ -31,16 +31,16 @@ const Layout = () => {
 
   return (
     <div className="layout">
-      <div className="left">
-        {isSidebarOpen && (
-          <Sidebar
-            isActive={isActive}
-            user={user}
-            isSidebarOpen={isSidebarOpen}
-            setIsSidebarOpen={setIsSidebarOpen}
-          />
-        )}
-      </div>
+      {/* <div className="left"> */}
+      {isSidebarOpen && (
+        <Sidebar
+          isActive={isActive}
+          user={user}
+          isSidebarOpen={isSidebarOpen}
+          setIsSidebarOpen={setIsSidebarOpen}
+        />
+      )}
+      {/* </div> */}
       <div className="right">
         <Navbar
           user={user}

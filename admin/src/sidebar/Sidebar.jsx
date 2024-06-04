@@ -104,7 +104,7 @@ const Sidebar = ({ isActive, user, isSidebarOpen, setIsSidebarOpen }) => {
         <FaRegMessage />
         <span>Messaging</span>
       </Link>
-      {user.isAdmin && (
+      {user.role?.name === "admin" && (
         <>
           <CollapseButton
             icon={<MdOutlineAccountBalanceWallet />}
@@ -182,10 +182,6 @@ const Sidebar = ({ isActive, user, isSidebarOpen, setIsSidebarOpen }) => {
           >
             <HiOutlineSquaresPlus />
             <span>Roles</span>
-          </Link>
-          <Link to="/logout" className="item">
-            <MdOutlineAccountBalanceWallet />
-            <span>Logout</span>
           </Link>
         </>
       )}
