@@ -14,7 +14,7 @@ function Header({ user, theme, setTheme, isSidebarOpen, setIsSidebarOpen }) {
           className="header-icon"
           onClick={() => setIsSidebarOpen(!isSidebarOpen)}
         />
-        <h2>ALPHA CAPITAL</h2>
+        <h3>ALPHA CAPITAL</h3>
       </div>
       <div className="links">
         {theme === "light" ? (

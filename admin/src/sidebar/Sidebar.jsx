@@ -23,6 +23,7 @@ import { HiOutlineSquaresPlus } from "react-icons/hi2";
 const Sidebar = ({ isActive, user, isSidebarOpen, setIsSidebarOpen }) => {
   const customersPath = new RegExp(`^customers(\/.*)?$`);
   const ordersPath = new RegExp(`^orders(\/.*)?$`);
+  console.log(isActive);
   return (
     <div className="aside">
       <div className="close">
@@ -34,7 +35,7 @@ const Sidebar = ({ isActive, user, isSidebarOpen, setIsSidebarOpen }) => {
       <Link
         onClick={() => console.log("dashboard clicked")}
         to="/dashboard"
-        className={`item ${isActive === "dashboard" ? "active" : ""}`}
+        className={`item ${isActive === "/dashboard" ? "active" : ""}`}
       >
         <RxDashboard />
         <span>Dashboard</span>
@@ -42,31 +43,49 @@ const Sidebar = ({ isActive, user, isSidebarOpen, setIsSidebarOpen }) => {
       <CollapseButton icon={<MdOutlineSell />} name="Orders" className="item">
         <div>
           <Link
-            to="/orders"
-            className={`item ${ordersPath.test(isActive) ? "active" : ""}`}
+            to="/orders/?q=all"
+            className={`item ${isActive === "/orders/?q=all" ? "active" : ""}`}
           >
             <GoDot />
             <span>All orders</span>
+          </Link>
+          <Link
+            to="/orders/?q=pending"
+            className={`item ${
+              isActive === "/orders/?q=pending" ? "active" : ""
+            }`}
+          >
+            <GoDot />
+            <span>Pending</span>
+          </Link>
+          <Link
+            to="/orders/?q=complete"
+            className={`item ${
+              isActive === "/orders/?q=complete" ? "active" : ""
+            }`}
+          >
+            <GoDot />
+            <span>Complete</span>
           </Link>
         </div>
       </CollapseButton>
       <Link
         to="/dealing"
-        className={`item ${isActive === "dealing" ? "active" : ""}`}
+        className={`item ${isActive === "/dealing" ? "active" : ""}`}
       >
         <BiSpreadsheet />
         <span>Dealing sheet</span>
       </Link>
       <Link
         to="/reports"
-        className={`item ${isActive === "reports" ? "active" : ""}`}
+        className={`item ${isActive === "/reports" ? "active" : ""}`}
       >
         <TbReport />
         <span>Market Reports</span>
       </Link>
       <Link
         to="/assets"
-        className={`item ${isActive === "assets" ? "active" : ""}`}
+        className={`item ${isActive === "/assets" ? "active" : ""}`}
       >
         <MdWebAsset />
         <span>Asset Management</span>
@@ -75,14 +94,14 @@ const Sidebar = ({ isActive, user, isSidebarOpen, setIsSidebarOpen }) => {
         <>
           <Link
             to="/customers"
-            className={`item ${customersPath.test(isActive) ? "active" : ""}`}
+            className={`item ${isActive === "/customers" ? "active" : ""}`}
           >
             <GoDot />
             <span>Customers</span>
           </Link>
           <Link
             to="/categories"
-            className={`item ${isActive === "categories" ? "active" : ""}`}
+            className={`item ${isActive === "/categories" ? "active" : ""}`}
           >
             <GoDot />
             <span>Categories</span>
@@ -92,14 +111,14 @@ const Sidebar = ({ isActive, user, isSidebarOpen, setIsSidebarOpen }) => {
 
       <Link
         to="/files"
-        className={`item ${isActive === "files" ? "active" : ""}`}
+        className={`item ${isActive === "/files" ? "active" : ""}`}
       >
         <MdOutlineFolder />
         <span>File Manager</span>
       </Link>
       <Link
         to="/messages"
-        className={`item ${isActive === "messages" ? "active" : ""}`}
+        className={`item ${isActive === "/messages" ? "active" : ""}`}
       >
         <FaRegMessage />
         <span>Messaging</span>
@@ -115,7 +134,7 @@ const Sidebar = ({ isActive, user, isSidebarOpen, setIsSidebarOpen }) => {
               <Link
                 to="/transactions"
                 className={`item ${
-                  isActive === "transactions" ? "active" : ""
+                  isActive === "/transactions" ? "active" : ""
                 }`}
               >
                 <GoDot />
@@ -123,21 +142,21 @@ const Sidebar = ({ isActive, user, isSidebarOpen, setIsSidebarOpen }) => {
               </Link>
               <Link
                 to="/expenses"
-                className={`item ${isActive === "expenses" ? "active" : ""}`}
+                className={`item ${isActive === "/expenses" ? "active" : ""}`}
               >
                 <GoDot />
                 <span>Expenses</span>
               </Link>
               <Link
                 to="/payments"
-                className={`item ${isActive === "payments" ? "active" : ""}`}
+                className={`item ${isActive === "/payments" ? "active" : ""}`}
               >
                 <GoDot />
                 <span>Payments</span>
               </Link>
               <Link
                 to="/receipts"
-                className={`item ${isActive === "receipts" ? "active" : ""}`}
+                className={`item ${isActive === "/receipts" ? "active" : ""}`}
               >
                 <GoDot />
                 <span>Receipts</span>
@@ -148,14 +167,16 @@ const Sidebar = ({ isActive, user, isSidebarOpen, setIsSidebarOpen }) => {
             <div>
               <Link
                 to="/employees"
-                className={`item ${isActive === "employees" ? "active" : ""}`}
+                className={`item ${isActive === "/employees" ? "active" : ""}`}
               >
                 <GoDot />
                 <span>Employees</span>
               </Link>
               <Link
                 to="/departments"
-                className={`item ${isActive === "departments" ? "active" : ""}`}
+                className={`item ${
+                  isActive === "/departments" ? "active" : ""
+                }`}
               >
                 <GoDot />
                 <span>Departments</span>
@@ -164,21 +185,21 @@ const Sidebar = ({ isActive, user, isSidebarOpen, setIsSidebarOpen }) => {
           </CollapseButton>
           <Link
             to="/securities"
-            className={`item ${isActive === "securities" ? "active" : ""}`}
+            className={`item ${isActive === "/securities" ? "active" : ""}`}
           >
             <BsShieldLock />
             <span>Securities</span>
           </Link>
           <Link
             to="/business"
-            className={`item ${isActive === "business" ? "active" : ""}`}
+            className={`item ${isActive === "/business" ? "active" : ""}`}
           >
             <MdOutlineAccountBalanceWallet />
             <span>Business</span>
           </Link>
           <Link
             to="/roles"
-            className={`item ${isActive === "roles" ? "active" : ""}`}
+            className={`item ${isActive === "/roles" ? "active" : ""}`}
           >
             <HiOutlineSquaresPlus />
             <span>Roles</span>

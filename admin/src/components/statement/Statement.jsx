@@ -46,11 +46,14 @@ const Table = styled.div`
 const TableHeaderRow = styled.tr`
   display: flex;
   align-items: center;
+  background-color: hsl(0deg 0% 80%);
   width: 100%;
 `;
 const TableHeaderCell = styled.th`
   text-transform: uppercase;
   font-weight: normal;
+  text-align: left;
+  padding: 8px 10px;
   width: 100%;
 `;
 
@@ -62,6 +65,7 @@ const TableDataCell = styled.td`
   width: 100%;
   border: none;
   vertical-align: bottom;
+  padding: 8px 10px;
   border-bottom: 0.1px solid hsl(0deg 0% 70%);
 `;
 

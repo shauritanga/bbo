@@ -40,11 +40,13 @@ const Table = styled.div`
 const TableHeaderRow = styled.tr`
   display: flex;
   align-items: center;
+  background-color: hsl(0deg 0% 80%);
   width: 100%;
 `;
 const TableHeaderCell = styled.th`
   text-transform: uppercase;
   font-weight: normal;
+  text-align: left;
   padding: 8px 10px;
   width: 100%;
 `;

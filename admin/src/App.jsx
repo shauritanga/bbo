@@ -26,6 +26,7 @@ import CustomerView from "./views/customer/Customer";
 import OrderView from "./views/order/Order";
 import Register from "./register/Register";
 import AuthProvider from "./provider/AuthProvider";
+import DealingView from "./views/dealing/DealingView";
 
 function App() {
   const signIn = false;
@@ -42,6 +43,7 @@ function App() {
             <Route path="/customers/:customerId" element={<CustomerView />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/dealing" element={<DealingSheet />} />
+            <Route path="/dealing/:dealingId" element={<DealingView />} />
             <Route path="/departments" element={<Department />} />
             <Route path="/employees" element={<Employee />} />
             <Route path="/expenses" element={<Expense />} />

@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router";
+import { useNavigate } from "react-router-dom";
 import { DatePicker, Input, InputPicker } from "rsuite";
 import styled from "styled-components";
 import "rsuite/InputNumber/styles/index.css";
 import Select from "../../components/select";
 
-const data = ["Eugenia", "Bryan", "Linda", "Nancy", "Lloyd"].map((item) => ({
+const data = ["Bond", "Security"].map((item) => ({
   label: item,
   value: item,
 }));
@@ -18,7 +19,9 @@ const OrderView = () => {
   const [price, setPrice] = useState(state.price);
   const [amount, setAmount] = useState(state.price * state.volume);
   const [type, setType] = useState(state.type);
+  // const [holding, setHolding] = useState(null);
   const [security, setSecurity] = useState(state.security?.name);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetch("http://localhost:5001/api/customers")
@@ -29,6 +32,15 @@ const OrderView = () => {
   if (client === null) {
     return <div>Loading...</div>;
   }
+  // useEffect(() => {
+  //   fetch("http://localhost:5001/api/securities")
+  //     .then((res) => res.json())
+  //     .then((data) => setHolding(data))
+  //     .catch((err) => console.log(err));
+  // }, []);
+  // if (holding === null) {
+  //   return <div>Loading...</div>;
+  // }
   return (
     <Wrapper>
       <Main>
@@ -91,7 +103,6 @@ const OrderView = () => {
                 <label htmlFor="date">Order Type</label>
                 <Select value={type} onChange={(e) => setType(e.target.value)}>
                   <option value="">Select Type</option>
-
                   <option value="Buy">Buy</option>
                   <option value="Sell">Sell</option>
                 </Select>
@@ -113,16 +124,59 @@ const OrderView = () => {
                   onChange={(e) => setSecuritty(e.target.value)}
                 >
                   <option value="">Select Security</option>
-
-                  <option value="NICO">Buy</option>
-                  <option value="CRDB">Sell</option>
                 </Select>
               </FormController>
             </FormGroup>
             <Input as="textarea" rows={3} placeholder="Textarea" />
           </Form>
         </Balance>
-        <Execution>new execution</Execution>
+        <Execution>
+          <ExecutionHeader>
+            <p>Activities</p>
+            <Button
+              style={{
+                backgroundColor: "hsl(243deg, 50%, 21%)",
+                color: "#fff",
+              }}
+            >
+              New Execution
+            </Button>
+          </ExecutionHeader>
+          <ExecutionTable>
+            {/* <thead> */}
+            <ExecetionTableHeaderRow>
+              <ExecutionTableHeaderCell>Date</ExecutionTableHeaderCell>
+              <ExecutionTableHeaderCell>slip no</ExecutionTableHeaderCell>
+              <ExecutionTableHeaderCell>price</ExecutionTableHeaderCell>
+              <ExecutionTableHeaderCell>executed</ExecutionTableHeaderCell>
+              <ExecutionTableHeaderCell>amount</ExecutionTableHeaderCell>
+              <ExecutionTableHeaderCell>action</ExecutionTableHeaderCell>
+            </ExecetionTableHeaderRow>
+            {/* </thead> */}
+            {/* <tbody> */}
+            <ExecutionTableDataRow>
+              <ExecutionTableDataCell>2024-06-04</ExecutionTableDataCell>
+              <ExecutionTableDataCell>6178654</ExecutionTableDataCell>
+              <ExecutionTableDataCell>400</ExecutionTableDataCell>
+              <ExecutionTableDataCell>300</ExecutionTableDataCell>
+              <ExecutionTableDataCell>120000</ExecutionTableDataCell>
+              <ExecutionTableDataCell style={{ display: "flex", gap: "40px" }}>
+                <ExecutionAction>approved</ExecutionAction>
+                <ExecutionAction>PDF</ExecutionAction>
+                <ExecutionAction
+                  onClick={() =>
+                    navigate(`/dealing/${28087654 - 9086 - 7866}`, {
+                      state: "order.customer",
+                    })
+                  }
+                >
+                  view
+                </ExecutionAction>
+              </ExecutionTableDataCell>
+            </ExecutionTableDataRow>
+            {/* </tbody> */}
+          </ExecutionTable>
+        </Execution>
       </Main>
       <Aside>
         <Portfolio>
@@ -153,15 +207,41 @@ const OrderView = () => {
               </tr>
               <tr>
                 <TableDataCell>Status</TableDataCell>
-                <TableDataCell>Active</TableDataCell>
+                <TableDataCell style={{ color: "#61c478" }}>
+                  <span
+                    style={{
+                      backgroundColor: "hsl(0deg 0% 95%",
+                      padding: "3px 6px",
+                      borderRadius: "999px",
+                    }}
+                  >
+                    Active
+                  </span>
+                </TableDataCell>
               </tr>
             </tbody>
           </Table>
         </Portfolio>
         <Actions>
-          <Button>aa</Button>
-          <Button>bb</Button>
-          <Button>cc</Button>
+          <Button
+            style={{ backgroundColor: "hsl(243deg, 50%, 21%)", color: "#fff" }}
+          >
+            Print
+          </Button>
+          <Button
+            style={{ backgroundColor: "hsl(243deg, 50%, 21%)", color: "#fff" }}
+          >
+            Add Documents
+          </Button>
+          <Button style={{ backgroundColor: "#61C478", color: "#fff" }}>
+            Approve
+          </Button>
+          <Button style={{ backgroundColor: "#F2A356", color: "#fff" }}>
+            Reset
+          </Button>
+          <Button style={{ backgroundColor: "#D95E5A", color: "#fff" }}>
+            Cancel
+          </Button>
         </Actions>
       </Aside>
     </Wrapper>
@@ -210,9 +290,41 @@ const TextInput = styled.input`
 `;
 const Execution = styled.div`
   display: flex;
+  flex-direction: column;
+  gap: 20px;
   background-color: #fff;
   border-radius: 7px;
   padding: 20px;
+`;
+const ExecutionHeader = styled.div`
+  display: flex;
+  align-items: center;
+  width: 100%;
+  justify-content: space-between;
+`;
+const ExecutionTable = styled.table`
+  width: 100%;
+`;
+const ExecetionTableHeaderRow = styled.tr`
+  width: 100%;
+  background-color: hsl(0deg 0% 90%);
+`;
+const ExecutionTableHeaderCell = styled.th`
+  text-transform: uppercase;
+  text-align: left;
+  padding: 8px 10px;
+`;
+const ExecutionTableDataRow = styled.tr``;
+const ExecutionTableDataCell = styled.td`
+  padding: 8px 10px;
+`;
+
+const ExecutionAction = styled.span`
+  background-color: hsl(0deg 0% 90%/0.5);
+  padding: 4px 8px;
+  color: #61c478;
+  border-radius: 999px;
+  cursor: pointer;
 `;
 const Aside = styled.div`
   display: flex;
@@ -240,6 +352,7 @@ const Avatar = styled.div`
 const Table = styled.table`
   width: 100%;
 `;
+
 const TableDataCell = styled.td`
   border: 1px solid;
   padding: 10px;

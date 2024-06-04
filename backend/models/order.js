@@ -41,6 +41,10 @@ const orderSchema = mongoose.Schema({
   },
   status: {
     type: String,
+    default: "new",
+  },
+  balance: {
+    type: Number,
   },
 });
 

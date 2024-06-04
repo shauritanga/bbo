@@ -10,9 +10,6 @@ const OrderForm = ({ open, setOpen, size, title }) => {
   const [client, setClient] = useState("");
   const [volume, setVolume] = useState(0);
   const [price, setPrice] = useState(0);
-  const [fees, setFees] = useState(0);
-  const [amount, setAmount] = useState(0);
-  const [total, setTotal] = useState(0);
   const [type, setType] = useState("");
   const [action, setAction] = useState("");
 
@@ -51,7 +48,9 @@ const OrderForm = ({ open, setOpen, size, title }) => {
       fees,
       amount,
       total,
+      balance: volume,
     };
+    console.log(postData);
     fetch("http://localhost:5001/api/orders", {
       mode: "cors",
       headers: {
@@ -64,6 +63,11 @@ const OrderForm = ({ open, setOpen, size, title }) => {
       .then((data) => setOpen(false))
       .catch((error) => console.log(error));
   };
+
+  //calculated values
+  const amount = volume * price;
+  const fees = amount * 0.02366;
+  const total = amount + fees;
 
   return (
     <Modal
@@ -115,29 +119,17 @@ const OrderForm = ({ open, setOpen, size, title }) => {
             </FormGroup>
             <FormGroup>
               <label htmlFor="amount">Amount(TZS)</label>
-              <TextInput
-                id="amount"
-                type="number"
-                onChange={(event) => setAmount(event.target.value)}
-              />
+              <TextInput id="amount" type="number" value={amount} />
             </FormGroup>
           </FormRow>
           <FormRow>
             <FormGroup>
               <label htmlFor="fees">Total Fees(TZS)</label>
-              <TextInput
-                id="fees"
-                type="number"
-                onChange={(event) => setFees(event.target.value)}
-              />
+              <TextInput id="fees" type="number" value={fees} />
             </FormGroup>
             <FormGroup>
               <label htmlFor="total">Total(TZS)</label>
-              <TextInput
-                id="total"
-                type="number"
-                onChange={(event) => setTotal(event.target.value)}
-              />
+              <TextInput id="total" type="number" value={total} />
             </FormGroup>
           </FormRow>
           <FormRow>

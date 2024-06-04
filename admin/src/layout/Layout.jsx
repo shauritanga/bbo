@@ -15,12 +15,12 @@ const Layout = () => {
   const [theme, setTheme] = useState(
     () => window.localStorage.getItem("theme") || "light"
   );
-  const { pathname } = useLocation();
+  const { pathname, search } = useLocation();
   const { user } = useAuth();
 
   useEffect(() => {
-    setIsActive(pathname.substring(1));
-  }, [pathname]);
+    setIsActive(pathname + search);
+  }, [pathname, search]);
 
   useEffect(() => {
     window.localStorage.setItem("theme", theme);

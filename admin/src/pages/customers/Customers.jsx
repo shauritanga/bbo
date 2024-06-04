@@ -20,23 +20,23 @@ const fetcher = (url) => fetch(url).then((res) => res.json());
 
 const summary = [
   {
-    name: "New orders",
-    total: 34,
+    name: "New",
+    total: 14,
     icon: <IoTimerOutline />,
   },
   {
-    name: "Processing",
-    total: 74,
+    name: "Pending",
+    total: 3,
     icon: <VscServerProcess />,
   },
   {
-    name: "Unmatched",
-    total: 0,
+    name: "Total",
+    total: 712,
     icon: <BsExclamationOctagon />,
   },
   {
-    name: "All orders",
-    total: 349,
+    name: "issues",
+    total: 250,
     icon: <FiShoppingBag />,
   },
 ];

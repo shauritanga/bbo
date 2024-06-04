@@ -145,6 +145,7 @@ const ListItem = styled.div`
   padding: 10px 20px;
   border-radius: 7px;
   gap: 12px;
+  cursor: pointer;
 `;
 
 const Portfolio = styled.div`

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import SummaryCard from "../../components/summary-card/SummaryCard";
 import dayjs from "dayjs";
 import { IoTimerOutline } from "react-icons/io5";
@@ -34,8 +34,8 @@ const summary = [
     icon: <VscServerProcess />,
   },
   {
-    name: "Unmatched",
-    total: 0,
+    name: "Completed",
+    total: 12,
     icon: <BsExclamationOctagon />,
   },
   {
@@ -52,6 +52,9 @@ const Orders = () => {
   const [dateRage, setDateRage] = useState(false);
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
   const [filter, setFilter] = useState(null);
+  const [searchParams] = useSearchParams();
+
+  console.log(searchParams);
 
   const navigate = useNavigate();
 
@@ -95,6 +98,21 @@ const Orders = () => {
       </Button>
     );
   };
+
+  const query = searchParams.get("q");
+  let orders = null;
+  switch (query) {
+    case "all":
+      orders = data;
+      break;
+    case "pending":
+      orders = data.filter((order) => order.status === "new");
+      break;
+    case "complete":
+      orders = data.filter((order) => order.balance === 0);
+      break;
+  }
+  console.log(data[0].balance === 0);
 
   return (
     <Wrapper>
@@ -209,7 +227,7 @@ const Orders = () => {
             <TableHeaderCell>balance</TableHeaderCell>
             <TableHeaderCell>status</TableHeaderCell>
           </TableHeaderRow>
-          {data.map((order, index) => (
+          {orders?.map((order, index) => (
             <TableDataRow key={index}>
               <TableDataCell>{order._id}</TableDataCell>
               <TableDataCell>
@@ -228,7 +246,7 @@ const Orders = () => {
               <TableDataCell>{order.type}</TableDataCell>
               <TableDataCell>{order.amount}</TableDataCell>
               <TableDataCell>{order.volume}</TableDataCell>
-              <TableDataCell>{order.volume - 6}</TableDataCell>
+              <TableDataCell>{order.balance}</TableDataCell>
               <TableDataCell
                 onClick={() =>
                   navigate(`/orders/${order.customer?._id}`, {
@@ -236,7 +254,7 @@ const Orders = () => {
                   })
                 }
               >
-                complete
+                {order.status}
               </TableDataCell>
             </TableDataRow>
           ))}
@@ -331,7 +349,7 @@ const Table = styled.table`
 const TableHeaderRow = styled.tr`
   text-align: left;
   text-transform: uppercase;
-  background-color: hsl(250deg 0% 97%);
+  background-color: hsl(0deg 0% 80%);
 `;
 const TableHeaderCell = styled.th`
   padding: 10px;
