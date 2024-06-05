@@ -6,7 +6,7 @@
     background-color: var(--color-background);
     padding: 10px;
     color: var(--color-dark);
-    border-radius: 0.35rem;
+    border-radius: 7px;
     box-shadow: var(--box-shadow);
 }
 .card > p{

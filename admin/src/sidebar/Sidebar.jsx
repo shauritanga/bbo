@@ -67,6 +67,15 @@ const Sidebar = ({ isActive, user, isSidebarOpen, setIsSidebarOpen }) => {
             <GoDot />
             <span>Complete</span>
           </Link>
+          <Link
+            to="/orders/?q=cancelled"
+            className={`item ${
+              isActive === "/orders/?q=cancelled" ? "active" : ""
+            }`}
+          >
+            <GoDot />
+            <span>Cancelled</span>
+          </Link>
         </div>
       </CollapseButton>
       <Link
