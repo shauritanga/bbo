@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import "./receipt.css";
 import Search from "../../components/search/Search";
-import ReceiptModal from "../../components/modals/receipt/ReceiptModal";
 import dayjs from "dayjs";
 import CheckBox from "../../components/checkbox/CheckBox";
-import CustomInputGroupWidthButton from "../../components/search-icon/InputSearchWithIcon";
+import ReceiptForm from "../../components/forms/receipt/ReceiptForm";
+import Select from "../../components/select";
+import styled from "styled-components";
+import { Button, ButtonGroup, ButtonToolbar } from "rsuite";
 
 function Receipt() {
   const [checked, setChecked] = useState(false);
@@ -13,8 +15,14 @@ function Receipt() {
   const [clients, setClients] = useState(null);
   const [clientId, setClientId] = useState("");
   const [receipts, setReceipts] = useState(null);
-  const [openReceiptForm, setOpenReceiptForm] = useState(false);
+  const [openForm, setOpenForm] = useState(false);
   const [selected, setSelected] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const [totalDocuments, setTotalDocuments] = useState(0);
+  const itemsPerPage = 10; // Number of items to show per page
 
   const updatePayment = async (selected, status) => {
     for (let item in selected) {
@@ -52,17 +60,41 @@ function Receipt() {
   };
 
   useEffect(() => {
-    fetch("http://localhost:5001/api/receipts")
-      .then((response) => response.json())
-      .then((data) => setReceipts(data))
-      .catch((error) => console.log(error));
-  }, []);
+    const fetchData = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:5001/api/receipts/?page=${currentPage}&limit=${itemsPerPage}`
+        );
+        const data = await response.json();
+        setReceipts(data.data); // Assuming API returns { items: [...], totalPages: ... }
+        setTotalPages(data.totalPages);
+        setTotalDocuments(data.totalDocuments);
+      } catch (error) {
+        // Handle error
+      }
+    };
+
+    fetchData();
+  }, [currentPage]);
 
   useEffect(() => {
-    fetch("http://localhost:5001/api/customers")
-      .then((response) => response.json())
-      .then((data) => setClients(data))
-      .catch((error) => console.log(error));
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        const customersResponse = await fetch(
+          "http://localhost:5001/api/customers"
+        );
+        if (!customersResponse.ok) throw new Error("Error fetching customers");
+
+        const customersData = await customersResponse.json();
+        setClients(customersData);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchData();
   }, []);
 
   if (!clients) {
@@ -72,34 +104,50 @@ function Receipt() {
   if (!receipts) {
     return <div>Loading...</div>;
   }
+  console.log(receipts);
 
   const filtered = receipts.filter((expense) =>
-    expense.payee.toLowerCase().includes(query.toLowerCase())
+    expense.payee?.name.toLowerCase().includes(query.toLowerCase())
   );
   const data = query ? filtered : receipts;
   return (
     <div className="receipt">
       <div className="receipt-header">
-        <button onClick={() => setOpenReceiptForm(true)}>New Receipt</button>
+        <button
+          style={{ backgroundColor: "var(--color-button)", color: "#fff" }}
+          onClick={() => setOpenForm(true)}
+        >
+          New Receipt
+        </button>
         <div className="receipt-header-right">
           <form>
-            <select
+            <Select
               required
               value={clientId}
+              width={340}
               onChange={(event) => setClientId(event.target.value)}
             >
-              <option value="">--Select Client--</option>
-              <optgroup label="Clients">
-                {clients.map((client) => (
-                  <option key={client._id} value={client._id}>
-                    {client.name}
-                  </option>
-                ))}
-              </optgroup>
-            </select>
-            <button>Filter</button>
+              <option value="" disabled>
+                Select Client
+              </option>
+
+              {clients.map((client) => (
+                <option key={client._id} value={client._id}>
+                  {client.name}
+                </option>
+              ))}
+            </Select>
+            <button
+              style={{ backgroundColor: "var(--color-button)", color: "#fff" }}
+            >
+              Filter
+            </button>
           </form>
-          <button>Export Excel</button>
+          <button
+            style={{ backgroundColor: "var(--color-button)", color: "#fff" }}
+          >
+            Export Excel
+          </button>
         </div>
       </div>
       <div className="receipt-actions">
@@ -109,22 +157,37 @@ function Receipt() {
           style={{ visibility: visible ? "visible" : "hidden" }}
         >
           <button
+            style={{ backgroundColor: "var(--color-approve)", color: "#fff" }}
             onClick={() => updatePayment(selected, { status: "approved" })}
           >
             Approve
           </button>
-          <button onClick={() => updatePayment(selected, { status: "" })}>
+          <button
+            style={{
+              backgroundColor: "var(--color-disapprove)",
+              color: "#fff",
+            }}
+            onClick={() => updatePayment(selected, { status: "" })}
+          >
             Disapprove
           </button>
-          <button>Reject</button>
-          <button>Export(excel)</button>
+          <button
+            style={{ backgroundColor: "var(--color-reject)", color: "#fff" }}
+          >
+            Reject
+          </button>
+          <button
+            style={{ backgroundColor: "var(--color-button)", color: "#fff" }}
+          >
+            Export(excel)
+          </button>
         </div>
       </div>
-      <div className="receipt-table">
-        <table style={{ width: "100%" }}>
+      <TableWrapper>
+        <Table style={{ width: "100%" }}>
           <thead>
-            <tr>
-              <th style={{ width: "50px" }}>
+            <TableHeaderRow>
+              <TableHeaderCell style={{ width: "50px" }}>
                 <CheckBox
                   name="all"
                   value={selected.length === receipts.length}
@@ -132,43 +195,114 @@ function Receipt() {
                   setVisible={setVisible}
                   updateValue={selectAll}
                 />
-              </th>
-              <th>id</th>
-              <th>payee</th>
-              <th>Description</th>
-              <th>amount</th>
-              <th>date</th>
-              <th>status</th>
-            </tr>
+              </TableHeaderCell>
+              <TableHeaderCell>id</TableHeaderCell>
+              <TableHeaderCell>payee</TableHeaderCell>
+              <TableHeaderCell>Description</TableHeaderCell>
+              <TableHeaderCell>amount</TableHeaderCell>
+              <TableHeaderCell>date</TableHeaderCell>
+              <TableHeaderCell>status</TableHeaderCell>
+            </TableHeaderRow>
           </thead>
           <tbody>
-            {data.map((expense) => (
-              <tr key={expense._id}>
-                <td>
-                  <CheckBox
-                    name={expense}
-                    value={selected.includes(expense)}
-                    visible={visible}
-                    setVisible={setVisible}
-                    updateValue={handleSelect}
-                  />
-                </td>
-                <td>{expense._id}</td>
-                <td>{expense.payee}</td>
-                <td>{expense.description}</td>
-                <td>{expense.amount}</td>
-                <td>{dayjs(expense.date).format("DD-MM-YYYY")}</td>
-                <td>{expense.status}</td>
-              </tr>
-            ))}
+            {data.length === 0 ? (
+              <TableDataRow>
+                <TableDataCell
+                  style={{ textAlign: "center", padding: "10px" }}
+                  colSpan={7}
+                >
+                  No Records found
+                </TableDataCell>
+              </TableDataRow>
+            ) : (
+              data.map((expense) => (
+                <TableDataRow key={expense._id}>
+                  <TableDataCell>
+                    <CheckBox
+                      name={expense}
+                      value={selected.includes(expense)}
+                      visible={visible}
+                      setVisible={setVisible}
+                      updateValue={handleSelect}
+                    />
+                  </TableDataCell>
+                  <TableDataCell>{expense._id}</TableDataCell>
+                  <TableDataCell>{expense.payee?.name}</TableDataCell>
+                  <TableDataCell>{expense.description}</TableDataCell>
+                  <TableDataCell>{expense.amount}</TableDataCell>
+                  <TableDataCell>
+                    {dayjs(expense.date).format("DD-MM-YYYY")}
+                  </TableDataCell>
+                  <TableDataCell>{expense.status}</TableDataCell>
+                </TableDataRow>
+              ))
+            )}
           </tbody>
-        </table>
-      </div>
-      {openReceiptForm && (
-        <ReceiptModal setOpenReceiptForm={setOpenReceiptForm} />
-      )}
+        </Table>
+        <Pagination>
+          <Counter>{totalDocuments} total orders</Counter>
+          <ButtonToolbar>
+            <Button
+              onClick={() =>
+                setCurrentPage(currentPage > 1 ? currentPage - 1 : currentPage)
+              }
+              style={{ color: "hsl(243deg, 50%, 50%)" }}
+            >
+              Prev
+            </Button>
+            <ButtonGroup>
+              {Array.from(Array(totalPages).keys())
+                .map((x) => x + 1)
+                .map((page) => (
+                  <Button onClick={() => setCurrentPage(page)}>{page}</Button>
+                ))}
+            </ButtonGroup>
+            <Button
+              onClick={() => setCurrentPage(currentPage + 1)}
+              style={{ color: "hsl(243deg, 50%, 50%)" }}
+            >
+              Next
+            </Button>
+          </ButtonToolbar>
+        </Pagination>
+      </TableWrapper>
+      <ReceiptForm open={openForm} setOpen={setOpenForm} />
     </div>
   );
 }
 
+const TableWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  padding: 20px;
+  border-radius: 7px;
+  justify-content: space-between;
+  height: 600px;
+`;
+const Table = styled.table``;
+const TableHeaderRow = styled.tr`
+  border-bottom: 1px solid hsl(0deg 0% 70%);
+  background-color: hsl(0deg 0% 80%);
+`;
+const TableHeaderCell = styled.th`
+  text-align: left;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  padding: 10px 20px;
+`;
+const TableDataRow = styled.tr``;
+const TableDataCell = styled.td`
+  font-size: 0.75rem;
+  padding: 10px 20px;
+`;
+const Pagination = styled.div`
+  display: flex;
+  margin-top: auto;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 30px;
+`;
+const Counter = styled.p``;
+const Pages = styled.div``;
 export default Receipt;

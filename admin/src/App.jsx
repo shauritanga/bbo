@@ -27,6 +27,7 @@ import OrderView from "./views/order/Order";
 import Register from "./register/Register";
 import AuthProvider from "./provider/AuthProvider";
 import DealingView from "./views/dealing/DealingView";
+import TransactionView from "./views/transaction/TransactionView";
 
 function App() {
   const signIn = false;
@@ -61,6 +62,10 @@ function App() {
               element={<Security backgroundColor="var(--color-white)" />}
             />
             <Route path="/transactions" element={<Transaction />} />
+            <Route
+              path="/transactions/:transactionId"
+              element={<TransactionView />}
+            />
           </Route>
 
           <Route path="/statement" element={<PDF />} />

@@ -40,10 +40,11 @@ const NativeSelect = styled.select`
 const Presentational = styled.div`
   display: flex;
   justify-content: space-between;
-  border: 1px solid grey;
+  border: 1px solid hsl(0deg 0% 80%);
   border-radius: 7px;
   color: grey;
-  padding: 10px;
+  padding: 8px 10px;
+  cursor: pointer;
 `;
 const IconWrapper = styled.div``;
 export default Select;

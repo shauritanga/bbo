@@ -12,6 +12,7 @@ import roleRoute from "./routes/role.js";
 import receiptRoute from "./routes/receipt.js";
 import paymentRoute from "./routes/payment.js";
 import statementRoute from "./routes/statement.js";
+import transactionRoutes from "./routes/transactionRoutes.js";
 import authRoute from "./routes/auth.js";
 import logger from "morgan";
 import dotenv from "dotenv";
@@ -29,6 +30,7 @@ app.use(cors());
 
 app.use("/api/v1/login", authRoute);
 app.use("/api/payments", paymentRoute);
+app.use("/api/transactions", transactionRoutes);
 app.use("/api/customers", customerRoute);
 app.use("/api/orders", orderRoute);
 app.use("/api/securities", securityRoute);

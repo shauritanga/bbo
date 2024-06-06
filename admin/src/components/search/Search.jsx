@@ -9,7 +9,9 @@ function Search({ query, setQuery }) {
     <div
       className="search"
       style={{
-        border: focus ? "1px solid gray" : "1px solid rgb(218, 218, 218)",
+        border: focus
+          ? "1px solid hsl(243deg 50% 21%)"
+          : "1px solid hsl(0deg 0% 70%)",
       }}
     >
       <FiSearch size={18} color="gray" />

@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
-import "./paymentModal.css";
+import React, { useState, useEffect } from "react";
+import { Modal, Button } from "rsuite";
+import "./receipt.css";
 
-function PaymentModal({ setOpenReceiptForm }) {
+const ReceiptForm = ({ open, setOpen }) => {
   const [transactionDate, settransactionDate] = useState("");
   const [amount, setAmount] = useState(0);
   const [reference, setReference] = useState("");
@@ -9,10 +10,11 @@ function PaymentModal({ setOpenReceiptForm }) {
   const [paymentMethod, setPaymentMethod] = useState(null);
   const [paymentMethodId, setPaymentMethodId] = useState("");
   const [payee, setPayee] = useState(null);
+  const [clients, setClients] = useState([]);
   const [category, setCategory] = useState(null);
   const [realAccount, setRealAccount] = useState(null);
 
-  const payment = {
+  const receipt = {
     transactionDate,
     amount,
     reference,
@@ -24,25 +26,54 @@ function PaymentModal({ setOpenReceiptForm }) {
   };
 
   useEffect(() => {
-    fetch("http://localhost:5001/api/paymethods")
-      .then((response) => response.json())
-      .then((data) => setPaymentMethod(data))
-      .catch((error) => console.log(error));
+    const fetchPayees = () => {
+      fetch("http://localhost:5001/api/customers", {
+        mode: "cors",
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Content-Type": "application/json",
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => setClients(data))
+        .catch((error) => console.log(error));
+    };
+    fetchPayees();
+  }, []);
+
+  useEffect(() => {
+    const fetchPaymentMethods = () => {
+      fetch("http://localhost:5001/api/paymethods", {
+        mode: "cors",
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Content-Type": "application/json",
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => setPaymentMethod(data))
+        .catch((error) => console.log(error));
+    };
+    fetchPaymentMethods();
   }, []);
 
   if (!paymentMethod) {
     return;
   }
+  if (!clients) {
+    return;
+  }
 
   const handleFormSubmit = async (event) => {
     event.preventDefault();
-    const response = await fetch("http://localhost:5001/api/payments", {
+    const response = await fetch("http://localhost:5001/api/receipts", {
+      mode: "cors",
       method: "post",
       headers: {
         "Access-Control-Allow-Origin": "*",
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(payment),
+      body: JSON.stringify(receipt),
     });
     const res = await response.json();
     console.log(res);
@@ -54,15 +85,14 @@ function PaymentModal({ setOpenReceiptForm }) {
     setOpenReceiptForm(false);
   };
   return (
-    <div className="payment-modal">
-      <div className="payment-modal-container">
-        <div className="payment-modal-header">
-          <h3>New Payment</h3>
-          <span onClick={() => setOpenReceiptForm(false)}>x</span>
-        </div>
-        <form action="" className="payment-modal-form">
+    <Modal backdrop="static" open={open} onClose={() => setOpen(false)}>
+      <Modal.Header>
+        <Modal.Title>New Receipt</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <form action="" className="receipt-modal-form">
           <div className="row">
-            <div className="payment-modal-form-control">
+            <div className="receipt-modal-form-control">
               <label htmlFor="transaction-date">Transaction Date</label>
               <input
                 type="text"
@@ -72,7 +102,7 @@ function PaymentModal({ setOpenReceiptForm }) {
                 onChange={(event) => settransactionDate(event.target.value)}
               />
             </div>
-            <div className="payment-modal-form-control">
+            <div className="receipt-modal-form-control">
               <label htmlFor="amount">Amount</label>
               <input
                 type="text"
@@ -84,7 +114,7 @@ function PaymentModal({ setOpenReceiptForm }) {
             </div>
           </div>
           <div className="row">
-            <div className="payment-modal-form-control">
+            <div className="receipt-modal-form-control">
               <label htmlFor="category">Category</label>
               <select
                 id="category"
@@ -100,7 +130,7 @@ function PaymentModal({ setOpenReceiptForm }) {
                 </optgroup>
               </select>
             </div>
-            <div className="payment-modal-form-control">
+            <div className="receipt-modal-form-control">
               <label htmlFor="real-account">Real Account</label>
               <select
                 id="real-account"
@@ -118,7 +148,7 @@ function PaymentModal({ setOpenReceiptForm }) {
             </div>
           </div>
           <div className="row">
-            <div className="payment-modal-form-control">
+            <div className="receipt-modal-form-control">
               <label htmlFor="payee">Payee</label>
               <select
                 required
@@ -127,10 +157,12 @@ function PaymentModal({ setOpenReceiptForm }) {
                 onChange={(event) => setPayee(event.target.value)}
               >
                 <option value="">Select payee</option>
-                <option value="Athanas">Athanas Shauritanga</option>
+                {clients?.map((payee) => (
+                  <option value={payee._id}>{payee.name}</option>
+                ))}
               </select>
             </div>
-            <div className="payment-modal-form-control">
+            <div className="receipt-modal-form-control">
               <label htmlFor="pay-method">Payement Method</label>
               <select
                 className="select"
@@ -146,20 +178,20 @@ function PaymentModal({ setOpenReceiptForm }) {
             </div>
           </div>
           <div className="row">
-            <div className="payment-modal-form-control">
-              <label htmlFor="cheque">Cheque Number</label>
+            <div className="receipt-modal-form-control">
+              <label htmlFor="reference">Reference</label>
               <input
                 type="text"
-                placeholder="Chque Number"
-                id="cheque"
+                placeholder="Reference"
+                id="reference"
                 value={reference}
                 onChange={(event) => setReference(event.target.value)}
               />
             </div>
           </div>
           <div className="row">
-            <div className="payment-modal-form-control">
-              <label htmlFor="Description">Description</label>
+            <div className="receipt-modal-form-control">
+              <label htmlFor="Description">Reference</label>
               <textarea
                 name="text"
                 value={description}
@@ -169,16 +201,18 @@ function PaymentModal({ setOpenReceiptForm }) {
               </textarea>
             </div>
           </div>
-          <div className="payment-modal-actions">
-            <button onClick={handleFormSubmit}>Send</button>
-            <button className="cancel" onClick={handleCancelFormSubmit}>
-              Cancel
-            </button>
-          </div>
         </form>
-      </div>
-    </div>
+      </Modal.Body>
+      <Modal.Footer>
+        <Button onClick={handleFormSubmit} appearance="primary">
+          Ok
+        </Button>
+        <Button onClick={() => setOpen(false)} appearance="subtle">
+          Cancel
+        </Button>
+      </Modal.Footer>
+    </Modal>
   );
-}
+};
 
-export default PaymentModal;
+export default ReceiptForm;

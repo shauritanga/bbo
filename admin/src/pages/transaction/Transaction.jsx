@@ -1,33 +1,76 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import "./transaction.css";
-import Search from "../../components/search/Search";
 import CheckBox from "../../components/checkbox/CheckBox";
-import ExpenseModal from "../../components/modals/expense/ExpenseModal";
+import Select from "../../components/select";
+import { DateRangePicker, toaster, Notification } from "rsuite";
+import styled from "styled-components";
+import dayjs from "dayjs";
 
 function Transaction() {
   const [query, setQuery] = useState("");
   const [clients, setClients] = useState(null);
   const [clientId, setClientId] = useState("");
+  const [customer, setCustomer] = useState("");
   const [transactions, setTransactions] = useState(null);
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState([]);
-  const [openExpenseForm, setOpenExpenseForm] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const [totalDocuments, setTotalDocuments] = useState(0);
+  const itemsPerPage = 10; // Number of items to show per page
 
-  const updatePayment = async (selected, status) => {
-    for (let item in selected) {
-      const response = await fetch(
-        `http://localhost:3000/api/expenses/${selected[item]._id}`,
+  const navigate = useNavigate();
+
+  const customStyles = {
+    control: (base) => ({
+      ...base,
+      height: 42,
+      width: 340,
+      minHeight: 35,
+    }),
+    menuPortal: (base) => ({
+      ...base,
+      zIndex: 9999,
+    }),
+  };
+
+  const updateTransaction = async (selected, status) => {
+    try {
+      for (let item in selected) {
+        const response = await fetch(
+          `http://localhost:5001/api/transactions/${selected[item]._id}`,
+          {
+            mode: "cors",
+            method: "PATCH",
+            headers: {
+              "Access-Control-Allow-Origin": "*",
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(status),
+          }
+        );
+        const json = await response.json();
+      }
+      toaster.push(
+        <Notification type="success" header="Success">
+          Update successifully
+        </Notification>,
         {
-          mode: "cors",
-          method: "POST",
-          headers: {
-            "Access-Control-Allow-Origin": "*",
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(status),
+          duration: 5000,
+          placement: "topCenter",
         }
       );
-      const json = await response.json();
+    } catch (error) {
+      toaster.push(
+        <Notification type="error" header="Error">
+          {error.message}
+        </Notification>,
+        {
+          duration: 5000,
+          placement: "topCenter",
+        }
+      );
     }
   };
 
@@ -46,22 +89,26 @@ function Transaction() {
       setSelected([]);
     }
   };
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:5001/api/transactions/?page=${currentPage}&limit=${itemsPerPage}`
+        );
+        const data = await response.json();
+        setTransactions(data.data); // Assuming API returns { items: [...], totalPages: ... }
+        setTotalPages(data.totalPages);
+        setTotalDocuments(data.totalDocuments);
+      } catch (error) {
+        // Handle error
+      }
+    };
+
+    fetchData();
+  }, [currentPage]);
 
   useEffect(() => {
-    fetch("http://localhost:3000/api/expenses", {
-      mode: "cors",
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Content-Type": "application/json",
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => setTransactions(data))
-      .catch((error) => console.log(error));
-  }, []);
-
-  useEffect(() => {
-    fetch("http://localhost:3000/api/customers", {
+    fetch("http://localhost:5001/api/customers", {
       mode: "cors",
       headers: {
         "Access-Control-Allow-Origin": "*",
@@ -76,62 +123,86 @@ function Transaction() {
   if (!clients) {
     return;
   }
+  if (!transactions) {
+    return <div>Loading...</div>;
+  }
+
+  const clientOptions = clients?.map((client) => {
+    return { lable: client.name, value: client.name };
+  });
 
   if (!transactions) {
     return <div>Loading...</div>;
   }
   const filtered = transactions?.filter((expense) =>
-    expense.payee.toLowerCase().includes(query.toLowerCase())
+    expense.payee?.name.toLowerCase().includes(query.toLowerCase())
   );
   const data = query ? filtered : transactions;
   return (
     <div className="transaction">
-      {/* <div className="transaction-header">
-        <button onClick={() => setOpenExpenseForm(true)}>New Expense</button>
-        <div className="transaction-header-right">
-          <form>
-            <select
-              required
-              value={clientId}
-              onChange={(event) => setClientId(event.target.value)}
-            >
-              <option value="">--Select Client--</option>
-              <optgroup label="Clients">
-                {clients.map((client) => (
-                  <option key={client._id} value={client._id}>
-                    {client.name}
-                  </option>
-                ))}
-              </optgroup>
-            </select>
-            <button>Filter</button>
-          </form>
-          <button>Export Excel</button>
-        </div>
-      </div> */}
       <div className="transaction-actions">
-        <Search setQuery={setQuery} />
+        <Select
+          width={340}
+          value={customer}
+          onChange={(event) => setCustomer(event.target.value)}
+        >
+          <option value="" disabled>
+            Select Customer
+          </option>
+          {clients?.map((customer) => (
+            <option key={customer._id} value={customer.name}>
+              {customer.name}
+            </option>
+          ))}
+        </Select>
+        <DateRangePicker
+          format="dd-MM-yyyy"
+          style={{
+            border: "1px solid hsl(0deg 0% 80%)",
+            borderRadius: "7px",
+          }}
+          placeholder="Select Date Range"
+        />
+        <FilterButton>Filter</FilterButton>
         <div
           className="transaction-actions_hiden"
           style={{ visibility: visible ? "visible" : "hidden" }}
         >
           <button
-            onClick={() => updatePayment(selected, { status: "approved" })}
+            style={{ backgroundColor: "var(--color-approve)", color: "#fff" }}
+            onClick={() => updateTransaction(selected, { status: "approved" })}
           >
             Approve
           </button>
-          <button onClick={() => updatePayment(selected, { status: "" })}>
+          <button
+            style={{
+              backgroundColor: "var(--color-disapprove)",
+              color: "#fff",
+            }}
+            onClick={() =>
+              updateTransaction(selected, { status: "disapproved" })
+            }
+          >
             Disapprove
           </button>
-          <button>Reject</button>
-          <button>Export(excel)</button>
+          <button
+            style={{ backgroundColor: "var(--color-reject)", color: "#fff" }}
+            onClick={() => updateTransaction(selected, { status: "approved" })}
+          >
+            Reject
+          </button>
+          <button
+            style={{ backgroundColor: "var(--color-button)", color: "#fff" }}
+          >
+            Export(excel)
+          </button>
         </div>
       </div>
       <div className="transaction-table">
         <table style={{ width: "100%" }}>
           <thead>
-            <tr>
-              <th style={{ width: 70 }}>
+            <TableHeaderRow>
+              <TableHeaderCell style={{ width: 70, textAlign: "left" }}>
                 <CheckBox
                   name="all"
                   value={selected.length === transactions.length}
@@ -139,43 +210,93 @@ function Transaction() {
                   setVisible={setVisible}
                   updateValue={selectAll}
                 />
-              </th>
-              <th>id</th>
-              <th>payee</th>
-              <th>Description</th>
-              <th>amount</th>
-              <th>date</th>
-              <th>status</th>
-            </tr>
+              </TableHeaderCell>
+              <TableHeaderCell>id</TableHeaderCell>
+              <TableHeaderCell>payee</TableHeaderCell>
+              <TableHeaderCell>Description</TableHeaderCell>
+              <TableHeaderCell>amount</TableHeaderCell>
+              <TableHeaderCell>date</TableHeaderCell>
+              <TableHeaderCell>status</TableHeaderCell>
+            </TableHeaderRow>
           </thead>
           <tbody>
-            {data.map((expense) => (
-              <tr key={expense._id}>
-                <td>
+            {data.map((transaction) => (
+              <tr key={transaction._id}>
+                <TableDataCell>
                   <CheckBox
-                    name={expense}
-                    value={selected.includes(expense)}
+                    name={transaction}
+                    value={selected.includes(transaction)}
                     visible={visible}
                     setVisible={setVisible}
                     updateValue={handleSelect}
                   />
-                </td>
-                <td>{expense._id}</td>
-                <td>{expense.payee}</td>
-                <td>{expense.description}</td>
-                <td>{expense.amount}</td>
-                <td>{expense.date}</td>
-                <td>{expense.status}</td>
+                </TableDataCell>
+                <TableDataCell>{transaction._id}</TableDataCell>
+                <TableDataCell>{transaction.payee?.name}</TableDataCell>
+                <TableDataCell>{transaction.description}</TableDataCell>
+                <TableDataCell>
+                  <div>
+                    <p>{transaction.amount}</p>
+                    <p>Ref:{transaction.referenceNumber}</p>
+                  </div>
+                </TableDataCell>
+                <TableDataCell>
+                  <div>
+                    <p>{dayjs(transaction.date).format("DD-MM-YYYY")}</p>
+                    <p>{transaction.type}</p>
+                  </div>
+                </TableDataCell>
+                <TableDataCell>
+                  <span
+                    style={{
+                      backgroundColor:
+                        transaction.status === "approved"
+                          ? "var(--color-approve)"
+                          : transaction.status === "disapproved"
+                          ? "var(--color-disapprove)"
+                          : "none",
+                      padding: "6px 10px",
+                      borderRadius: "999px",
+                      color: "white",
+                      cursor: "pointer",
+                    }}
+                    onClick={() =>
+                      navigate(`/transactions/${transaction._id}`, {
+                        state: transaction,
+                      })
+                    }
+                  >
+                    {transaction.status}
+                  </span>
+                </TableDataCell>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
-      {openExpenseForm && (
-        <ExpenseModal setOpenReceiptForm={setOpenExpenseForm} />
-      )}
     </div>
   );
 }
+const FilterButton = styled.button`
+  padding: 8px 20px;
+  color: hsl(0deg 0% 100%);
+  border-radius: 5px;
+  width: 200px;
+  margin-right: auto;
+  background-color: hsl(243deg 50% 21%);
+`;
 
+const TableHeaderRow = styled.tr`
+  background-color: hsl(0deg 0% 80%);
+`;
+
+const TableHeaderCell = styled.th`
+  text-align: left;
+  padding: 8px;
+  text-transform: uppercase;
+`;
+const TableDataCell = styled.td`
+  text-align: left;
+  padding: 8px;
+`;
 export default Transaction;

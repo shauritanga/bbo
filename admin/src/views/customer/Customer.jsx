@@ -10,10 +10,12 @@ import { GrShieldSecurity } from "react-icons/gr";
 import { FaRegFileLines } from "react-icons/fa6";
 import Security from "../../components/security/Security";
 import SelectionModal from "../../components/modals/statement/SelectionModal";
+import ShareMigrationForm from "../../components/forms/share/ShareMigrationForm";
 
 const CustomerView = () => {
   const [isActive, setIsActive] = useState("account");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [openMigrationShare, setOpenMigrationShare] = useState(false);
   const location = useLocation();
   const customer = location.state;
 
@@ -93,7 +95,7 @@ const CustomerView = () => {
                 <TableRowCell colSpan={2}>Customer Portfolio</TableRowCell>
               </TableDataRow>
               <TableDataRow>
-                <TableRowCell colSpan={2}>Athanas Shauritanga</TableRowCell>
+                <TableRowCell colSpan={2}>{customer.name}</TableRowCell>
               </TableDataRow>
               <TableDataRow>
                 <TableRowCell>CDS</TableRowCell>
@@ -111,14 +113,34 @@ const CustomerView = () => {
           </Table>
         </CustomerInfo>
         <Actions>
-          <Button>Set Pending</Button>
-          <Button>Send Activation Email</Button>
-          <Button onClick={() => setIsModalOpen(true)}>
+          <Button style={{ backgroundColor: "var(--color-button)" }}>
+            Add Documents (PDF,JPG,GIF,PNG)
+          </Button>
+          <Button
+            onClick={() => setOpenMigrationShare(true)}
+            style={{ backgroundColor: "var(--color-reject)" }}
+          >
+            Migrate Shares
+          </Button>
+          <Button style={{ backgroundColor: "var(--color-disapprove)" }}>
+            Set Pending
+          </Button>
+          <Button style={{ backgroundColor: "var(--color-reject)" }}>
+            Send Activation Email
+          </Button>
+          <Button
+            style={{ backgroundColor: "var(--color-button)" }}
+            onClick={() => setIsModalOpen(true)}
+          >
             Print Statement (PDF)
           </Button>
         </Actions>
       </Portfolio>
       {isModalOpen && <SelectionModal />}
+      <ShareMigrationForm
+        open={openMigrationShare}
+        setOpen={setOpenMigrationShare}
+      />
     </Wrapper>
   );
 };
@@ -174,9 +196,11 @@ const Actions = styled.div`
   flex-direction: column;
   padding: 20px;
   background-color: var(--color-white);
-  gap: 10px;
+  gap: 15px;
 `;
 const Button = styled.button`
+  border-radius: 7px;
+  color: white;
   height: 32px;
 `;
 
@@ -187,6 +211,7 @@ const Table = styled.table`
 const TableDataRow = styled.tr``;
 const TableRowCell = styled.td`
   text-align: center;
+  padding: 10px;
   border: 0.2px solid hsl(0deg 20% 10%);
 `;
 export default CustomerView;

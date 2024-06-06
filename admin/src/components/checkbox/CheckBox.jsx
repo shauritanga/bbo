@@ -6,6 +6,7 @@ function CheckBox({
   value = false,
   updateValue = () => {},
   visible,
+  selected,
   setVisible,
 }) {
   const handleChange = () => {

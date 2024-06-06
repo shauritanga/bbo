@@ -1,4 +1,8 @@
 :root{
+--color-button:hsl(243deg 50% 21%);
+--color-approve:#61C478;
+--color-disapprove:#F2A356;
+--color-reject:#D95E5A;
 --color-primary:#6c9bcf;
 --color-danger:#ff0060;
 --color-success: #1b9c85;

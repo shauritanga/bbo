@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useReducer, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import SummaryCard from "../../components/summary-card/SummaryCard";
 import dayjs from "dayjs";
@@ -15,6 +15,9 @@ import {
   Input,
   InputPicker,
   DateRangePicker,
+  toaster,
+  Notification,
+  Pagination as RsuitePagination,
 } from "rsuite";
 import "rsuite/dist/rsuite.css";
 import { GrCalendar } from "react-icons/gr";
@@ -47,45 +50,107 @@ const summary = [
 
 const Orders = () => {
   const [data, setData] = useState(null);
-  const [client, setClient] = useState([]);
+  const [clients, setClients] = useState([]);
   const [active, setActive] = useState("today");
+
   const [dateRage, setDateRage] = useState(false);
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
   const [filter, setFilter] = useState(null);
   const [searchParams] = useSearchParams();
-
-  console.log(searchParams);
+  // const [query, setQuery] = useState("");
+  const [activePage, setActivePage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [limit, setLimit] = useState(10);
+  const [isLoading, setIsLoading] = useState(true);
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    fetch("http://localhost:5001/api/orders", {})
-      .then((response) => response.json())
-      .then((data) => setData(data))
-      .catch((error) => console.log(error));
-  }, []);
+  const handleFilterChange = (value) => {
+    setFilter(value);
+  };
+
+  const handleSelect = (value, obj) => {
+    setSelected((prevSelected) =>
+      value
+        ? [...prevSelected, obj]
+        : prevSelected.filter((item) => item._id !== obj._id)
+    );
+  };
+
+  const selectAll = (value) => {
+    setSelected(value ? orders : []); // Use filteredOrders if you want to select only filtered orders
+  };
+
+  const handlePageChange = (page) => {
+    setActivePage(page);
+  };
 
   useEffect(() => {
-    fetch("http://localhost:5001/api/customers", {})
-      .then((response) => response.json())
-      .then((data) => setClient(data))
-      .catch((error) => console.log(error));
+    const fetchData = async () => {
+      try {
+        const [ordersResponse, clientsResponse] = await Promise.all([
+          fetch("http://localhost:5001/api/orders"),
+          fetch("http://localhost:5001/api/customers"),
+        ]);
+
+        if (!ordersResponse.ok) throw new Error("Error fetching orders");
+        if (!clientsResponse.ok) throw new Error("Error fetching customers");
+
+        const ordersData = await ordersResponse.json();
+        const clientsData = await clientsResponse.json();
+
+        setData(ordersData);
+        setClients(clientsData);
+      } catch (err) {
+        setError(err.message);
+        toaster.push(
+          <Notification header="Error">
+            Failed to fetch data: {err.message}
+          </Notification>,
+          { duration: 5000, placement: "topCenter" }
+        );
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
   }, []);
 
   if (!data) {
     return <div>Loading ...</div>;
   }
-  const customers = client?.map((item) => ({
+  const customers = clients?.map((item) => ({
     label: item.name,
     value: item.name,
   }));
 
-  const filters = (value) => {
-    const filtered = data.filter((item) => {
-      item.name === value;
-    });
-    setData(filtered);
-  };
+  // const filterOrders = () => {
+  //   let filteredOrders = data; // Start with all data
+
+  //   // Apply client filter if selected
+  //   if (filter) {
+  //     filteredOrders = filteredOrders.filter(
+  //       (order) => order.customer?.name === filter
+  //     );
+  //   }
+
+  //   // Apply query filter if provided
+  //   if (query) {
+  //     filteredOrders = filteredOrders.filter((order) =>
+  //       order.customer?.name.toLowerCase().includes(query.toLowerCase())
+  //     );
+  //   }
+
+  //   // Apply date-based filters based on 'active'
+  //   // ... (Implementation depends on your specific requirements)
+
+  //   setOrders(filteredOrders);
+  // };
+
+  // useEffect(() => {
+  //   filterOrders(); // Update orders whenever filters change
+  // }, [filter, query, active, dateRage]); // Add dateRage dependency
 
   const renderButton = (props, ref) => {
     return (
@@ -99,9 +164,9 @@ const Orders = () => {
     );
   };
 
-  const query = searchParams.get("q");
+  const q = searchParams.get("q");
   let orders = null;
-  switch (query) {
+  switch (q) {
     case "all":
       orders = data;
       break;
@@ -112,7 +177,6 @@ const Orders = () => {
       orders = data.filter((order) => order.balance === 0);
       break;
   }
-  console.log(data[0].balance === 0);
 
   return (
     <Wrapper>
@@ -197,6 +261,7 @@ const Orders = () => {
             color: "#fff",
             backgroundColor: "hsl(243deg, 50%, 50%)",
           }}
+          onClick={() => console.log("Hello world")}
         >
           Filter
         </Button>
@@ -260,7 +325,7 @@ const Orders = () => {
           ))}
         </Table>
         <Pagination>
-          <Counter>{data.length} total orders</Counter>
+          <Counter>{orders.length} total orders</Counter>
           <ButtonToolbar>
             <Button style={{ color: "hsl(243deg, 50%, 50%)" }}>Prev</Button>
             <ButtonGroup>
@@ -274,7 +339,6 @@ const Orders = () => {
           </ButtonToolbar>
         </Pagination>
       </TableWrapper>
-      <Pagination></Pagination>
       <ModalView
         title="Select Date Range"
         open={dateRage}

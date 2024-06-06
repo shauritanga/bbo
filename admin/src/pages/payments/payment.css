@@ -43,8 +43,10 @@
     align-items: center;
     justify-content: space-between;
     padding: 15px 20px;
-    background-color: var(--color-background);
+    background-color: white;
+    border-radius: 7px;
     box-shadow: var(--boxs-shadow);
+    margin-bottom: 20px;
 }
 .payment-actions_hiden{
     display: flex;

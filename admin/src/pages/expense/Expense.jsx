@@ -2,9 +2,10 @@ import React, { useEffect, useState } from "react";
 import "./expense.css";
 import Search from "../../components/search/Search";
 import CheckBox from "../../components/checkbox/CheckBox";
-import ExpenseModal from "../../components/modals/expense/ExpenseModal";
-import ModalView from "../../components/modals/Modal";
 import styled from "styled-components";
+import Select from "../../components/select";
+import { Button, ButtonGroup, ButtonToolbar } from "rsuite";
+import ExpenseForm from "../../components/forms/expense/ExpenseForm";
 
 function Expense() {
   const [query, setQuery] = useState("");
@@ -14,6 +15,10 @@ function Expense() {
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState([]);
   const [open, setOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const [totalDocuments, setTotalDocuments] = useState(0);
+  const itemsPerPage = 10; // Number of items to show per page
 
   const updatePayment = async (selected, status) => {
     for (let item in selected) {
@@ -49,11 +54,22 @@ function Expense() {
   };
 
   useEffect(() => {
-    fetch("http://localhost:5001/api/expenses")
-      .then((response) => response.json())
-      .then((data) => setExpenses(data))
-      .catch((error) => console.log(error));
-  }, []);
+    const fetchData = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:5001/api/expenses/?page=${currentPage}&limit=${itemsPerPage}`
+        );
+        const data = await response.json();
+        setExpenses(data.data); // Assuming API returns { items: [...], totalPages: ... }
+        setTotalPages(data.totalPages);
+        setTotalDocuments(data.totalDocuments);
+      } catch (error) {
+        // Handle error
+      }
+    };
+
+    fetchData();
+  }, [currentPage]);
 
   useEffect(() => {
     fetch("http://localhost:5001/api/customers")
@@ -70,32 +86,47 @@ function Expense() {
     return <div>Loading...</div>;
   }
   const filtered = expenses?.filter((expense) =>
-    expense.payee.toLowerCase().includes(query.toLowerCase())
+    expense.payee?.name.toLowerCase().includes(query.toLowerCase())
   );
   const data = query ? filtered : expenses;
   return (
     <div className="expense">
       <div className="expense-header">
-        <button onClick={() => setOpen(true)}>New Expense</button>
+        <button
+          style={{ backgroundColor: "var(--color-button)", color: "#fff" }}
+          onClick={() => setOpen(true)}
+        >
+          New Expense
+        </button>
         <div className="expense-header-right">
           <form>
-            <select
+            <Select
               required
               value={clientId}
+              width={340}
               onChange={(event) => setClientId(event.target.value)}
             >
-              <option value="">--Select Client--</option>
-              <optgroup label="Clients">
-                {clients.map((client) => (
-                  <option key={client._id} value={client._id}>
-                    {client.name}
-                  </option>
-                ))}
-              </optgroup>
-            </select>
-            <button>Filter</button>
+              <option value="" disabled>
+                Select Client
+              </option>
+
+              {clients.map((client) => (
+                <option key={client._id} value={client._id}>
+                  {client.name}
+                </option>
+              ))}
+            </Select>
+            <button
+              style={{ backgroundColor: "var(--color-button)", color: "#fff" }}
+            >
+              Filter
+            </button>
           </form>
-          <button>Export Excel</button>
+          <button
+            style={{ backgroundColor: "var(--color-button)", color: "#fff" }}
+          >
+            Export Excel
+          </button>
         </div>
       </div>
       <div className="expense-actions">
@@ -105,21 +136,36 @@ function Expense() {
           style={{ visibility: visible ? "visible" : "hidden" }}
         >
           <button
+            style={{ backgroundColor: "var(--color-approve)", color: "#fff" }}
             onClick={() => updatePayment(selected, { status: "approved" })}
           >
             Approve
           </button>
-          <button onClick={() => updatePayment(selected, { status: "" })}>
+          <button
+            style={{
+              backgroundColor: "var(--color-disapprove)",
+              color: "#fff",
+            }}
+            onClick={() => updatePayment(selected, { status: "" })}
+          >
             Disapprove
           </button>
-          <button>Reject</button>
-          <button>Export(excel)</button>
+          <button
+            style={{ backgroundColor: "var(--color-reject)", color: "#fff" }}
+          >
+            Reject
+          </button>
+          <button
+            style={{ backgroundColor: "var(--color-button)", color: "#fff" }}
+          >
+            Export(excel)
+          </button>
         </div>
       </div>
-      <div className="expense-table">
-        <table style={{ width: "100%" }}>
+      <TableWrapper>
+        <Table style={{ width: "100%" }}>
           <thead>
-            <tr>
+            <TableHeaderRow>
               <TableHeaderCell style={{ width: 70, textAlign: "left" }}>
                 <CheckBox
                   name="all"
@@ -135,7 +181,7 @@ function Expense() {
               <TableHeaderCell>amount</TableHeaderCell>
               <TableHeaderCell>date</TableHeaderCell>
               <TableHeaderCell>status</TableHeaderCell>
-            </tr>
+            </TableHeaderRow>
           </thead>
           <tbody>
             {data.map((expense) => (
@@ -150,7 +196,7 @@ function Expense() {
                   />
                 </TableDataCell>
                 <TableDataCell>{expense._id}</TableDataCell>
-                <TableDataCell>{expense.payee}</TableDataCell>
+                <TableDataCell>{expense.payee?.name}</TableDataCell>
                 <TableDataCell>{expense.description}</TableDataCell>
                 <TableDataCell>{expense.amount}</TableDataCell>
                 <TableDataCell>{expense.date}</TableDataCell>
@@ -158,27 +204,72 @@ function Expense() {
               </tr>
             ))}
           </tbody>
-        </table>
-      </div>
+        </Table>
+        <Pagination>
+          <Counter>{totalDocuments} total orders</Counter>
+          <ButtonToolbar>
+            <Button
+              onClick={() =>
+                setCurrentPage(currentPage > 1 ? currentPage - 1 : currentPage)
+              }
+              style={{ color: "hsl(243deg, 50%, 50%)" }}
+            >
+              Prev
+            </Button>
+            <ButtonGroup>
+              {Array.from(Array(totalPages).keys())
+                .map((x) => x + 1)
+                .map((page) => (
+                  <Button onClick={() => setCurrentPage(page)}>{page}</Button>
+                ))}
+            </ButtonGroup>
+            <Button
+              onClick={() => setCurrentPage(currentPage + 1)}
+              style={{ color: "hsl(243deg, 50%, 50%)" }}
+            >
+              Next
+            </Button>
+          </ButtonToolbar>
+        </Pagination>
+      </TableWrapper>
 
-      <ModalView
-        title="New Expense"
-        open={open}
-        setOpen={setOpen}
-        body={<ExpenseModal />}
-        height={560}
-      />
+      <ExpenseForm open={open} setOpen={setOpen} />
     </div>
   );
 }
-
+const TableWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  padding: 20px;
+  border-radius: 7px;
+  justify-content: space-between;
+  height: 600px;
+`;
+const Table = styled.table``;
+const TableHeaderRow = styled.tr`
+  border-bottom: 1px solid hsl(0deg 0% 70%);
+  background-color: hsl(0deg 0% 80%);
+`;
 const TableHeaderCell = styled.th`
   text-align: left;
-  padding: 8px;
   text-transform: uppercase;
+  font-size: 0.75rem;
+  padding: 10px 20px;
 `;
+const TableDataRow = styled.tr``;
 const TableDataCell = styled.td`
-  text-align: left;
-  padding: 8px;
+  font-size: 0.75rem;
+  padding: 10px 20px;
 `;
+const Pagination = styled.div`
+  display: flex;
+  margin-top: auto;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 30px;
+`;
+const Counter = styled.p``;
+const Pages = styled.div``;
+
 export default Expense;

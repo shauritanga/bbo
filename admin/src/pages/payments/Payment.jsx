@@ -2,9 +2,11 @@ import React, { useEffect, useState } from "react";
 import "./payment.css";
 import Search from "../../components/search/Search";
 import dayjs from "dayjs";
-import PaymentModal from "../../components/modals/payment/PaymentModal";
 import CheckBox from "../../components/checkbox/CheckBox";
 import styled from "styled-components";
+import Select from "../../components/select";
+import PaymentForm from "../../components/forms/payment/PaymentForm";
+import { Button, ButtonGroup, ButtonToolbar } from "rsuite";
 
 function Payment() {
   const [query, setQuery] = useState("");
@@ -12,8 +14,14 @@ function Payment() {
   const [clients, setClients] = useState(null);
   const [clientId, setClientId] = useState("");
   const [payments, setPayments] = useState(null);
-  const [openReceiptForm, setOpenReceiptForm] = useState(false);
+  const [openForm, setOpenForm] = useState(false);
   const [selected, setSelected] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const [totalDocuments, setTotalDocuments] = useState(0);
+  const itemsPerPage = 10; // Number of items to show per page
 
   const updatePayment = async (selected, status) => {
     for (let item in selected) {
@@ -51,78 +59,138 @@ function Payment() {
   };
 
   useEffect(() => {
-    fetch("http://localhost:5001/api/payments")
-      .then((response) => response.json())
-      .then((data) => setPayments(data))
-      .catch((error) => console.log(error));
-  }, []);
+    const fetchData = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:5001/api/payments/?page=${currentPage}&limit=${itemsPerPage}`
+        );
+        const data = await response.json();
+        setPayments(data.data); // Assuming API returns { items: [...], totalPages: ... }
+        setTotalPages(data.totalPages);
+        setTotalDocuments(data.totalDocuments);
+      } catch (error) {
+        // Handle error
+      }
+    };
+
+    fetchData();
+  }, [currentPage]);
 
   useEffect(() => {
-    fetch("http://localhost:5001/api/customers")
-      .then((response) => response.json())
-      .then((data) => setClients(data))
-      .catch((error) => console.log(error));
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        const customersResponse = await fetch(
+          "http://localhost:5001/api/customers"
+        );
+
+        if (!customersResponse.ok) throw new Error("Error fetching customers");
+
+        const customersData = await customersResponse.json();
+        setClients(customersData);
+      } catch (err) {
+        setError(err.message);
+        console.log(err.message);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchData();
   }, []);
 
   if (!clients) {
-    return;
+    return <div>Loading</div>;
   }
 
   if (!payments) {
     return <div>Loading...</div>;
   }
+  console.log(totalPages);
 
-  const filtered = payments.filter((expense) =>
-    expense.payee.toLowerCase().includes(query.toLowerCase())
+  const filtered = payments?.filter((payment) =>
+    payment.payee?.name.toLowerCase().includes(query.toLowerCase())
   );
   const data = query ? filtered : payments;
   return (
     <div className="payment">
       <div className="payment-header">
-        <button onClick={() => setOpenReceiptForm(true)}>New Payment</button>
+        <button
+          style={{ backgroundColor: "var(--color-button)", color: "#fff" }}
+          onClick={() => setOpenForm(true)}
+        >
+          New Payment
+        </button>
         <div className="payment-header-right">
           <form>
-            <select
+            <Select
               required
               value={clientId}
+              width={340}
+              selected={selected}
               onChange={(event) => setClientId(event.target.value)}
             >
-              <option value="">--Select Client--</option>
-              <optgroup label="Clients">
-                {clients.map((client) => (
-                  <option key={client._id} value={client._id}>
-                    {client.name}
-                  </option>
-                ))}
-              </optgroup>
-            </select>
-            <button>Filter</button>
+              <option value="" disabled>
+                Select Client
+              </option>
+
+              {clients.map((client) => (
+                <option key={client._id} value={client._id}>
+                  {client.name}
+                </option>
+              ))}
+            </Select>
+            <button
+              style={{ backgroundColor: "var(--color-button)", color: "#fff" }}
+            >
+              Filter
+            </button>
           </form>
-          <button>Export Excel</button>
+          <button
+            style={{ backgroundColor: "var(--color-button)", color: "#fff" }}
+          >
+            Export Excel
+          </button>
         </div>
       </div>
       <div className="payment-actions">
         <Search setQuery={setQuery} />
         <div
           className="payment-actions_hiden"
-          style={{ visibility: visible ? "visible" : "hidden" }}
+          style={{
+            visibility: visible || selected.length !== 0 ? "visible" : "hidden",
+          }}
         >
           <button
+            style={{ backgroundColor: "var(--color-approve)", color: "#fff" }}
             onClick={() => updatePayment(selected, { status: "approved" })}
           >
             Approve
           </button>
-          <button onClick={() => updatePayment(selected, { status: "" })}>
+          <button
+            style={{
+              backgroundColor: "var(--color-disapprove)",
+              color: "#fff",
+            }}
+            onClick={() => updatePayment(selected, { status: "" })}
+          >
             Disapprove
           </button>
-          <button>Reject</button>
-          <button>Export(excel)</button>
+          <button
+            style={{ backgroundColor: "var(--color-reject)", color: "#fff" }}
+          >
+            Reject
+          </button>
+          <button
+            style={{ backgroundColor: "var(--color-button)", color: "#fff" }}
+          >
+            Export(excel)
+          </button>
         </div>
       </div>
-      <div className="payment-table">
-        <table style={{ width: "100%" }}>
+      <TableWrapper>
+        <Table style={{ width: "100%" }}>
           <thead>
-            <tr>
+            <TableHeaderRow>
               <TableHeaderCell style={{ width: "50px" }}>
                 <CheckBox
                   name="all"
@@ -138,48 +206,97 @@ function Payment() {
               <TableHeaderCell>amount</TableHeaderCell>
               <TableHeaderCell>date</TableHeaderCell>
               <TableHeaderCell>status</TableHeaderCell>
-            </tr>
+            </TableHeaderRow>
           </thead>
           <tbody>
-            {data.map((expense, index) => (
-              <tr key={expense._id}>
-                <TableDataCell style={{ width: "50px" }}>
-                  <CheckBox
-                    name={expense}
-                    value={selected.includes(expense)}
-                    visible={visible}
-                    setVisible={setVisible}
-                    updateValue={handleSelect}
-                  />
-                </TableDataCell>
-                <TableDataCell>{expense._id}</TableDataCell>
-                <TableDataCell>{expense.payee}</TableDataCell>
-                <TableDataCell>{expense.description}</TableDataCell>
-                <TableDataCell>{expense.amount}</TableDataCell>
-                <TableDataCell>
-                  {dayjs(expense.date).format("DD-MM-YYYY")}
-                </TableDataCell>
-                <TableDataCell>{expense.status}</TableDataCell>
-              </tr>
-            ))}
+            {Array.isArray(data) &&
+              data.map((expense, index) => (
+                <tr key={expense._id}>
+                  <TableDataCell style={{ width: "50px" }}>
+                    <CheckBox
+                      name={expense}
+                      value={selected.includes(expense)}
+                      visible={visible}
+                      setVisible={setVisible}
+                      updateValue={handleSelect}
+                    />
+                  </TableDataCell>
+                  <TableDataCell>{expense._id}</TableDataCell>
+                  <TableDataCell>{expense.payee?.name}</TableDataCell>
+                  <TableDataCell>{expense.description}</TableDataCell>
+                  <TableDataCell>{expense.amount}</TableDataCell>
+                  <TableDataCell>
+                    {dayjs(expense.date).format("DD-MM-YYYY")}
+                  </TableDataCell>
+                  <TableDataCell>{expense.status}</TableDataCell>
+                </tr>
+              ))}
           </tbody>
-        </table>
-      </div>
-      {openReceiptForm && (
-        <PaymentModal setOpenReceiptForm={setOpenReceiptForm} />
-      )}
+        </Table>
+        <Pagination>
+          <Counter>{totalDocuments} total orders</Counter>
+          <ButtonToolbar>
+            <Button
+              onClick={() =>
+                setCurrentPage(currentPage > 1 ? currentPage - 1 : currentPage)
+              }
+              style={{ color: "hsl(243deg, 50%, 50%)" }}
+            >
+              Prev
+            </Button>
+            <ButtonGroup>
+              {Array.from(Array(totalPages).keys())
+                .map((x) => x + 1)
+                .map((page) => (
+                  <Button onClick={() => setCurrentPage(page)}>{page}</Button>
+                ))}
+            </ButtonGroup>
+            <Button
+              onClick={() => setCurrentPage(currentPage + 1)}
+              style={{ color: "hsl(243deg, 50%, 50%)" }}
+            >
+              Next
+            </Button>
+          </ButtonToolbar>
+        </Pagination>
+      </TableWrapper>
+      <PaymentForm open={openForm} setOpen={setOpenForm} />
     </div>
   );
 }
 
+const TableWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  padding: 20px;
+  border-radius: 7px;
+  justify-content: space-between;
+  height: 600px;
+`;
+const Table = styled.table``;
+const TableHeaderRow = styled.tr`
+  border-bottom: 1px solid hsl(0deg 0% 70%);
+  background-color: hsl(0deg 0% 80%);
+`;
 const TableHeaderCell = styled.th`
   text-align: left;
-  padding: 8px;
   text-transform: uppercase;
+  font-size: 0.75rem;
+  padding: 10px 20px;
 `;
+const TableDataRow = styled.tr``;
 const TableDataCell = styled.td`
-  text-align: left;
-  padding: 8px;
+  font-size: 0.75rem;
+  padding: 10px 20px;
 `;
-
+const Pagination = styled.div`
+  display: flex;
+  margin-top: auto;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 30px;
+`;
+const Counter = styled.p``;
+const Pages = styled.div``;
 export default Payment;
