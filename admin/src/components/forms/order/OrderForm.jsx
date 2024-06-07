@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import Select from "../../select";
-import { Button, Modal } from "rsuite";
+import { Button, Modal, Notification, toaster } from "rsuite";
 
 const OrderForm = ({ open, setOpen, size, title }) => {
   const [security, setSecurity] = useState([]);
@@ -50,7 +50,7 @@ const OrderForm = ({ open, setOpen, size, title }) => {
       total,
       balance: volume,
     };
-    console.log(postData);
+
     fetch("http://localhost:5001/api/orders", {
       mode: "cors",
       headers: {
@@ -60,8 +60,30 @@ const OrderForm = ({ open, setOpen, size, title }) => {
       body: JSON.stringify(postData),
     })
       .then((response) => response.json())
-      .then((data) => setOpen(false))
-      .catch((error) => console.log(error));
+      .then((data) => {
+        toaster.push(
+          <Notification type="success" header="Success">
+            Order created successfully
+          </Notification>,
+          {
+            duration: 5000,
+            placement: "topCenter",
+          }
+        );
+        setOpen(false);
+      })
+      .catch((error) => {
+        toaster.push(
+          <Notification type="error" header="Error">
+            {error.message}
+          </Notification>,
+          {
+            duration: 5000,
+            placement: "topCenter",
+          }
+        );
+        setOpen(false);
+      });
   };
 
   //calculated values

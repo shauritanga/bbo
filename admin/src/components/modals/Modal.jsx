@@ -1,7 +1,15 @@
 import React from "react";
-import { Modal, Button } from "rsuite";
+import { Modal, Button, DateRangePicker } from "rsuite";
 
-const ModalView = ({ open, setOpen, body, size, title }) => {
+const ModalView = ({
+  open,
+  setOpen,
+  body,
+  size,
+  title,
+  dateRnge,
+  setDateRange,
+}) => {
   return (
     <Modal
       backdrop="static"
@@ -12,7 +20,15 @@ const ModalView = ({ open, setOpen, body, size, title }) => {
       <Modal.Header>
         <Modal.Title>{title}</Modal.Title>
       </Modal.Header>
-      <Modal.Body style={{ width: "100%" }}>{body}</Modal.Body>
+      <Modal.Body style={{ width: "100%", height: "50px" }}>
+        <DateRangePicker
+          style={{ width: "100%" }}
+          onChange={(value) => {
+            setDateRange(value);
+            setOpen(false);
+          }}
+        />
+      </Modal.Body>
       <Modal.Footer>
         <Button onClick={() => setOpen(false)} appearance="primary">
           Ok

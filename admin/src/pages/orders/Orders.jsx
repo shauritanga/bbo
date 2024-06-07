@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import SummaryCard from "../../components/summary-card/SummaryCard";
 import dayjs from "dayjs";
@@ -20,10 +20,11 @@ import {
   Pagination as RsuitePagination,
 } from "rsuite";
 import "rsuite/dist/rsuite.css";
-import { GrCalendar } from "react-icons/gr";
+import { GrCalendar, GrOrderedList } from "react-icons/gr";
 import ModalView from "../../components/modals/Modal";
 import Breadcrumbs from "../../components/breadcrumbs/Breadcrumbs";
 import OrderForm from "../../components/forms/order/OrderForm";
+import FilterButton from "../../components/fiterButton/FilterButton";
 
 const summary = [
   {
@@ -50,40 +51,22 @@ const summary = [
 
 const Orders = () => {
   const [data, setData] = useState(null);
+  const [orders, setOrders] = useState([]);
+  const [activeFilter, setActiveFilter] = useState("today");
   const [clients, setClients] = useState([]);
-  const [active, setActive] = useState("today");
-
-  const [dateRage, setDateRage] = useState(false);
+  const [dateRange, setDateRange] = useState([]);
+  const [open, setOpen] = useState(false);
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
   const [filter, setFilter] = useState(null);
   const [searchParams] = useSearchParams();
-  // const [query, setQuery] = useState("");
+  const [error, setError] = useState("");
+  const [query, setQuery] = useState("");
   const [activePage, setActivePage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [limit, setLimit] = useState(10);
   const [isLoading, setIsLoading] = useState(true);
 
   const navigate = useNavigate();
-
-  const handleFilterChange = (value) => {
-    setFilter(value);
-  };
-
-  const handleSelect = (value, obj) => {
-    setSelected((prevSelected) =>
-      value
-        ? [...prevSelected, obj]
-        : prevSelected.filter((item) => item._id !== obj._id)
-    );
-  };
-
-  const selectAll = (value) => {
-    setSelected(value ? orders : []); // Use filteredOrders if you want to select only filtered orders
-  };
-
-  const handlePageChange = (page) => {
-    setActivePage(page);
-  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -100,6 +83,7 @@ const Orders = () => {
         const clientsData = await clientsResponse.json();
 
         setData(ordersData);
+        setOrders(ordersData);
         setClients(clientsData);
       } catch (err) {
         setError(err.message);
@@ -117,40 +101,63 @@ const Orders = () => {
     fetchData();
   }, []);
 
-  if (!data) {
-    return <div>Loading ...</div>;
-  }
-  const customers = clients?.map((item) => ({
-    label: item.name,
-    value: item.name,
-  }));
+  console.log(dateRange);
 
-  // const filterOrders = () => {
-  //   let filteredOrders = data; // Start with all data
+  const filterOrders = useCallback(() => {
+    let filteredOrders = data ?? []; // Start with all data
 
-  //   // Apply client filter if selected
-  //   if (filter) {
-  //     filteredOrders = filteredOrders.filter(
-  //       (order) => order.customer?.name === filter
-  //     );
-  //   }
+    if (activeFilter === "today") {
+      const today = dayjs();
+      filteredOrders = filteredOrders.filter((order) =>
+        dayjs(order.date).isSame(today, "day")
+      );
+    } else if (activeFilter === "weekly") {
+      const startOfWeek = dayjs().startOf("week");
+      const endOfWeek = dayjs().endOf("week");
+      filteredOrders = filteredOrders.filter((order) => {
+        const orderDate = dayjs(order.date);
+        return orderDate.isAfter(startOfWeek) && orderDate.isBefore(endOfWeek);
+      });
+    } else if (activeFilter === "monthly") {
+      const startOfMonth = dayjs().startOf("month");
+      const endOfMonth = dayjs().endOf("month");
+      filteredOrders = filteredOrders.filter((order) => {
+        const orderDate = dayjs(order.date);
+        return (
+          orderDate.isAfter(startOfMonth) && orderDate.isBefore(endOfMonth)
+        );
+      });
+    } else if (activeFilter === "annually") {
+      const startOfYear = dayjs().startOf("year");
+      const endOfYear = dayjs().endOf("year");
+      filteredOrders = filteredOrders.filter((order) => {
+        const orderDate = dayjs(order.date);
+        return orderDate.isAfter(startOfYear) && orderDate.isBefore(endOfYear);
+      });
+    } else if (activeFilter === "custom" && dateRange) {
+      const [startDate, endDate] = dateRange;
+      return orders.filter((order) => {
+        const orderDate = dayjs(order.date);
+        return (
+          orderDate.isSame(startDate, "day") ||
+          (orderDate.isAfter(startDate) && orderDate.isBefore(endDate)) ||
+          orderDate.isSame(endDate, "day")
+        );
+      });
+    }
+    if (filter) {
+      filteredOrders = filteredOrders.filter(
+        (order) => order.customer?.name === filter
+      );
+    }
 
-  //   // Apply query filter if provided
-  //   if (query) {
-  //     filteredOrders = filteredOrders.filter((order) =>
-  //       order.customer?.name.toLowerCase().includes(query.toLowerCase())
-  //     );
-  //   }
+    return filteredOrders;
+  }, [data, filter, activeFilter, dateRange]);
 
-  //   // Apply date-based filters based on 'active'
-  //   // ... (Implementation depends on your specific requirements)
-
-  //   setOrders(filteredOrders);
-  // };
-
-  // useEffect(() => {
-  //   filterOrders(); // Update orders whenever filters change
-  // }, [filter, query, active, dateRage]); // Add dateRage dependency
+  useEffect(() => {
+    const filteredOrders = filterOrders();
+    setOrders(filteredOrders);
+  }, [filterOrders]);
 
   const renderButton = (props, ref) => {
     return (
@@ -163,18 +170,28 @@ const Orders = () => {
       </Button>
     );
   };
+  if (!data) {
+    return <div>Loading</div>;
+  }
+  if (!clients) {
+    return <div>Loading</div>;
+  }
 
+  const customers = clients.map((item) => ({
+    label: item.name,
+    value: item.name,
+  }));
   const q = searchParams.get("q");
-  let orders = null;
+  let orderData = null;
   switch (q) {
     case "all":
-      orders = data;
+      orderData = orders;
       break;
     case "pending":
-      orders = data.filter((order) => order.status === "new");
+      orderData = orders.filter((order) => order.status === "new");
       break;
     case "complete":
-      orders = data.filter((order) => order.balance === 0);
+      orderData = orders.filter((order) => order.balance === 0);
       break;
   }
 
@@ -185,49 +202,38 @@ const Orders = () => {
         <Filters>
           <FilterButton
             name="today"
-            onClick={(e) => setActive(e.target.name)}
-            style={
-              active === "today"
-                ? { backgroundColor: "hsl(243deg, 20%, 70%)" }
-                : {}
-            }
+            activeFilter={activeFilter}
+            onClick={setActiveFilter}
           >
             Today
           </FilterButton>
           <FilterButton
             name="weekly"
-            onClick={(e) => setActive(e.target.name)}
-            style={
-              active === "weekly"
-                ? { backgroundColor: "hsl(243deg, 20%, 70%)" }
-                : {}
-            }
+            activeFilter={activeFilter}
+            onClick={setActiveFilter}
           >
             Weekly
           </FilterButton>
           <FilterButton
             name="monthly"
-            onClick={(e) => setActive(e.target.name)}
-            style={
-              active === "monthly"
-                ? { backgroundColor: "hsl(243deg, 20%, 70%)" }
-                : {}
-            }
+            activeFilter={activeFilter}
+            onClick={setActiveFilter}
           >
             Monthly
           </FilterButton>
           <FilterButton
             name="annually"
-            onClick={(e) => setActive(e.target.name)}
-            style={
-              active === "annually"
-                ? { backgroundColor: "hsl(243deg, 20%, 70%)" }
-                : {}
-            }
+            activeFilter={activeFilter}
+            onClick={setActiveFilter}
           >
             Annually
           </FilterButton>
-          <FilterButton onClick={() => setDateRage(true)}>
+          <FilterButton
+            name="custom"
+            activeFilter={activeFilter}
+            onClick={setActiveFilter}
+            setOpen={setOpen}
+          >
             <GrCalendar />
           </FilterButton>
         </Filters>
@@ -292,18 +298,18 @@ const Orders = () => {
             <TableHeaderCell>balance</TableHeaderCell>
             <TableHeaderCell>status</TableHeaderCell>
           </TableHeaderRow>
-          {orders?.map((order, index) => (
+          {orderData?.map((order, index) => (
             <TableDataRow key={index}>
               <TableDataCell>{order._id}</TableDataCell>
               <TableDataCell>
                 {dayjs(order.date).format("DD-MM-YYYY")}
               </TableDataCell>
               <TableDataCell
-                onClick={() =>
+                onClick={() => {
                   navigate(`/customers/${order.customer?._id}`, {
                     state: order.customer,
-                  })
-                }
+                  });
+                }}
               >
                 {order.customer?.name}
               </TableDataCell>
@@ -341,10 +347,11 @@ const Orders = () => {
       </TableWrapper>
       <ModalView
         title="Select Date Range"
-        open={dateRage}
+        dateRange={dateRange}
+        setDateRange={setDateRange}
+        open={open}
+        setOpen={setOpen}
         size="xs"
-        setOpen={setDateRage}
-        body={<DateRangePicker style={{ width: "100%" }} />}
       />
       <OrderForm
         title="New Order"
@@ -368,24 +375,6 @@ const TopFilters = styled.div`
 `;
 const Filters = styled.div`
   display: flex;
-`;
-const FilterButton = styled.button`
-  display: flex;
-  align-items: center;
-
-  padding: 8px 20px;
-  background-color: inherit;
-  border: 1px solid hsl(243deg, 50%, 50%);
-  &:not(:first-of-type) {
-    border-left: 0;
-  }
-  &:first-of-type {
-    border-radius: 5px 0 0 5px;
-  }
-  &:last-of-type {
-    border-radius: 0 5px 5px 0;
-    padding: 8px 10px;
-  }
 `;
 
 const SummaryWrapper = styled.div`
@@ -425,6 +414,7 @@ const TableDataRow = styled.tr`
 `;
 const TableDataCell = styled.td`
   padding: 15px;
+  font-size: 0.75rem;
   &:nth-of-type(3n),
   &:last-of-type {
     cursor: pointer;
