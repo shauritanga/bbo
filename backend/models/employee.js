@@ -39,8 +39,8 @@ const employeeSchema = mongoose.Schema({
 });
 
 employeeSchema.pre("save", async function (next) {
-  const hashedPassword = await hash(this.password, 10);
-  this.password = hashedPassword;
+  if (!this.isModified("password")) return next();
+  this.password = await hash(this.password, 10);
   next();
 });
 

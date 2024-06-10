@@ -25,20 +25,12 @@ router.post("/", async (req, res) => {
     if (!employee) {
       return res.status(404).json({ message: "Username not found", ok: false });
     }
-    console.log(employee["password"]);
-
-    // const passwordMatch = await bcrypt.compare(password, employee.password);
-
-    // if (!passwordMatch) {
-    //   return res.status(400).json({ message: "Invalid password", ok: false });
-    // }
 
     // Token Generation (for authentication in future requests)
     const token = jwt.sign({ employeeId: employee._id }, "ilovecode");
 
     res.json({
       message: "Login successful",
-      ok: true,
       token,
       user: employee,
     });

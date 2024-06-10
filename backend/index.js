@@ -1,6 +1,5 @@
 import express from "express";
 import cors from "cors";
-
 import mongoose from "mongoose";
 import customerRoute from "./routes/customer.js";
 import orderRoute from "./routes/order.js";
@@ -17,16 +16,26 @@ import authRoute from "./routes/auth.js";
 import logger from "morgan";
 import dotenv from "dotenv";
 import helmet from "helmet";
+import passport from "passport";
 dotenv.config();
 
 const app = express();
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+  })
+);
 
 app.use(express.json());
 app.use(logger("tiny"));
 app.use(helmet());
 app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
-
 app.use(cors());
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.use("/api/v1/login", authRoute);
 app.use("/api/payments", paymentRoute);

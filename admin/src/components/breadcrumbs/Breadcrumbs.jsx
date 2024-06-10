@@ -1,11 +1,13 @@
 import React from "react";
 import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
 
 const Breadcrumbs = ({ data }) => {
+  const navigate = useNavigate();
   return (
     <Wrapper>
       {data.map((item) => (
-        <ListItem key={item}>{item}</ListItem>
+        <ListItem onClick={()=> navigate(item==="Home"?"/dashboard":`/${item}`)} key={item}>{item}</ListItem>
       ))}
     </Wrapper>
   );

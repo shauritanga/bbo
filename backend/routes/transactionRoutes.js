@@ -8,7 +8,7 @@ import {
 // Import other controllers
 
 const router = express.Router();
-
+//router.use(passport.authenticate("local", { session: false }));
 router.post("/", createTransaction);
 router.get("/", getAllTransactions);
 router.patch("/:id", updateTransaction);
