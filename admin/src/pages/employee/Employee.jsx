@@ -1,78 +1,151 @@
 import React, { useEffect, useState } from "react";
-import "./employee.css";
-//import CustomTable from "../../components/customTable/CustomTable";
-import EmployeeTable from "../../components/employeeTable/EmployeeTable";
-import EmployeeForm from "../../components/modals/employee_form/EmployeeForm";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import {
+  fetchEmployees,
+  setCounter,
+  setSearch,
+} from "../../reducers/employeeSlice";
+import styled from "styled-components";
+import Select from "../../components/select/Select";
 
 function Employee() {
-  const [count, setCount] = useState(0);
-  const [query, setQuery] = useState("");
-  const [openForm, setOpenForm] = useState(false);
-  const [employees, setEmployees] = useState(null);
-
-  const columns = [
-    { id: "1", name: "Name", width: 200 },
-    { id: "2", name: "Email" },
-    { id: "3", name: "Phone number" },
-    { id: "4", name: "Role" },
-    { id: "10", name: "status" },
-  ];
+  const dispatch = useDispatch();
+  const { employees, status, error, filters } = useSelector(
+    (state) => state.employees
+  );
+  const navigate = useNavigate();
 
   useEffect(() => {
-    fetch("http://localhost:5001/api/employees", {
-      mode: "cors",
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Content-Type": "application/json",
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => setEmployees(data))
-      .catch((error) => console.log(error));
-  }, []);
+    dispatch(fetchEmployees());
+  }, [dispatch]);
 
-  if (!employees) {
-    return <div>Loading ...</div>;
+  if (status === "loading") {
+    return <div>Loading...</div>;
+  } else if (status === "failed") {
+    return <div>Error: {error}</div>;
+  } else if (status === "succeeded") {
+    console.log(employees);
+    return (
+      <Wrapper>
+        <Action>
+          <Select
+            width={80}
+            value={filters.counter}
+            onChange={(e) => dispatch(setCounter(e.target.value))}
+          >
+            <option value="10">10</option>
+            <option value="20">20</option>
+            <option value="30">30</option>
+          </Select>
+          <TextInput placeholder="Search..." />
+          <Button>Add Employee</Button>
+        </Action>
+        <TableWrapper>
+          <Table>
+            <thead>
+              <TableHeaderRow>
+                <TableHeaderCell>Name</TableHeaderCell>
+                <TableHeaderCell>Email</TableHeaderCell>
+                <TableHeaderCell>Phone</TableHeaderCell>
+                <TableHeaderCell>role</TableHeaderCell>
+                <TableHeaderCell>status</TableHeaderCell>
+              </TableHeaderRow>
+            </thead>
+            <tbody>
+              {employees.map((employee) => (
+                <TableDataRow key={employee.id}>
+                  <TableDataCell>{employee.name}</TableDataCell>
+                  <TableDataCell>{employee.email}</TableDataCell>
+                  <TableDataCell>{employee.phone}</TableDataCell>
+                  <TableDataCell>
+                    {employee.role?.name.toUpperCase()}
+                  </TableDataCell>
+                  <TableDataCell>
+                    <span
+                      onClick={() => {
+                        navigate(`/employees/${employee._id}`, {
+                          state: employee,
+                        });
+                      }}
+                      style={{
+                        color: employee.status === "active" ? "green" : "red",
+                        backgroundColor:
+                          employee.status === "active"
+                            ? "rgba(0, 128, 0, 0.1)"
+                            : "rgba(255, 0, 0, 0.1)",
+                        padding: "3px 6px",
+                        borderRadius: "6px",
+                        cursor: "pointer",
+                      }}
+                    >
+                      {employee.status}
+                    </span>
+                  </TableDataCell>
+                </TableDataRow>
+              ))}
+            </tbody>
+          </Table>
+        </TableWrapper>
+      </Wrapper>
+    );
   }
-
-  const filtered = employees.filter((obj) =>
-    obj.name.toLowerCase().includes(query.toLowerCase())
-  );
-
-  return (
-    <div className="employee">
-      <div className="employee-header"></div>
-      <div className="employee-table">
-        <div className="employee-table-summary">
-          <div className="employee-table-summary-count">
-            Show {count} employees
-          </div>
-          <div className="employee-table-summary-modify">
-            <form action="">
-              <input
-                type="search"
-                placeholder="Search Employee"
-                onChange={(event) => setQuery(event.target.value)}
-              />
-            </form>
-            <button
-              className="employee-table-summary-modify-button"
-              onClick={() => setOpenForm(true)}
-            >
-              New Employee
-            </button>
-          </div>
-        </div>
-        <div className="employee-table-detail">
-          {/* <EmployeeTable
-            columns={columns}
-            rows={query === "" ? employees : filtered}
-          /> */}
-        </div>
-        {openForm && <EmployeeForm setOpenForm={setOpenForm} />}
-      </div>
-    </div>
-  );
 }
-
+const Wrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  padding: 20px;
+`;
+const Action = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 20px;
+`;
+const Button = styled.button`
+  background-color: hsl(243, 50%, 21%);
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 20px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  &:hover {
+    background-color: hsl(243, 50%, 30%);
+  }
+`;
+const TextInput = styled.input`
+  width: 340px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+  margin-left: auto;
+`;
+const TableWrapper = styled.div`
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+`;
+const Table = styled.table`
+  width: 100%;
+`;
+const TableHeaderRow = styled.tr`
+  background-color: hsl(0, 0%, 80%);
+  border-bottom: 1px solid #ccc;
+`;
+const TableHeaderCell = styled.th`
+  text-align: left;
+  padding: 10px;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+`;
+const TableDataRow = styled.tr``;
+const TableDataCell = styled.td`
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+`;
 export default Employee;

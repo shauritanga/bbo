@@ -1,5 +1,13 @@
 import React, { useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useFilePicker } from "use-file-picker";
+import {
+  FileAmountLimitValidator,
+  FileTypeValidator,
+  FileSizeValidator,
+  ImageDimensionsValidator,
+} from "use-file-picker/validators";
+import axios from "axios";
+import { useLocation, useNavigate } from "react-router-dom";
 import { LiaFileContractSolid } from "react-icons/lia";
 import { SlUser } from "react-icons/sl";
 import styled from "styled-components";
@@ -11,13 +19,76 @@ import { FaRegFileLines } from "react-icons/fa6";
 import Security from "../../components/security/Security";
 import SelectionModal from "../../components/modals/statement/SelectionModal";
 import ShareMigrationForm from "../../components/forms/share/ShareMigrationForm";
+import Select from "../../components/select";
+import { Delete } from "@mui/icons-material";
+import { CiTrash } from "react-icons/ci";
 
 const CustomerView = () => {
+  const { openFilePicker, filesContent, loading, errors } = useFilePicker({
+    // readAs: "DataURL",
+    accept: "image/*",
+    validators: [
+      new FileAmountLimitValidator({ max: 1 }),
+      new FileTypeValidator(["jpg", "png"]),
+      new FileSizeValidator({ maxFileSize: 50 * 1024 * 1024 /* 50 MB */ }),
+      new ImageDimensionsValidator({
+        maxHeight: 900, // in pixels
+        maxWidth: 1600,
+        minHeight: 600,
+        minWidth: 768,
+      }),
+    ],
+    onFilesSuccessfullySelected: ({ plainFiles, filesContent }) => {
+      // this callback is called when there were no validation errors
+      console.log("onFilesSuccessfullySelected", plainFiles, filesContent);
+      setFiles((prevFiles) => [...prevFiles, ...filesContent]);
+    },
+  });
+  const [fileType, setFileType] = useState("");
   const [isActive, setIsActive] = useState("account");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [files, setFiles] = useState([]);
   const [openMigrationShare, setOpenMigrationShare] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
   const customer = location.state;
+
+  const sendActivationEmail = async (email) => {
+    try {
+      await axios.post(
+        "http://localhost:5001/api/emails/send-activation-email",
+        { email }
+      );
+      alert("Activation email sent successfully!");
+    } catch (error) {
+      console.error("Error sending activation email:", error);
+      alert("Failed to send activation email. Please try again later.");
+    }
+  };
+
+  const handleUpload = async () => {
+    const formData = new FormData();
+    plainFiles.forEach((file, index) => {
+      formData.append(`file${index}`, file);
+    });
+
+    try {
+      const response = await fetch("YOUR_API_ENDPOINT", {
+        method: "POST",
+        body: formData,
+      });
+      if (response.ok) {
+        console.log("Files uploaded successfully");
+        clear();
+      } else {
+        console.error("Failed to upload files");
+      }
+    } catch (error) {
+      console.error("Error uploading files:", error);
+    }
+  };
+
+  console.log(filesContent);
 
   const content = () => {
     switch (isActive) {
@@ -31,7 +102,7 @@ const CustomerView = () => {
         return <Statement />;
         break;
       case "security":
-        return <Security />;
+        return <Security email={customer.email} />;
         break;
     }
   };
@@ -85,6 +156,76 @@ const CustomerView = () => {
           </ListItem>
         </Links>
         {content()}
+        {files.length > 0 && (
+          <UploadView>
+            <table style={{ width: "100%" }}>
+              <thead>
+                <tr
+                  style={{
+                    backgroundColor: "hsl(243deg, 0%, 80%)",
+
+                    marginBottom: "20px",
+                  }}
+                >
+                  <th
+                    style={{ width: "50%", textAlign: "left", padding: "10px" }}
+                  >
+                    File Name
+                  </th>
+                  <th
+                    style={{ width: "25%", textAlign: "left", padding: "10px" }}
+                  >
+                    File Type
+                  </th>
+                  <th
+                    style={{ width: "25%", textAlign: "left", padding: "10px" }}
+                  >
+                    Action
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {files.map((file) => (
+                  <tr key={file.name} style={{ borderTop: "1px solid #ccc" }}>
+                    <td style={{ padding: "10px" }}>{file.name}</td>
+                    <td style={{ padding: "10px" }}>
+                      <Select
+                        value={fileType}
+                        width={340}
+                        onChange={(e) => setFileType(e.target.value)}
+                      >
+                        <option value="" disabled>
+                          Select File Type
+                        </option>
+                        <option value="identity">Identity</option>
+                        <option value="passport">Passport</option>
+                        <option value="other">Bank Slip</option>
+                      </Select>
+                    </td>
+                    <td style={{ padding: "10px" }}>
+                      <CiTrash
+                        size={38}
+                        onClick={() => {}}
+                        style={{ cursor: "pointer", color: "red" }}
+                      />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <Button
+              onClick={handleUpload}
+              style={{
+                backgroundColor: "var(--color-button)",
+                alignSelf: "flex-end",
+                padding: "10px 20px",
+                borderBottom: "20px",
+              }}
+            >
+              Upload
+            </Button>
+          </UploadView>
+        )}
       </Main>
       <Portfolio>
         <CustomerInfo>
@@ -113,7 +254,10 @@ const CustomerView = () => {
           </Table>
         </CustomerInfo>
         <Actions>
-          <Button style={{ backgroundColor: "var(--color-button)" }}>
+          <Button
+            onClick={() => openFilePicker()}
+            style={{ backgroundColor: "var(--color-button)" }}
+          >
             Add Documents (PDF,JPG,GIF,PNG)
           </Button>
           <Button
@@ -125,12 +269,15 @@ const CustomerView = () => {
           <Button style={{ backgroundColor: "var(--color-disapprove)" }}>
             Set Pending
           </Button>
-          <Button style={{ backgroundColor: "var(--color-reject)" }}>
+          <Button
+            onClick={() => sendActivationEmail("shauritangaathanas@gmail.com")}
+            style={{ backgroundColor: "var(--color-reject)" }}
+          >
             Send Activation Email
           </Button>
           <Button
             style={{ backgroundColor: "var(--color-button)" }}
-            onClick={() => setIsModalOpen(true)}
+            onClick={() => navigate("/statement", { state: customer })}
           >
             Print Statement (PDF)
           </Button>
@@ -168,6 +315,16 @@ const ListItem = styled.div`
   border-radius: 7px;
   gap: 12px;
   cursor: pointer;
+`;
+
+const UploadView = styled.div`
+  display: flex;
+  background: #fff;
+  flex-direction: column;
+  border-radius: 7px;
+  padding: 10px;
+  max-height: fit-content;
+  gap: 20px;
 `;
 
 const Portfolio = styled.div`

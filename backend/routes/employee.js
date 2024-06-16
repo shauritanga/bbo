@@ -4,7 +4,8 @@ const router = express.Router();
 
 router.get("/", async (req, res) => {
   try {
-    const employees = await Employee.find({}, { _id: 0, __v: 0 });
+    const employees = await Employee.find({}).populate("role");
+
     res.status(200).json(employees);
   } catch (error) {
     res.status(500).json(error);

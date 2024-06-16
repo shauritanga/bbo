@@ -28,9 +28,6 @@ const Login = () => {
   };
   return (
     <Wrapper>
-      <Banner>
-        <img src="../../large.png" style={{ width: "50%", margin: "auto" }} />
-      </Banner>
       <FormWrapper>
         <Form onSubmit={handleSubmitEvent}>
           <TextInput
@@ -57,6 +54,9 @@ const Login = () => {
           <Button type="submit">Sign in</Button>
         </Form>
       </FormWrapper>
+      <Banner>
+        {/* <img src="../../large.png" style={{ width: "50%", margin: "auto" }} /> */}
+      </Banner>
     </Wrapper>
   );
 };
@@ -65,22 +65,26 @@ const Wrapper = styled.div`
   position: absolute;
   inset: 0;
   display: flex;
-  background-color: hsl(0deg 0% 0%);
+  background-image: url("../../bg.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 `;
 
 const Banner = styled.div`
-  flex: 7;
   display: flex;
-  background-color: hsl(0deg 0% 97%);
+  align-items: center;
+  flex: 1;
+  background-color: transparent;
 `;
 
 const FormWrapper = styled.div`
-  flex: 3;
+  flex: 1;
   hesight: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: hsl(0deg 0% 100%);
+  background-color: transparent;
 `;
 
 const Form = styled.form`
@@ -95,7 +99,6 @@ const TextInput = styled.input`
   height: 35px;
   padding: 10px;
   background-color: inherit;
-  border-radius: 4px;
 `;
 
 const Button = styled.button`

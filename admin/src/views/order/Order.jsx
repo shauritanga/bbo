@@ -32,20 +32,11 @@ const OrderView = () => {
   if (client === null) {
     return <div>Loading...</div>;
   }
-  // useEffect(() => {
-  //   fetch("http://localhost:5001/api/securities")
-  //     .then((res) => res.json())
-  //     .then((data) => setHolding(data))
-  //     .catch((err) => console.log(err));
-  // }, []);
-  // if (holding === null) {
-  //   return <div>Loading...</div>;
-  // }
   return (
     <Wrapper>
       <Main>
         <Balance>
-          Order Balance: 45,000,000
+          Order Balance: {state.balance}
           <Form>
             <FormGroup>
               <FormController>
@@ -228,11 +219,6 @@ const OrderView = () => {
           >
             Print
           </Button>
-          <Button
-            style={{ backgroundColor: "hsl(243deg, 50%, 21%)", color: "#fff" }}
-          >
-            Add Documents
-          </Button>
           <Button style={{ backgroundColor: "#61C478", color: "#fff" }}>
             Approve
           </Button>
@@ -366,7 +352,7 @@ const Actions = styled.div`
   background-color: #fff;
 `;
 const Button = styled.button`
-  padding: 10px;
+  padding: 8px 10px;
   border-radius: 7px;
 `;
 export default OrderView;

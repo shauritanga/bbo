@@ -2,9 +2,11 @@ import React, { useState } from "react";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import styled from "styled-components";
 
-const Security = () => {
+const Security = ({ email }) => {
   const [showPassword, setShowPassword] = useState(false);
+  const [emailValue, setEmailValue] = useState(email);
   const [showNewPassword, setNewShowPassword] = useState(false);
+  console.log(emailValue);
   return (
     <Wrapper>
       <PasswordWrapper>
@@ -94,7 +96,8 @@ const Security = () => {
             <EmailTextInput
               type="email"
               id="email"
-              placeholder="salimahashimabu2@gmail.com"
+              value={emailValue}
+              onChange={(e) => setEmailValue(e.target.value)}
             />
             <Spacer />
           </EmailInputWrapper>

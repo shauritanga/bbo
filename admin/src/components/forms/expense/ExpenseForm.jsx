@@ -140,17 +140,6 @@ const ExpenseForm = ({ open, setOpen }) => {
         }
       );
     }
-    // const response = await fetch("http://localhost:5001/api/expenses", {
-    //   method: "post",
-    //   headers: {
-    //     "Access-Control-Allow-Origin": "*",
-    //     "Content-Type": "application/json",
-    //   },
-    //   body: JSON.stringify(payment),
-    // });
-    // const res = await response.json();
-    // console.log(res);
-    // setOpen(false);
   };
   return (
     <Modal backdrop="static" open={open} onClose={() => setOpen(false)}>

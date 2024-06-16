@@ -42,8 +42,7 @@ const Presentational = styled.div`
   justify-content: space-between;
   border: 1px solid hsl(0deg 0% 80%);
   border-radius: 7px;
-  color: grey;
-  padding: 8px 10px;
+  padding: 10px;
   cursor: pointer;
 `;
 const IconWrapper = styled.div``;

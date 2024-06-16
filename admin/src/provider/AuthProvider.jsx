@@ -9,21 +9,22 @@ const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
 
   const loginAction = async (data) => {
-    const response = await fetch("http://localhost:5001/api/v1/login", {
-      method: "post",
-      body: JSON.stringify(data),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    const result = await response.json();
-    console.log(result);
-    if (!result.ok) {
-      alert(result.message);
-      return;
+    try {
+      const response = await fetch("http://localhost:5001/api/v1/login", {
+        method: "post",
+        body: JSON.stringify(data),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) throw new Error("Error fetching orders");
+      const result = await response.json();
+      console.log(result);
+      setUser(result.user);
+      navigate("/dashboard");
+    } catch (error) {
+      console.log("Hello world!");
     }
-    setUser(result.user);
-    navigate("/dashboard");
   };
 
   console.log({ user });

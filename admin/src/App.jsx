@@ -5,7 +5,7 @@ import Layout from "./layout/Layout";
 import { Navigate } from "react-router";
 import Orders from "./pages/orders/Orders";
 import DealingSheet from "./pages/dealing/DealingSheet";
-import Reports from "./pages/reports/Reports";
+import Reports from "./pages/reports/AccountingReports";
 import Assets from "./pages/assets/Assets";
 import Customers from "./pages/customers/Customers";
 import Files from "./pages/files/Files";
@@ -28,6 +28,11 @@ import Register from "./register/Register";
 import AuthProvider from "./provider/AuthProvider";
 import DealingView from "./views/dealing/DealingView";
 import TransactionView from "./views/transaction/TransactionView";
+import EmployeeView from "./views/employee/EmployeeView";
+import AccountingReports from "./pages/reports/AccountingReports";
+import MarketReports from "./pages/reports/MarketReports";
+import EmailWithPDF from "./components/pdf/email";
+import Category from "./pages/category/Category";
 
 function App() {
   const signIn = false;
@@ -38,8 +43,14 @@ function App() {
           <Route path="login" element={<Register />} />
           <Route element={<Layout />}>
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            <Route path="/accounting/expenses" element={<Expense />} />
+            <Route path="/accounting/payments" element={<Payment />} />
+            <Route path="/accounting/receipts" element={<Receipt />} />
+            <Route path="/accounting/reports" element={<AccountingReports />} />
+            <Route path="/accounting/transactions" element={<Transaction />} />
             <Route path="/assets" element={<Assets />} />
             <Route path="/business" element={<Business />} />
+            <Route path="/categories" element={<Category />} />
             <Route path="/customers" element={<Customers />} />
             <Route path="/customers/:customerId" element={<CustomerView />} />
             <Route path="/dashboard" element={<Dashboard />} />
@@ -47,28 +58,25 @@ function App() {
             <Route path="/dealing/:dealingId" element={<DealingView />} />
             <Route path="/departments" element={<Department />} />
             <Route path="/employees" element={<Employee />} />
-            <Route path="/expenses" element={<Expense />} />
+            <Route path="/employees/:employeeId" element={<EmployeeView />} />
             <Route path="/files" element={<Files />} />
-            <Route path="/messages" element={<Messages />} />
             <Route path="/orders" element={<Orders />} />
             <Route path="/orders/:orderId" element={<OrderView />} />
-            <Route path="/payments" element={<Payment />} />
-            <Route path="/receipts" element={<Receipt />} />
-            <Route path="/reports" element={<Reports />} />
+            <Route path="/reports" element={<MarketReports />} />
             <Route path="/resources" element={<HumanResource />} />
             <Route path="/roles" element={<Role />} />
             <Route
               path="/securities"
               element={<Security backgroundColor="var(--color-white)" />}
             />
-            <Route path="/transactions" element={<Transaction />} />
+
             <Route
               path="/transactions/:transactionId"
               element={<TransactionView />}
             />
           </Route>
 
-          <Route path="/statement" element={<PDF />} />
+          <Route path="/statement" element={<EmailWithPDF />} />
         </Routes>
       </AuthProvider>
     </BrowserRouter>

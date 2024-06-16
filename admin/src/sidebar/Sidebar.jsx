@@ -92,13 +92,13 @@ const Sidebar = ({ isActive, user, isSidebarOpen, setIsSidebarOpen }) => {
         <TbReport />
         <span>Market Reports</span>
       </Link>
-      <Link
+      {/* <Link
         to="/assets"
         className={`item ${isActive === "/assets" ? "active" : ""}`}
       >
         <MdWebAsset />
         <span>Asset Management</span>
-      </Link>
+      </Link> */}
       <CollapseButton icon={<SlPeople />} name="CRM">
         <>
           <Link
@@ -125,13 +125,7 @@ const Sidebar = ({ isActive, user, isSidebarOpen, setIsSidebarOpen }) => {
         <MdOutlineFolder />
         <span>File Manager</span>
       </Link>
-      <Link
-        to="/messages"
-        className={`item ${isActive === "/messages" ? "active" : ""}`}
-      >
-        <FaRegMessage />
-        <span>Messaging</span>
-      </Link>
+
       {user.role?.name === "admin" && (
         <>
           <CollapseButton
@@ -141,7 +135,7 @@ const Sidebar = ({ isActive, user, isSidebarOpen, setIsSidebarOpen }) => {
           >
             <div>
               <Link
-                to="/transactions"
+                to="/accounting/transactions"
                 className={`item ${
                   isActive === "/transactions" ? "active" : ""
                 }`}
@@ -150,25 +144,32 @@ const Sidebar = ({ isActive, user, isSidebarOpen, setIsSidebarOpen }) => {
                 <span>Transactions</span>
               </Link>
               <Link
-                to="/expenses"
+                to="/accounting/expenses"
                 className={`item ${isActive === "/expenses" ? "active" : ""}`}
               >
                 <GoDot />
                 <span>Expenses</span>
               </Link>
               <Link
-                to="/payments"
+                to="/accounting/payments"
                 className={`item ${isActive === "/payments" ? "active" : ""}`}
               >
                 <GoDot />
                 <span>Payments</span>
               </Link>
               <Link
-                to="/receipts"
+                to="/accounting/receipts"
                 className={`item ${isActive === "/receipts" ? "active" : ""}`}
               >
                 <GoDot />
                 <span>Receipts</span>
+              </Link>
+              <Link
+                to="/accounting/reports"
+                className={`item ${isActive === "/reports" ? "active" : ""}`}
+              >
+                <GoDot />
+                <span>Reports</span>
               </Link>
             </div>
           </CollapseButton>
@@ -181,7 +182,7 @@ const Sidebar = ({ isActive, user, isSidebarOpen, setIsSidebarOpen }) => {
                 <GoDot />
                 <span>Employees</span>
               </Link>
-              <Link
+              {/* <Link
                 to="/departments"
                 className={`item ${
                   isActive === "/departments" ? "active" : ""
@@ -189,7 +190,7 @@ const Sidebar = ({ isActive, user, isSidebarOpen, setIsSidebarOpen }) => {
               >
                 <GoDot />
                 <span>Departments</span>
-              </Link>
+              </Link> */}
             </div>
           </CollapseButton>
           <Link

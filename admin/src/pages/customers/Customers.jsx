@@ -179,7 +179,7 @@ function Customers() {
           </thead>
           <tbody>
             {customers.map((customer) => (
-              <tr>
+              <tr key={customer._id}>
                 <TableDataCell>
                   <p>{customer.name}</p>
                 </TableDataCell>
