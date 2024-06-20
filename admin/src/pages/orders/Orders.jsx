@@ -300,7 +300,7 @@ const Orders = () => {
           </TableHeaderRow>
           {orderData?.map((order, index) => (
             <TableDataRow key={index}>
-              <TableDataCell>{order._id}</TableDataCell>
+              <TableDataCell>{order.orderId}</TableDataCell>
               <TableDataCell>
                 {dayjs(order.date).format("DD-MM-YYYY")}
               </TableDataCell>

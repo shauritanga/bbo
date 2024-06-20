@@ -81,7 +81,7 @@ const renderActiveShape = (props) => {
   );
 };
 
-const PieGraph = () => {
+const PieGraph = ({ outer, inner }) => {
   const [activeIndex, setActiveIndex] = useState(0);
 
   const onPieEnter = (_, index) => {
@@ -97,8 +97,8 @@ const PieGraph = () => {
           data={data}
           cx="50%"
           cy="50%"
-          innerRadius={35}
-          outerRadius={55}
+          innerRadius={inner}
+          outerRadius={outer}
           fill="#8884d8"
           dataKey="value"
           onMouseEnter={onPieEnter}

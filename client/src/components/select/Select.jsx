@@ -3,7 +3,7 @@ import { RxChevronDown } from "react-icons/rx";
 import styled from "styled-components";
 import { getValue } from "utils/getDate";
 
-const Select = ({ value, children, onChange, backgroundColor, width }) => {
+const Select = ({ value, children, onChange, backgroundColor, width}) => {
   const displayValue = getValue(value, children);
   return (
     <Wrapper>
@@ -13,7 +13,6 @@ const Select = ({ value, children, onChange, backgroundColor, width }) => {
       <Presentational
         style={{
           "--width": width + "px",
-          "--background-color": backgroundColor,
         }}
       >
         {displayValue}
@@ -28,7 +27,7 @@ const Select = ({ value, children, onChange, backgroundColor, width }) => {
 const Wrapper = styled.div`
   position: relative;
   width: max-content;
-  border: 1px solid hsl(205deg 50% 20%);
+  border: 1px solid #ccc;
   border-radius: 7px;
 `;
 
@@ -46,9 +45,8 @@ const Presentational = styled.div`
   align-items: center;
   justify-content: space-between;
   width: var(--width);
-  background-color: var(--background-color);
   border-radius: 4px;
-  padding: 12px 16px;
+  padding: 10px 16px;
 `;
 
 const IconWrapper = styled.div`

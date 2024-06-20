@@ -30,6 +30,7 @@ const customerSchema = mongoose.Schema({
   },
   email: {
     type: String,
+    unique: true,
   },
   password: {
     type: String,
@@ -37,7 +38,7 @@ const customerSchema = mongoose.Schema({
   dob: {
     type: Date,
   },
-  active: {
+  verified: {
     type: Boolean,
     default: false,
   },
@@ -45,6 +46,10 @@ const customerSchema = mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  status:{
+    type:String,
+    default:"pending"
+  }
 });
 
 customerSchema.pre("save", async function (next) {

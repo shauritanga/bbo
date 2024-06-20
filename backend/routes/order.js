@@ -3,11 +3,64 @@ import Order from "../models/order.js";
 const route = express.Router();
 
 route.get("/", async (req, res) => {
-  console.log("inafika");
   const orders = await Order.find({}, { password: 0 })
     .populate("customer")
     .populate("security");
-  res.send(JSON.stringify(orders));
+  res.status(200).json(orders);
+});
+
+route.get("/all/:id", async (req, res) => {
+  try {
+    const orders = await Order.find({ customer: req.params.id }).populate(
+      "security"
+    ).populate("customer");
+    if(!orders){
+      res.status(404).json({ message: "No orders found" });
+    }else{
+     
+      res.status(200).json(orders);
+    }
+    
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: error.message });
+  }
+});
+route.get("/buy/:id", async (req, res) => {
+  try {
+    const orders = await Order.find({customer: req.params.id,type:"buy" }).populate(
+      "security"
+    ).populate("customer");
+    if(!orders){
+      res.status(404).json({ message: "No orders found" });
+    }else{
+     
+      res.status(200).json(orders);
+    }
+    
+    
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: error.message });
+  }
+});
+route.get("/sell/:id", async (req, res) => {
+  try {
+    const orders = await Order.find({customer: req.params.id,type:"sell" }).populate(
+      "security"
+    ).populate("customer");
+    if(!orders){
+      res.status(404).json({ message: "No orders found" });
+    }else{
+     
+      res.status(200).json(orders);
+    }
+    
+    
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: error.message });
+  }
 });
 
 route.get("/dealing", async (req, res) => {

@@ -1,38 +1,85 @@
 import Card from "components/card/Card";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { MdOutlinePendingActions, MdOutlineSell } from "react-icons/md";
 import { ImSpinner3 } from "react-icons/im";
 import { AiOutlineFileDone } from "react-icons/ai";
 import styled from "styled-components";
 import Select from "components/select/Select";
+import { useDispatch, useSelector } from "react-redux";
+import { useAuth } from "provider/AuthProvider";
+import { fetchOrders, setCounter, setSearchTerm } from "reducers/orderSlice";
+import dayjs from "dayjs";
 
 const SellShare = () => {
-  const [value, setValue] = useState("5");
+  const { orders, status, error, filters } = useSelector(
+    (state) => state.orders
+  );
+  const dispatch = useDispatch();
+
+  const { user, token } = useAuth();
+  const userObjcet = JSON.parse(user);
+
+  useEffect(() => {
+    dispatch(fetchOrders({ sort: "sell", id: userObjcet._id }));
+  }, [dispatch]);
+
+  if (status === "loading") {
+    return <div>Loading...</div>;
+  }
+  if (status === "error") {
+    return <div>Error: {error}</div>;
+  }
+
+  const filteredOrders = orders?.slice(0, filters.counter).filter((order) => {
+    const matchesQuery =
+      !filters.searchTerm ||
+      order.security?.name
+        .toLowerCase()
+        .includes(filters.searchTerm.toLowerCase());
+    return matchesQuery;
+  });
+
+  //
+  const all = orders.length;
+  const newOrder = orders.filter(
+    (order) => order.status.toLowerCase() === "new"
+  ).length;
+  const underprocess = orders.filter(
+    (order) => order.status.toLowerCase() === "processing"
+  ).length;
+  const complete = orders.filter(
+    (order) => order.status.toLowerCase() === "completed"
+  ).length;
+
   return (
     <>
       <Wrapper>
         <Card
-          title="Orders"
+          style={{ backgroundColor: "#323365", color: "#ffffff" }}
+          title="All Orders"
           subtitle="Total Orders"
-          quantity={20}
+          quantity={all}
           icon={<MdOutlineSell size={25} />}
         />
         <Card
+          style={{ backgroundColor: "#e71f27", color: "#ffffff" }}
           title="Pending"
           subtitle="Pending Orders"
-          quantity={1}
+          quantity={newOrder}
           icon={<MdOutlinePendingActions size={25} />}
         />
         <Card
-          title="Processing"
+          style={{ backgroundColor: "#33336a", color: "#ffffff" }}
+          title="Under prosess"
           subtitle="Orders under processing"
-          quantity={2}
+          quantity={underprocess}
           icon={<ImSpinner3 size={25} />}
         />
         <Card
+          style={{ backgroundColor: "#656281", color: "#ffffff" }}
           title="Complete"
           subtitle="Completed Orders"
-          quantity={17}
+          quantity={complete}
           icon={<AiOutlineFileDone size={25} />}
         />
       </Wrapper>
@@ -40,9 +87,9 @@ const SellShare = () => {
         <p>Sell Shares</p>
         <Actions>
           <Select
-            value={value}
+            value={filters.counter}
             width={80}
-            onChange={(e) => setValue(e.target.value)}
+            onChange={(e) => dispatch(setCounter(e.target.value))}
             backgroundColor="inherit"
           >
             <option value="5">5</option>
@@ -50,7 +97,11 @@ const SellShare = () => {
             <option value="15">15</option>
             <option value="20">20</option>
           </Select>
-          <TextInput placeholder="Search..." />
+          <TextInput
+            value={filters.searchTerm}
+            onChange={(e) => dispatch(setSearchTerm(e.target.value))}
+            placeholder="Search..."
+          />
           <Button>Export</Button>
           <Button>+ New Order</Button>
         </Actions>
@@ -69,28 +120,29 @@ const SellShare = () => {
             </TableRowHeader>
           </thead>
           <tbody>
-            <tr>
-              <TableData>ATR1372</TableData>
-              <TableData>2022-08-26</TableData>
-              <TableData>CRDB</TableData>
-              <TableData>5800</TableData>
-              <TableData></TableData>
-              <TableData>560</TableData>
-              <TableData>TZS 415.00</TableData>
-              <TableData></TableData>
-              <TableData></TableData>
-            </tr>
-            <tr>
-              <TableData>ATR51230</TableData>
-              <TableData>2024-02-29</TableData>
-              <TableData>NBC</TableData>
-              <TableData>4800</TableData>
-              <TableData></TableData>
-              <TableData>415</TableData>
-              <TableData>TZS 52,000.00</TableData>
-              <TableData></TableData>
-              <TableData></TableData>
-            </tr>
+            {filteredOrders.length === 0 ? (
+              <tr>
+                <TableData colSpan={9}>
+                  No any order found
+                </TableData>
+              </tr>
+            ) : (
+              filteredOrders.map((order) => (
+                <tr key={order._id}>
+                  <TableData>{order.orderId}</TableData>
+                  <TableData>
+                    {dayjs(order.date).format("DD-MM-YYYY")}
+                  </TableData>
+                  <TableData>{order.security?.name}</TableData>
+                  <TableData>{order.total}</TableData>
+                  <TableData>{order.volume}</TableData>
+                  <TableData>{order.price}</TableData>
+                  <TableData>{order.balance}</TableData>
+                  <TableData>{order.status}</TableData>
+                  <TableData></TableData>
+                </tr>
+              ))
+            )}
           </tbody>
         </Table>
       </TableWrapper>
@@ -115,10 +167,11 @@ const TableWrapper = styled.div`
   margin: 0 auto;
   gap: 20px;
   padding: 20px;
-  color: hsl(205 50% 60%);
-  color: hsl(205 50% 60%);
+  color: #333;
   border-radius: 4px;
-  background-color: hsl(205 50% 15%);
+  background-color: #fff;
+  color: #000;
+  filter: drop-shadow(0px 2px 8px rgba(74, 70, 132, 0.4));
 `;
 
 const Actions = styled.div`
@@ -127,17 +180,19 @@ const Actions = styled.div`
   gap: 20px;
 `;
 const TextInput = styled.input`
-  border: 1px solid hsl(205deg 50% 20%);
+  border: 1px solid #ccc;
   background-color: inherit;
   color: inherit;
   margin-left: auto;
   height: 43px;
-  padding: 20px;
+  padding: 10px 20px;
   border-radius: 7px;
+  outline: none;
 `;
 const Button = styled.button`
-  background-color: hsl(205 50% 60%);
-  padding: 10px 20px;
+  background-color: #323365;
+  color: #ffffff;
+  padding: 12px 20px;
   border-radius: 7px;
   cursor: pointer;
   border: none;
@@ -149,8 +204,8 @@ const Table = styled.table`
 
 const TableHaeader = styled.th`
   padding: 10px 20px;
-  border-top: 1px solid hsl(205 50% 50%);
-  border-bottom: 1px solid hsl(205 50% 50%);
+  border-top: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
   text-align: left;
   text-transform: uppercase;
   font-size: 14px;
@@ -162,7 +217,8 @@ const TableRowHeader = styled.tr`
 
 const TableData = styled.td`
   padding: 10px 20px;
-  border-bottom: 0.2px solid hsl(205 50% 20%);
+  border-bottom: 0.2px solid #ccc;
+  color: #333;
 `;
 
 export default SellShare;

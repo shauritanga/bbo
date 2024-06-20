@@ -5,6 +5,8 @@ import { IoBagHandleOutline } from "react-icons/io5";
 import { LiaCoinsSolid, LiaFileContractSolid } from "react-icons/lia";
 import { LuFileText } from "react-icons/lu";
 import styled from "styled-components";
+import LoginUser from "components/client/LoginUser";
+
 
 const Header = () => {
   const [isActive, setIsActive] = useState("");
@@ -15,21 +17,19 @@ const Header = () => {
     setIsActive(pathname.substring(1));
   }, [pathname]);
 
-  console.log(isActive);
   return (
     <Wrapper>
       <TopWrapper>
         <TopHeadder>
           <h3>ALPHA CAPITAL</h3>
-          <Client>AS</Client>
+          <LoginUser />
         </TopHeadder>
       </TopWrapper>
       <NavBar>
-        <Spacer />
         <ListItem
           style={{
             backgroundColor:
-              isActive === "dashboard" ? "hsl(205 50% 17%)" : "inherit",
+              isActive === "dashboard" ? "#656281" : "transparent",
           }}
           onClick={() => {
             navigate("/dashboard");
@@ -41,7 +41,7 @@ const Header = () => {
         <ListItem
           style={{
             backgroundColor:
-              isActive === "buy" ? "hsl(205 50% 17%)" : "inherit",
+              isActive === "buy" ? "#656281" : "transparent",
           }}
           onClick={() => {
             navigate("/buy");
@@ -53,7 +53,7 @@ const Header = () => {
         <ListItem
           style={{
             backgroundColor:
-              isActive === "sell" ? "hsl(205 50% 17%)" : "inherit",
+              isActive === "sell" ? "#656281" : "transparent",
           }}
           onClick={() => {
             navigate("/sell");
@@ -65,7 +65,7 @@ const Header = () => {
         <ListItem
           style={{
             backgroundColor:
-              isActive === "contract-note" ? "hsl(205 50% 17%)" : "inherit",
+              isActive === "contract-note" ? "#656281" : "transparent",
           }}
           onClick={() => {
             navigate("/contract-note");
@@ -77,7 +77,7 @@ const Header = () => {
         <ListItem
           style={{
             backgroundColor:
-              isActive === "statement" ? "hsl(205 50% 17%)" : "inherit",
+              isActive === "statement" ? "#656281" : "transparent",
           }}
           onClick={() => {
             navigate("/statement");
@@ -92,15 +92,17 @@ const Header = () => {
   );
 };
 
-const Wrapper = styled.div``;
+const Wrapper = styled.div`
+  background-color: #201e50;
+`;
 const TopHeadder = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: 80%;
+  max-width: 1300px;
   margin: 0 auto;
   color: hsl(205 50% 60%);
-  padding: 10px;
+  padding: 10px 0;
 `;
 
 const Client = styled.div`
@@ -115,9 +117,11 @@ const Client = styled.div`
 
 const NavBar = styled.div`
   display: flex;
-  background-color: hsl(205 50% 15%);
+  max-width: 1300px;
+  margin: 0 auto;
+  background-color: transparent;
   padding: 10px;
-  color: hsl(205 50% 60%);
+  color: #f5f5f5;
 `;
 
 const ListItem = styled.div`
@@ -128,13 +132,13 @@ const ListItem = styled.div`
   cursor: pointer;
   border-radius: 4px;
   &:hover {
-    background-color: hsl(205 50% 17%);
+    background-color: red;
     color: hsl(205 50% 90%);
   }
 `;
 
 const TopWrapper = styled.div`
-  background-color: hsl(205 50% 15%);
+  background-color: transparent;
   border-bottom: 0.05px solid hsl(205 50% 75%);
 `;
 const Spacer = styled.div`

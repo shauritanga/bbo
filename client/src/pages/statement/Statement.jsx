@@ -56,23 +56,19 @@ const Wrapper = styled.div`
   flex-direction: column;
   gap: 20px;
   width: 80%;
-  background-color: hsl(205 50% 15%);
+  background-color: #f5f5f5;
   padding: 20px;
-  color: hsl(205 50% 60%);
   border-radius: 4px;
   margin: 0 auto;
+  filter: drop-shadow(0px 2px 8px rgba(74, 70, 132, 0.4));
 `;
 
 const TextInput = styled.input`
-  background-color: inherit;
-  height: 32px;
   border-radius: 4px;
-  border: 1px solid hsl(205 50% 50%);
+  border: 1px solid #999;
   padding: 10px;
-  color: inherit;
-  &:focus {
-    border: none;
-  }
+  width: 100%;
+  outline: none;
 `;
 
 const Table = styled.table`
@@ -88,6 +84,7 @@ const TableHaeader = styled.th`
   text-transform: uppercase;
   font-size: 14px;
   font-weight: 600;
+
 `;
 const TableRowHeader = styled.tr`
   //border: 1px solid red;
@@ -96,6 +93,9 @@ const TableRowHeader = styled.tr`
 const TableData = styled.td`
   padding: 10px 20px;
   border-bottom: 0.2px solid hsl(205 50% 20%);
+  color: #212121;
+  font-size: 14px;
+  font-weight: 400;
 `;
 
 const Button = styled.button`

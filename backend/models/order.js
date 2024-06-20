@@ -1,6 +1,8 @@
 import mongoose from "mongoose";
+import OrderCounter from "./orderCounter.js";
 
 const orderSchema = mongoose.Schema({
+  orderId:{ type: String, unique: true },
   customer: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Customer",
@@ -12,32 +14,25 @@ const orderSchema = mongoose.Schema({
   },
   volume: {
     type: String,
-    required: true,
   },
   price: {
     type: String,
-    required: true,
   },
   amount: {
     type: String,
-    required: true,
   },
   fees: {
     type: Number,
-    required: true,
   },
   total: {
     type: Number,
-    required: true,
   },
   type: {
     type: String,
-    required: true,
   },
   security: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Security",
-    required: true,
   },
   status: {
     type: String,
@@ -46,6 +41,20 @@ const orderSchema = mongoose.Schema({
   balance: {
     type: Number,
   },
+});
+
+orderSchema.pre("save", async function (next) {
+  const doc = this;
+  if (doc.isNew) {
+    const orderCounter = await OrderCounter.findByIdAndUpdate(
+      { _id: "orderId" },
+      { $inc: { seq: 1 } },
+      { new: true, upsert: true }
+    );
+    const seq = String(orderCounter.seq).padStart(5, "0");
+    doc.orderId = `AOR${seq}`;
+  }
+  next();
 });
 
 const Order = mongoose.model("Order", orderSchema);

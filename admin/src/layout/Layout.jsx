@@ -18,6 +18,8 @@ const Layout = () => {
   const { pathname, search } = useLocation();
   const { user } = useAuth();
 
+  const userObject = typeof user === "string" ? JSON.parse(user) : user;
+
   useEffect(() => {
     setIsActive(pathname + search);
   }, [pathname, search]);
@@ -27,7 +29,7 @@ const Layout = () => {
     document.body.setAttribute("dark-theme", theme);
   }, [theme]);
 
-  if (!user) return <Navigate to="/login" />;
+  if (!userObject) return <Navigate to="/login" />;
 
   return (
     <div className="layout">
@@ -35,7 +37,7 @@ const Layout = () => {
       {isSidebarOpen && (
         <Sidebar
           isActive={isActive}
-          user={user}
+          user={userObject}
           isSidebarOpen={isSidebarOpen}
           setIsSidebarOpen={setIsSidebarOpen}
         />
@@ -43,7 +45,7 @@ const Layout = () => {
       {/* </div> */}
       <div className="right">
         <Navbar
-          user={user}
+          user={userObject}
           theme={theme}
           setTheme={setTheme}
           isSidebarOpen={isSidebarOpen}

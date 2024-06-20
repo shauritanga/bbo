@@ -4,6 +4,7 @@ import "./header.css";
 import { HiOutlineMenuAlt2 } from "react-icons/hi";
 import { LuSearch } from "react-icons/lu";
 import { MdOutlineDarkMode, MdOutlineLightMode } from "react-icons/md";
+import LoginUser from "../components/user/LoginUser";
 
 function Header({ user, theme, setTheme, isSidebarOpen, setIsSidebarOpen }) {
   return (
@@ -39,10 +40,7 @@ function Header({ user, theme, setTheme, isSidebarOpen, setIsSidebarOpen }) {
               {user.role?.name === "admin" ? "Admin" : "Normal"}
             </span>
           </div>
-          <img
-            src="https://images.unsplash.com/photo-1632765854612-9b02b6ec2b15?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTR8fGJsYWNrJTIwd29tYW58ZW58MHx8MHx8fDA%3D"
-            alt=""
-          />
+          <LoginUser />
         </div>
       </div>
     </div>

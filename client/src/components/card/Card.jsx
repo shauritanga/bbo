@@ -2,9 +2,9 @@ import React from "react";
 import styled from "styled-components";
 import { MdOutlineSell } from "react-icons/md";
 
-const Card = ({ icon, title, subtitle, quantity }) => {
+const Card = ({ icon, title, subtitle, quantity, ...deligate }) => {
   return (
-    <Wrapper>
+    <Wrapper {...deligate}>
       <DetailsWrapper>
         <Title>{title}</Title>
         <Quantity>{quantity}</Quantity>
@@ -22,7 +22,8 @@ const Wrapper = styled.div`
   border-radius: 5px;
   flex: 1 0 250px;
   min-width: 250px;
-  background-color: hsl(205 50% 15%);
+  filter: drop-shadow(0px 2px 8px rgba(74, 70, 132, 0.4));
+ 
 `;
 
 const IconWrapper = styled.div`
@@ -46,11 +47,11 @@ const Title = styled.p`
 
 const Quantity = styled.span`
   font-size: 1.5rem;
-  color: hsl(205deg 20% 70%);
 `;
 
 const Typography = styled.p`
   font-size: 0.89rem;
-  color: hsl(205deg 20% 60%);
+  color: #fff;
+  opacity: 0.5;
 `;
 export default Card;

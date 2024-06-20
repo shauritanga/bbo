@@ -33,6 +33,7 @@ import AccountingReports from "./pages/reports/AccountingReports";
 import MarketReports from "./pages/reports/MarketReports";
 import EmailWithPDF from "./components/pdf/email";
 import Category from "./pages/category/Category";
+import Otp from "./pages/otp/Otp";
 
 function App() {
   const signIn = false;
@@ -41,6 +42,7 @@ function App() {
       <AuthProvider>
         <Routes>
           <Route path="login" element={<Register />} />
+          <Route path="/otp" element={<Otp />} />
           <Route element={<Layout />}>
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
             <Route path="/accounting/expenses" element={<Expense />} />

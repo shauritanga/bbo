@@ -15,6 +15,16 @@ route.get("/:id", async (req, res) => {
     res.send(error);
   }
 });
+route.get("/clients/:token", async (req, res) => {
+  console.log(token);
+  // try {
+  //   const customer = await Customer.findOne({ _id: req.params.id });
+  //   res.send(customer);
+  // } catch (error) {
+  //   res.send(error);
+  // }
+});
+
 
 route.post("/", async (req, res) => {
   const customer = Customer({

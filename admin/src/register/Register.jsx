@@ -1,69 +1,151 @@
 import { useState } from "react";
 import { useAuth } from "../provider/AuthProvider";
 import styled from "styled-components";
+import { Formik, Form, ErrorMessage, Field } from "formik";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
-  const [input, setInput] = useState({
-    username: "",
-    password: "",
-  });
-  const [show, setShow] = useState(false);
+  const { loginAction } = useAuth();
+  const navigate = useNavigate();
 
-  const auth = useAuth();
-  const handleSubmitEvent = (e) => {
-    e.preventDefault();
-    if (input.username !== "" && input.password !== "") {
-      auth.loginAction(input);
-      return;
-    }
-    alert("pleae provide a valid input");
-  };
-
-  const handleInput = (e) => {
-    const { name, value } = e.target;
-    setInput((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
   return (
     <Wrapper>
       <FormWrapper>
-        <Form onSubmit={handleSubmitEvent}>
-          <TextInput
-            type="email"
-            name="username"
-            id="email"
-            placeholder="Email"
-            onChange={handleInput}
+        <FormContainer>
+          <img
+            src="../../alpha.png"
+            alt="alpha logo"
+            width={150}
+            height={150}
+            style={{ margin: "0 auto" }}
           />
-          <TextInput
-            type={show ? "text" : "password"}
-            name="password"
-            id="password"
-            placeholder="Password"
-            onChange={handleInput}
-          />
-          <Help>
-            <RememberMe>
-              <input type="checkbox" name="remember" id="remember" />
-              <label htmlFor="remember">Remember me</label>
-            </RememberMe>
-            <a href="">Forgot password?</a>
-          </Help>
-          <Button type="submit">Sign in</Button>
-        </Form>
+          <h1 style={{ textAlign: "center" }}>Alpha Capital</h1>
+          <Formik
+            initialValues={{ email: "", password: "" }}
+            validate={(values) => {
+              const errors = {};
+              if (!values.email) {
+                errors.email = "Required";
+              } else if (
+                !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email)
+              ) {
+                errors.email = "Invalid email address";
+              }
+              if (!values.password) {
+                errors.password = "Required";
+              } else if (values.password.length < 8) {
+                errors.password = "Password must be at least 6 characters";
+              }
+              return errors;
+            }}
+            onSubmit={async (values, { setSubmitting }) => {
+              const result = await axios.post(
+                "http://localhost:5001/api/v1/auth/otp",
+                values
+              );
+              if (result.status === 200) {
+                navigate("/otp", { state: { email: values.email } });
+              }
+              setSubmitting(false);
+            }}
+          >
+            {({
+              values,
+              handleChange,
+              handleBlur,
+              handleSubmit,
+              isSubmitting,
+            }) => (
+              <Form
+                // onSubmit={handleSubmit}
+                style={{
+                  display: "flex",
+                  width: "100%",
+                  flexDirection: "column",
+                  marginTop: "20px",
+                  alignItems: "center",
+                  gap: "10px",
+                }}
+              >
+                <Field
+                  type="email"
+                  name="email"
+                  placeholder="Email"
+                  // value={values.email}
+                  // onChange={handleChange}
+                  // onBlur={handleBlur}
+                  style={{
+                    width: "100%",
+                    padding: "10px",
+                    border: "1px solid #ccc",
+                    borderRadius: "4px",
+                    outline: "none",
+                    fontSize: "16px",
+                  }}
+                />
+                <ErrorMessage name="email" component="div" />
+                <Field
+                  type="password"
+                  name="password"
+                  placeholder="Password"
+                  // value={values.password}
+                  // onChange={handleChange}
+                  // onBlur={handleBlur}
+                  style={{
+                    width: "100%",
+                    padding: "10px",
+                    border: "1px solid #ccc",
+                    borderRadius: "4px",
+                    outline: "none",
+                    fontSize: "16px",
+                  }}
+                />
+                <ErrorMessage name="password" component="div" />
+                <p
+                  style={{
+                    color: "#007bff",
+                    cursor: "pointer",
+                    alignSelf: "flex-end",
+                  }}
+                >
+                  Forgot Password?
+                </p>
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  style={{
+                    width: "100%",
+                    padding: "10px",
+                    border: "1px solid #007bff",
+                    backgroundColor: "#007bff",
+                    color: "#fff",
+                    borderRadius: "4px",
+                    outline: "none",
+                    fontSize: "16px",
+                  }}
+                >
+                  {isSubmitting ? "Submitting..." : "Login"}
+                </button>
+              </Form>
+            )}
+          </Formik>
+        </FormContainer>
       </FormWrapper>
-      <Banner>
-        {/* <img src="../../large.png" style={{ width: "50%", margin: "auto" }} /> */}
-      </Banner>
     </Wrapper>
   );
 };
 
+const fieldStyles = {
+  padding: "10px",
+  borderRadius: "4px",
+  width: "100%",
+  height: "35px",
+  border: "1px solid #ccc",
+};
+
 const Wrapper = styled.div`
-  position: absolute;
-  inset: 0;
+  height: 100vh;
   display: flex;
   background-image: url("../../bg.png");
   background-size: cover;
@@ -71,34 +153,22 @@ const Wrapper = styled.div`
   background-repeat: no-repeat;
 `;
 
-const Banner = styled.div`
-  display: flex;
-  align-items: center;
-  flex: 1;
-  background-color: transparent;
-`;
-
 const FormWrapper = styled.div`
-  flex: 1;
-  hesight: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  width: 100%;
+  height: 100%;
   background-color: transparent;
 `;
 
-const Form = styled.form`
+const FormContainer = styled.div`
+  width: 35%;
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  width: 80%;
-  margin: 50px auto;
-`;
-const TextInput = styled.input`
-  border: 1px solid hsl(0deg 0% 90%);
-  height: 35px;
-  padding: 10px;
-  background-color: inherit;
+  gap: 10px;
+  padding: 20px;
+
+  border-radius: 4px;
+  justify-content: center;
+  height: 100%;
 `;
 
 const Button = styled.button`

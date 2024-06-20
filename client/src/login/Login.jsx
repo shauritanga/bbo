@@ -1,11 +1,15 @@
 import axios from "axios";
 import SignUp from "components/signup/SignUp";
 import { Formik, Field, Form, ErrorMessage } from "formik";
-import React from "react";
+import { useNavigate } from "react-router-dom";
+import React,{useState} from "react";
 import styled from "styled-components";
 
+
 const Login = () => {
-  const [active, setActive] = React.useState("login");
+  const [active, setActive] = useState("login");
+  const navigate = useNavigate();
+
   return (
     <Wrapper>
       <FormWrapper>
@@ -32,11 +36,11 @@ const Login = () => {
             }}
             onSubmit={async (values, { setSubmitting }) => {
               const result = await axios.post(
-                "http://localhost:5001/api/v1/login/clients",
+                "http://localhost:5001/api/v1/auth/otp",
                 values
               );
               if (result.status === 200) {
-                console.log(result.data);
+              navigate("/otp", { state: { email: values.email } });
               }
               setSubmitting(false);
             }}
@@ -149,25 +153,31 @@ const errorStyle = {
 };
 
 const Wrapper = styled.div`
-  height: 100vh;
-  width: 100vw;
   display: flex;
-  overflow: scroll;
-  background-image:url("../../public/);
+  height:100vh;
+  background-image:url("../../bg.png");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
 `;
 
 const Banner = styled.div`
   position:relative;
-  flex: 1;
+  width:60%;
+  height:100vh;
   display: flex;
   flex-direction: column;
 `;
 
 const FormWrapper = styled.div`
-  flex: 1;
+  width:40%
+  height:100vh;
+  margin:auto;
+  background-color: white;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
 `;
 
 const FormControl = styled.div`
