@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import Select from "../../select";
+import { addOrder } from "../../../reducers/orderSlice";
+import { useDispatch, useSelector } from "react-redux";
 import { Button, Modal, Notification, toaster } from "rsuite";
 
 const OrderForm = ({ open, setOpen, size, title }) => {
@@ -12,6 +14,8 @@ const OrderForm = ({ open, setOpen, size, title }) => {
   const [price, setPrice] = useState(0);
   const [type, setType] = useState("");
   const [action, setAction] = useState("");
+  const { orders, status, error } = useSelector((state) => state.orders);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     fetch("http://localhost:5001/api/customers")
@@ -51,39 +55,39 @@ const OrderForm = ({ open, setOpen, size, title }) => {
       balance: volume,
     };
 
-    fetch("http://localhost:5001/api/orders", {
-      mode: "cors",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      method: "POST",
-      body: JSON.stringify(postData),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        toaster.push(
-          <Notification type="success" header="Success">
-            Order created successfully
-          </Notification>,
-          {
-            duration: 5000,
-            placement: "topCenter",
-          }
-        );
-        setOpen(false);
-      })
-      .catch((error) => {
-        toaster.push(
-          <Notification type="error" header="Error">
-            {error.message}
-          </Notification>,
-          {
-            duration: 5000,
-            placement: "topCenter",
-          }
-        );
-        setOpen(false);
-      });
+    dispatch(addOrder(postData));
+    if (status === "loading") {
+      toaster.push(
+        <Notification type="success" header="Success">
+          Order created successfully
+        </Notification>,
+        {
+          duration: 5000,
+          placement: "topCenter",
+        }
+      );
+    } else if (status === "failed") {
+      toaster.push(
+        <Notification type="success" header="Success">
+          Order creation failedwith {error}
+        </Notification>,
+        {
+          duration: 5000,
+          placement: "topCenter",
+        }
+      );
+    } else {
+      toaster.push(
+        <Notification type="success" header="Success">
+          Order created successfully
+        </Notification>,
+        {
+          duration: 5000,
+          placement: "topCenter",
+        }
+      );
+      setOpen(false);
+    }
   };
 
   //calculated values

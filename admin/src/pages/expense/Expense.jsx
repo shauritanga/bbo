@@ -6,6 +6,8 @@ import styled from "styled-components";
 import Select from "../../components/select";
 import { Button, ButtonGroup, ButtonToolbar } from "rsuite";
 import ExpenseForm from "../../components/forms/expense/ExpenseForm";
+import axios from "axios";
+import * as XLSX from "xlsx";
 
 function Expense() {
   const [query, setQuery] = useState("");
@@ -85,6 +87,23 @@ function Expense() {
   if (!expenses) {
     return <div>Loading...</div>;
   }
+
+  const exportToExcel = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:5001/api/expenses/all"
+      );
+      const data = response.data;
+
+      //xlsx
+      const worksheet = XLSX.utils.json_to_sheet(data);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+      XLSX.writeFile(workbook, "Expenses.xlsx");
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
   const filtered = expenses?.filter((expense) =>
     expense.payee?.name.toLowerCase().includes(query.toLowerCase())
   );
@@ -99,7 +118,7 @@ function Expense() {
           New Expense
         </button>
         <div className="expense-header-right">
-          <form>
+          {/* <form>
             <Select
               required
               value={clientId}
@@ -121,9 +140,10 @@ function Expense() {
             >
               Filter
             </button>
-          </form>
+          </form> */}
           <button
             style={{ backgroundColor: "var(--color-button)", color: "#fff" }}
+            onClick={exportToExcel}
           >
             Export Excel
           </button>
@@ -185,7 +205,7 @@ function Expense() {
           </thead>
           <tbody>
             {data.map((expense) => (
-              <tr key={expense._id}>
+              <TableDataRow key={expense._id}>
                 <TableDataCell>
                   <CheckBox
                     name={expense}
@@ -195,13 +215,13 @@ function Expense() {
                     updateValue={handleSelect}
                   />
                 </TableDataCell>
-                <TableDataCell>{expense._id}</TableDataCell>
+                <TableDataCell>{expense.expenseId}</TableDataCell>
                 <TableDataCell>{expense.payee?.name}</TableDataCell>
                 <TableDataCell>{expense.description}</TableDataCell>
                 <TableDataCell>{expense.amount}</TableDataCell>
                 <TableDataCell>{expense.date}</TableDataCell>
                 <TableDataCell>{expense.status}</TableDataCell>
-              </tr>
+              </TableDataRow>
             ))}
           </tbody>
         </Table>
@@ -257,7 +277,12 @@ const TableHeaderCell = styled.th`
   font-size: 0.75rem;
   padding: 10px 20px;
 `;
-const TableDataRow = styled.tr``;
+const TableDataRow = styled.tr`
+  border-bottom: 1px solid #ccc;
+  &:nth-of-type(odd) {
+    background-color: hsl(250deg 50% 99%);
+  }
+`;
 const TableDataCell = styled.td`
   font-size: 0.75rem;
   padding: 10px 20px;

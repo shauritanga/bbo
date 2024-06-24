@@ -1,6 +1,13 @@
 import express from "express";
 import Payment from "../models/payment.js";
+import {
+  getAllPaymentMonthly,
+  getAllPayments,
+} from "../controllers/payment.js";
 const route = express.Router();
+
+route.get("/all", getAllPayments);
+route.get("/monthly", getAllPaymentMonthly);
 
 route.get("/", async (req, res) => {
   try {

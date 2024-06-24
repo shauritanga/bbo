@@ -6,6 +6,8 @@ import employeeReducer from "../reducers/employeeSlice.js";
 import reportReducer from "../reducers/reportSlice.js";
 import categoryReducer from "../reducers/categorySlice.js";
 import dealingReducer from "../reducers/dealingSlice.js";
+import orderReducer from "../reducers/orderSlice.js";
+import executionReducer from "../reducers/executionSlice.js";
 
 export default configureStore({
   reducer: {
@@ -16,5 +18,7 @@ export default configureStore({
     reports: reportReducer,
     categories: categoryReducer,
     dealings: dealingReducer,
+    orders: orderReducer,
+    executions: executionReducer,
   },
 });

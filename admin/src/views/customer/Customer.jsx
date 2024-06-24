@@ -88,18 +88,16 @@ const CustomerView = () => {
     }
   };
 
-  console.log(filesContent);
-
   const content = () => {
     switch (isActive) {
       case "account":
         return <Account customer={customer} />;
         break;
       case "contract":
-        return <Contract />;
+        return <Contract id={customer._id} />;
         break;
       case "statement":
-        return <Statement />;
+        return <Statement id={customer._id} />;
         break;
       case "security":
         return <Security email={customer.email} />;
@@ -248,7 +246,21 @@ const CustomerView = () => {
               </TableDataRow>
               <TableDataRow>
                 <TableRowCell>Status</TableRowCell>
-                <TableRowCell>active</TableRowCell>
+                <TableRowCell style={{ textTransform: "capitalize" }}>
+                  <span
+                    style={{
+                      padding: "4px 6px",
+                      borderRadius: "4px",
+                      backgroundColor: "#f5f5f5",
+                      color:
+                        customer.status === "active"
+                          ? "green"
+                          : "var(--color-disapprove)",
+                    }}
+                  >
+                    {customer.status}
+                  </span>
+                </TableRowCell>
               </TableDataRow>
             </tbody>
           </Table>
@@ -267,7 +279,7 @@ const CustomerView = () => {
             Migrate Shares
           </Button>
           <Button style={{ backgroundColor: "var(--color-disapprove)" }}>
-            Set Pending
+            {customer.status === "active" ? "Set Pending" : "Set Active"}
           </Button>
           <Button
             onClick={() => sendActivationEmail("shauritangaathanas@gmail.com")}

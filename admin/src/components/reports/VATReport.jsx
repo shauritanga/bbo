@@ -1,8 +1,12 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { TbReceiptTax } from "react-icons/tb";
 import PieGraph from "../charts/PieGraph";
 import AreaGraph from "../charts/AreaChart";
+import axios from "axios";
+import * as XLSX from "xlsx";
+import { Dropdown } from "rsuite";
+import CustomDropDown from "../dropdown/DropDown";
 
 const collectedCMSA = [
   {
@@ -106,11 +110,101 @@ const paidCMSA = [
   },
 ];
 const VATReport = () => {
+  const [data, setData] = useState([]);
+
+  let formatter = new Intl.NumberFormat("en-US");
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await axios.get("http://localhost:5001/api/v1/vat");
+      setData(response.data);
+    };
+
+    fetchData();
+  }, []);
+
+  if (data.length === 0) {
+    return <div>Loading...</div>;
+  }
+
+  console.log({ data });
+
+  const totalVAT = data.reduce((acc, item) => acc + item.value, 0);
+  // const totalPaid = data.reduce((acc, item) => acc + item.paid, 0);
+  // const balance = totalVAT - totalPaid;
+
+  console.log({ totalVAT });
+
+  const exportToExcel = async () => {
+    try {
+      const response = await axios.get("http://localhost:5001/api/v1/vat");
+      const data = response.data;
+
+      //xlsx
+      const worksheet = XLSX.utils.json_to_sheet(data);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+      XLSX.writeFile(workbook, "VAT_Report.xlsx");
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  const exportMonthlyVAT = async (monthName) => {
+    let month = null;
+    switch (monthName) {
+      case "January":
+        month = 0;
+        break;
+      case "February":
+        month = 1;
+        break;
+      case "March":
+        month = 2;
+        break;
+      case "April":
+        month = 3;
+        break;
+      case "May":
+        month = 4;
+        break;
+      case "June":
+        month = 5;
+        break;
+      case "July":
+        month = 6;
+        break;
+      case "August":
+        month = 7;
+        break;
+      case "September":
+        month = 8;
+        break;
+      case "October":
+        month = 9;
+        break;
+      case "November":
+        month = 10;
+        break;
+      case "December":
+        month = 11;
+        break;
+    }
+    const response = await axios.get(
+      `http://localhost:5001/api/v1/vat/montly/?month=${month}`
+    );
+    const data = response.data;
+    const worksheet = XLSX.utils.json_to_sheet(data);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+    XLSX.writeFile(workbook, `VAT_Report_${monthName}.xlsx`);
+  };
+
   return (
     <Wrapper>
       <Card>
         <Details>
-          <Title>2,863,267</Title>
+          <Title>{formatter.format(totalVAT)}</Title>
           <Typography>Total VAT</Typography>
         </Details>
         <IconWrapper>
@@ -147,13 +241,81 @@ const VATReport = () => {
           <AreaGraph data={paidCMSA} dataKey="cmsa" />
         </div>
       </PaidGraph>
+      <Actions>
+        <Button onClick={() => console.log("Export Range")}>
+          Export Range
+        </Button>
+        <Button onClick={exportToExcel}>Export All</Button>
+        <StyledDropdown title="Export Monthly">
+          <Dropdown.Item
+            onClick={(value) => exportMonthlyVAT(value.target.innerText)}
+          >
+            January
+          </Dropdown.Item>
+          <Dropdown.Item
+            onClick={(value) => exportMonthlyVAT(value.target.innerText)}
+          >
+            February
+          </Dropdown.Item>
+          <Dropdown.Item
+            onClick={(value) => exportMonthlyVAT(value.target.innerText)}
+          >
+            March
+          </Dropdown.Item>
+          <Dropdown.Item
+            onClick={(value) => exportMonthlyVAT(value.target.innerText)}
+          >
+            April
+          </Dropdown.Item>
+          <Dropdown.Item
+            onClick={(value) => exportMonthlyVAT(value.target.innerText)}
+          >
+            May
+          </Dropdown.Item>
+          <Dropdown.Item
+            onClick={(value) => exportMonthlyVAT(value.target.innerText)}
+          >
+            June
+          </Dropdown.Item>
+          <Dropdown.Item
+            onClick={(value) => exportMonthlyVAT(value.target.innerText)}
+          >
+            July
+          </Dropdown.Item>
+          <Dropdown.Item
+            onClick={(value) => exportMonthlyVAT(value.target.innerText)}
+          >
+            August
+          </Dropdown.Item>
+          <Dropdown.Item
+            onClick={(value) => exportMonthlyVAT(value.target.innerText)}
+          >
+            September
+          </Dropdown.Item>
+          <Dropdown.Item
+            onClick={(value) => exportMonthlyVAT(value.target.innerText)}
+          >
+            October
+          </Dropdown.Item>
+          <Dropdown.Item
+            onClick={(value) => exportMonthlyVAT(value.target.innerText)}
+          >
+            November
+          </Dropdown.Item>
+          <Dropdown.Item
+            onClick={(value) => exportMonthlyVAT(value.target.innerText)}
+          >
+            December
+          </Dropdown.Item>
+        </StyledDropdown>
+      </Actions>
     </Wrapper>
   );
 };
 const Wrapper = styled.div`
   display: grid;
   grid-template-columns: repeat(3, minmax(320px, 500px));
-  grid-template-rows: repeat(10, 100px);
+  grid-template-rows: repeat(11, 100px);
   grid-gap: 20px;
 `;
 const Card = styled.div`
@@ -195,7 +357,7 @@ const Typography = styled.p`
 
 const CollectionGraph = styled.div`
   grid-column: 1 / 4;
-  grid-row: 2 / 6;
+  grid-row: 3 / 7;
   background-color: #fff;
   padding: 20px;
   border-radius: 5px;
@@ -203,11 +365,52 @@ const CollectionGraph = styled.div`
 `;
 const PaidGraph = styled.div`
   grid-column: 1 / 4;
-  grid-row: 6 / 10;
+  grid-row: 7 / 11;
   background-color: #fff;
   padding: 20px;
   border-radius: 5px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+`;
+
+const Actions = styled.div`
+  grid-column: 1 / 4;
+  grid-row: 2 / 3;
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  gap: 30px;
+  align-items: center;
+  justify-content: flex-end;
+`;
+
+const Button = styled.button`
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 8px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-right: 10px;
+`;
+
+const StyledDropdown = styled(Dropdown)`
+  & .rs-dropdown-toggle {
+    width: 135px;
+  }
+  & .rs-btn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 10px;
+    cursor: pointer;
+  }
 `;
 
 export default VATReport;

@@ -28,7 +28,6 @@ const Dashboard = () => {
     return <div>Error: {error}</div>;
   }
 
-  console.log(orders);
   const filteredOrders = orders.slice(0, filters.counter).filter((order) => {
     const matchesQuery =
       !filters.searchTerm ||

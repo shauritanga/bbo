@@ -1,7 +1,9 @@
 import React from "react";
 import styled from "styled-components";
+import { useLocation } from "react-router";
 
 const DealingView = () => {
+  const { state } = useLocation();
   return (
     <Wrapper>
       <Main>
@@ -12,7 +14,7 @@ const DealingView = () => {
             <FormGroup>
               <FormControl>
                 <label htmlFor="slip">Slip No</label>
-                <TextInput type="text" placeholder="647865" />
+                <TextInput value={state.slip} type="text" disabled />
               </FormControl>
               <FormControl>
                 <label htmlFor="slip">Slip No</label>
@@ -22,51 +24,51 @@ const DealingView = () => {
             <FormGroup>
               <FormControl>
                 <label htmlFor="slip">Volume</label>
-                <TextInput type="text" placeholder="647865" />
+                <TextInput value={state.executed} type="text" disabled />
               </FormControl>
               <FormControl>
                 <label htmlFor="slip">Amount</label>
-                <TextInput type="text" placeholder="647865" />
+                <TextInput value={state.amount} type="text" disabled />
               </FormControl>
             </FormGroup>
             <FormGroup>
               <FormControl>
                 <label htmlFor="slip">Total Fees(TZS)</label>
-                <TextInput type="text" placeholder="647865" />
+                <TextInput value={state.totalFees} type="text" disabled />
               </FormControl>
               <FormControl>
                 <label htmlFor="slip">Total(TZS)</label>
-                <TextInput type="text" placeholder="647865" />
+                <TextInput value={state.total} type="text" disabled />
               </FormControl>
             </FormGroup>
             <FormGroup>
               <FormControl>
                 <label htmlFor="slip">DSE Fee</label>
-                <TextInput type="text" placeholder="647865" />
+                <TextInput value={state.dse} type="text" disabled />
               </FormControl>
               <FormControl>
                 <label htmlFor="slip">CDS Fee</label>
-                <TextInput type="text" placeholder="647865" />
+                <TextInput value={state.cds} type="text" disabled />
               </FormControl>
             </FormGroup>
             <FormGroup>
               <FormControl>
                 <label htmlFor="slip">CSMA Fee</label>
-                <TextInput type="text" placeholder="647865" />
+                <TextInput value={state.csma} type="text" disabled />
               </FormControl>
               <FormControl>
                 <label htmlFor="slip">Fidelity Fee</label>
-                <TextInput type="text" placeholder="647865" />
+                <TextInput value={state.fidelity} type="text" disabled />
               </FormControl>
             </FormGroup>
             <FormGroup>
               <FormControl>
                 <label htmlFor="slip">VAT Fee</label>
-                <TextInput type="text" placeholder="647865" />
+                <TextInput value={state.vat} type="text" disabled />
               </FormControl>
               <FormControl>
                 <label htmlFor="slip">Brokerage Fee</label>
-                <TextInput type="text" placeholder="647865" />
+                <TextInput value={state.brokerage} type="text" disabled />
               </FormControl>
             </FormGroup>
           </Form>

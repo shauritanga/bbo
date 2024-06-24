@@ -4,7 +4,7 @@ import Contract from "components/pdf/Contract";
 import { useLocation } from "react-router-dom";
 
 const Viewer = () => {
-  const {state} = useLocation();
+  const { state } = useLocation();
   return (
     <PDFViewer width="100%" height="1200px">
       <Contract data={state} />

@@ -148,7 +148,12 @@ const TableHeaderCell = styled.th`
   text-align: left;
   padding: 10px 20px;
 `;
-const TableDataRow = styled.tr``;
+const TableDataRow = styled.tr`
+  border-bottom: 0.5px solid #ccc;
+  &:nth-of-type(odd) {
+    background-color: hsl(250deg 50% 99%);
+  }
+`;
 const TableDataRowCell = styled.td`
   padding: 10px 20px;
 `;

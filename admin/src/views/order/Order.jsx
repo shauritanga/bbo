@@ -5,6 +5,10 @@ import { DatePicker, Input, InputPicker } from "rsuite";
 import styled from "styled-components";
 import "rsuite/InputNumber/styles/index.css";
 import Select from "../../components/select";
+import ExecutionForm from "../../components/forms/execution/ExecutionForm";
+import dayjs from "dayjs";
+import axios from "axios";
+import execution from "../../../../backend/models/execution";
 
 const data = ["Bond", "Security"].map((item) => ({
   label: item,
@@ -14,22 +18,52 @@ const data = ["Bond", "Security"].map((item) => ({
 const OrderView = () => {
   const { state } = useLocation();
   const [client, setClient] = useState(null);
+  const [clients, setClients] = useState([]);
   const [customer, setCustomer] = useState(state.customer?.name);
   const [volume, setVolume] = useState(state.volume);
   const [price, setPrice] = useState(state.price);
   const [amount, setAmount] = useState(state.price * state.volume);
-  const [type, setType] = useState(state.type);
+  const [action, setAction] = useState(state.type);
+  const [type, setType] = useState(state.action);
   // const [holding, setHolding] = useState(null);
   const [security, setSecurity] = useState(state.security?.name);
+  const [securities, setSecurities] = useState(null);
+  const [openExecutionForm, setOpenExecutionForm] = useState(false);
+  const [executions, setExecutions] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch("http://localhost:5001/api/customers")
-      .then((res) => res.json())
-      .then((data) => setClient(data))
-      .catch((err) => console.log(err));
+    const fetchData = async () => {
+      try {
+        const [clientResponse, securityResponse, executionResponse] =
+          await Promise.all([
+            axios.get("http://localhost:5001/api/customers"),
+            axios.get("http://localhost:5001/api/securities"),
+            axios.get(`http://localhost:5001/api/v1/executions/${state._id}`),
+          ]);
+
+        if (!clientResponse.statusText === "OK")
+          throw new Error("Failed to fetch customers");
+        if (!securityResponse.statusText === "OK")
+          throw new Error("Failed to fetch customers");
+        if (!executionResponse.statusText === "OK")
+          throw new Error("Failed to fetch customers");
+
+        const clientResult = clientResponse.data;
+        const securityResult = securityResponse.data;
+        const executionResult = executionResponse.data;
+        setClients(clientResult);
+        setSecurities(securityResult);
+        setExecutions(executionResult);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchData();
   }, []);
-  if (client === null) {
+
+  if (clients === null && securities === null && executions === null) {
     return <div>Loading...</div>;
   }
   return (
@@ -46,7 +80,7 @@ const OrderView = () => {
                   onChange={(e) => setCustomer(e.target.value)}
                 >
                   <option value="">Select Customer</option>
-                  {client?.map((item, index) => (
+                  {clients?.map((item, index) => (
                     <option key={index} value={item.name}>
                       {item.name}
                     </option>
@@ -94,27 +128,33 @@ const OrderView = () => {
                 <label htmlFor="date">Order Type</label>
                 <Select value={type} onChange={(e) => setType(e.target.value)}>
                   <option value="">Select Type</option>
-                  <option value="Buy">Buy</option>
-                  <option value="Sell">Sell</option>
+                  <option value="buy">Buy</option>
+                  <option value="sell">Sell</option>
                 </Select>
               </FormController>
             </FormGroup>
             <FormGroup>
               <FormController>
-                <label htmlFor="customer">Security/Bond</label>
+                <label htmlFor="security">Security/Bond</label>
                 <InputPicker
                   data={data}
+                  defaultValue={{ lable: action, value: action }}
                   style={{ width: "100%" }}
-                  id="customer"
+                  id="security"
                 />
               </FormController>
               <FormController>
                 <label htmlFor="date">Security</label>
                 <Select
                   value={security}
-                  onChange={(e) => setSecuritty(e.target.value)}
+                  onChange={(e) => setSecurity(e.target.value)}
                 >
                   <option value="">Select Security</option>
+                  {securities?.map((security, index) => (
+                    <option key={index} value={security.name}>
+                      {security.name}
+                    </option>
+                  ))}
                 </Select>
               </FormController>
             </FormGroup>
@@ -129,12 +169,12 @@ const OrderView = () => {
                 backgroundColor: "hsl(243deg, 50%, 21%)",
                 color: "#fff",
               }}
+              onClick={() => setOpenExecutionForm(true)}
             >
               New Execution
             </Button>
           </ExecutionHeader>
           <ExecutionTable>
-            {/* <thead> */}
             <ExecetionTableHeaderRow>
               <ExecutionTableHeaderCell>Date</ExecutionTableHeaderCell>
               <ExecutionTableHeaderCell>slip no</ExecutionTableHeaderCell>
@@ -143,29 +183,59 @@ const OrderView = () => {
               <ExecutionTableHeaderCell>amount</ExecutionTableHeaderCell>
               <ExecutionTableHeaderCell>action</ExecutionTableHeaderCell>
             </ExecetionTableHeaderRow>
-            {/* </thead> */}
-            {/* <tbody> */}
-            <ExecutionTableDataRow>
-              <ExecutionTableDataCell>2024-06-04</ExecutionTableDataCell>
-              <ExecutionTableDataCell>6178654</ExecutionTableDataCell>
-              <ExecutionTableDataCell>400</ExecutionTableDataCell>
-              <ExecutionTableDataCell>300</ExecutionTableDataCell>
-              <ExecutionTableDataCell>120000</ExecutionTableDataCell>
-              <ExecutionTableDataCell style={{ display: "flex", gap: "40px" }}>
-                <ExecutionAction>approved</ExecutionAction>
-                <ExecutionAction>PDF</ExecutionAction>
-                <ExecutionAction
-                  onClick={() =>
-                    navigate(`/dealing/${28087654 - 9086 - 7866}`, {
-                      state: "order.customer",
-                    })
-                  }
-                >
-                  view
-                </ExecutionAction>
-              </ExecutionTableDataCell>
-            </ExecutionTableDataRow>
-            {/* </tbody> */}
+            {executions?.length === 0 ? (
+              <ExecutionTableDataRow>
+                <ExecutionTableDataCell colSpan={6}>
+                  Not execution yet!
+                </ExecutionTableDataCell>
+              </ExecutionTableDataRow>
+            ) : (
+              executions?.map((execution) => (
+                <ExecutionTableDataRow>
+                  <ExecutionTableDataCell>
+                    {dayjs(execution.date).format("DD-MM-YYYY")}
+                  </ExecutionTableDataCell>
+                  <ExecutionTableDataCell>
+                    {execution.slip}
+                  </ExecutionTableDataCell>
+                  <ExecutionTableDataCell>
+                    {execution.price}
+                  </ExecutionTableDataCell>
+                  <ExecutionTableDataCell>
+                    {execution.executed}
+                  </ExecutionTableDataCell>
+                  <ExecutionTableDataCell>
+                    {execution.amount}
+                  </ExecutionTableDataCell>
+                  <ExecutionTableDataCell
+                    style={{ display: "flex", gap: "40px" }}
+                  >
+                    <ExecutionAction>approved</ExecutionAction>
+                    <ExecutionAction
+                      onClick={() => {
+                        console.log(execution);
+                        const url = `/contract?execution=${JSON.stringify(
+                          execution
+                        )}`;
+                        const title = "Contract";
+                        return window.open(url, title);
+                      }}
+                    >
+                      PDF
+                    </ExecutionAction>
+                    <ExecutionAction
+                      onClick={() =>
+                        navigate(`/dealing/${execution._id}`, {
+                          state: execution,
+                        })
+                      }
+                    >
+                      view
+                    </ExecutionAction>
+                  </ExecutionTableDataCell>
+                </ExecutionTableDataRow>
+              ))
+            )}
           </ExecutionTable>
         </Execution>
       </Main>
@@ -181,7 +251,7 @@ const OrderView = () => {
               </tr>
               <tr>
                 <TableDataCell colSpan={2} style={{ textAlign: "center" }}>
-                  Athanas Shauritanga
+                  {state.customer?.name}
                 </TableDataCell>
               </tr>
               <tr>
@@ -190,7 +260,7 @@ const OrderView = () => {
               </tr>
               <tr>
                 <TableDataCell>Balance</TableDataCell>
-                <TableDataCell>69000</TableDataCell>
+                <TableDataCell>{state.amount}</TableDataCell>
               </tr>
               <tr>
                 <TableDataCell>Shares</TableDataCell>
@@ -198,15 +268,19 @@ const OrderView = () => {
               </tr>
               <tr>
                 <TableDataCell>Status</TableDataCell>
-                <TableDataCell style={{ color: "#61c478" }}>
+                <TableDataCell>
                   <span
                     style={{
                       backgroundColor: "hsl(0deg 0% 95%",
                       padding: "3px 6px",
+                      color:
+                        state.customer?.status === "pending"
+                          ? "#f2a356"
+                          : "#000",
                       borderRadius: "999px",
                     }}
                   >
-                    Active
+                    {state.customer?.status}
                   </span>
                 </TableDataCell>
               </tr>
@@ -230,6 +304,12 @@ const OrderView = () => {
           </Button>
         </Actions>
       </Aside>
+      <ExecutionForm
+        open={openExecutionForm}
+        setOpen={setOpenExecutionForm}
+        customerId={state.customer._id}
+        orderId={state._id}
+      />
     </Wrapper>
   );
 };

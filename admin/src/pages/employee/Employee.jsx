@@ -8,8 +8,10 @@ import {
 } from "../../reducers/employeeSlice";
 import styled from "styled-components";
 import Select from "../../components/select/Select";
+import CreateEmployeeForm from "../../components/forms/employee/CreateEmployeeForm";
 
 function Employee() {
+  const [open, setOpen] = useState(false);
   const dispatch = useDispatch();
   const { employees, status, error, filters } = useSelector(
     (state) => state.employees
@@ -22,75 +24,89 @@ function Employee() {
 
   if (status === "loading") {
     return <div>Loading...</div>;
-  } else if (status === "failed") {
-    return <div>Error: {error}</div>;
-  } else if (status === "succeeded") {
-    console.log(employees);
-    return (
-      <Wrapper>
-        <Action>
-          <Select
-            width={80}
-            value={filters.counter}
-            onChange={(e) => dispatch(setCounter(e.target.value))}
-          >
-            <option value="10">10</option>
-            <option value="20">20</option>
-            <option value="30">30</option>
-          </Select>
-          <TextInput placeholder="Search..." />
-          <Button>Add Employee</Button>
-        </Action>
-        <TableWrapper>
-          <Table>
-            <thead>
-              <TableHeaderRow>
-                <TableHeaderCell>Name</TableHeaderCell>
-                <TableHeaderCell>Email</TableHeaderCell>
-                <TableHeaderCell>Phone</TableHeaderCell>
-                <TableHeaderCell>role</TableHeaderCell>
-                <TableHeaderCell>status</TableHeaderCell>
-              </TableHeaderRow>
-            </thead>
-            <tbody>
-              {employees.map((employee) => (
-                <TableDataRow key={employee.id}>
-                  <TableDataCell>{employee.name}</TableDataCell>
-                  <TableDataCell>{employee.email}</TableDataCell>
-                  <TableDataCell>{employee.phone}</TableDataCell>
-                  <TableDataCell>
-                    {employee.role?.name.toUpperCase()}
-                  </TableDataCell>
-                  <TableDataCell>
-                    <span
-                      onClick={() => {
-                        navigate(`/employees/${employee._id}`, {
-                          state: employee,
-                        });
-                      }}
-                      style={{
-                        color: employee.status === "active" ? "green" : "red",
-                        backgroundColor:
-                          employee.status === "active"
-                            ? "rgba(0, 128, 0, 0.1)"
-                            : "rgba(255, 0, 0, 0.1)",
-                        padding: "3px 6px",
-                        borderRadius: "6px",
-                        cursor: "pointer",
-                      }}
-                    >
-                      {employee.status}
-                    </span>
-                  </TableDataCell>
-                </TableDataRow>
-              ))}
-            </tbody>
-          </Table>
-        </TableWrapper>
-      </Wrapper>
-    );
   }
+  if (status === "failed") {
+    return <div>Error: {error}</div>;
+  }
+
+  const filteredEmployees = employees
+    .slice(0, filters.counter)
+    .filter((employee) => {
+      const matchesQuery =
+        !filters.search ||
+        employee.name.toLowerCase().includes(filters.search.toLowerCase());
+      return matchesQuery;
+    });
+  return (
+    <Wrapper>
+      <Action>
+        <Select
+          width={80}
+          value={filters.counter}
+          onChange={(e) => dispatch(setCounter(e.target.value))}
+        >
+          <option value="10">10</option>
+          <option value="20">20</option>
+          <option value="30">30</option>
+        </Select>
+        <TextInput
+          value={filters.search}
+          onChange={(e) => dispatch(setSearch(e.target.value))}
+          placeholder="Search..."
+        />
+        <Button onClick={() => setOpen(true)}>Add Employee</Button>
+      </Action>
+      <TableWrapper>
+        <Table>
+          <thead>
+            <TableHeaderRow>
+              <TableHeaderCell>Name</TableHeaderCell>
+              <TableHeaderCell>Email</TableHeaderCell>
+              <TableHeaderCell>Phone</TableHeaderCell>
+              <TableHeaderCell>role</TableHeaderCell>
+              <TableHeaderCell>status</TableHeaderCell>
+            </TableHeaderRow>
+          </thead>
+          <tbody>
+            {filteredEmployees.map((employee) => (
+              <TableDataRow key={employee.id}>
+                <TableDataCell>{employee.name}</TableDataCell>
+                <TableDataCell>{employee.email}</TableDataCell>
+                <TableDataCell>{employee.phone}</TableDataCell>
+                <TableDataCell>
+                  {employee.role?.name.toUpperCase()}
+                </TableDataCell>
+                <TableDataCell>
+                  <span
+                    onClick={() => {
+                      navigate(`/employees/${employee._id}`, {
+                        state: employee,
+                      });
+                    }}
+                    style={{
+                      color: employee.status === "active" ? "green" : "red",
+                      backgroundColor:
+                        employee.status === "active"
+                          ? "rgba(0, 128, 0, 0.1)"
+                          : "rgba(255, 0, 0, 0.1)",
+                      padding: "3px 6px",
+                      borderRadius: "6px",
+                      cursor: "pointer",
+                    }}
+                  >
+                    {employee.status}
+                  </span>
+                </TableDataCell>
+              </TableDataRow>
+            ))}
+          </tbody>
+        </Table>
+      </TableWrapper>
+      <CreateEmployeeForm open={open} setOpen={setOpen} />
+    </Wrapper>
+  );
 }
+
 const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
@@ -143,7 +159,11 @@ const TableHeaderCell = styled.th`
   text-transform: uppercase;
   font-size: 0.8rem;
 `;
-const TableDataRow = styled.tr``;
+const TableDataRow = styled.tr`
+  &:nth-of-type(odd) {
+    background-color: hsl(250deg 50% 99%);
+  }
+`;
 const TableDataCell = styled.td`
   padding: 10px;
   border-bottom: 1px solid #ccc;

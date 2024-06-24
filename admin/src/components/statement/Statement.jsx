@@ -1,7 +1,33 @@
-import React from "react";
+import axios from "axios";
+import dayjs from "dayjs";
+import React, { useEffect } from "react";
 import styled from "styled-components";
 
-const Statement = () => {
+const Statement = ({ id }) => {
+  const [transactions, setTransactions] = React.useState([]);
+
+  let formatter = new Intl.NumberFormat("sw-TZ", {
+    style: "currency",
+    currency: "TZS",
+  });
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:5001/api/transactions/customer/${id}`
+        );
+        if (response.status === 200) {
+          setTransactions(response.data);
+        }
+      } catch (error) {}
+    };
+    fetchData();
+  }, []);
+
+  if (!transactions) {
+    return <p>Loading...</p>;
+  }
   return (
     <Wrapper>
       <p>Statement</p>
@@ -17,17 +43,25 @@ const Statement = () => {
           <TableHeaderCell>credit</TableHeaderCell>
           <TableHeaderCell>balance</TableHeaderCell>
         </TableHeaderRow>
-        <TableDataRow>
-          <TableDataCell>2024-05-25</TableDataCell>
-          <TableDataCell>buy</TableDataCell>
-          <TableDataCell>610098</TableDataCell>
-          <TableDataCell>hello there!</TableDataCell>
-          <TableDataCell>59</TableDataCell>
-          <TableDataCell>500</TableDataCell>
-          <TableDataCell>0</TableDataCell>
-          <TableDataCell>5500</TableDataCell>
-          <TableDataCell>5644</TableDataCell>
-        </TableDataRow>
+        {transactions.map((transaction) => {
+          return (
+            <TableDataRow key={transaction._id}>
+              <TableDataCell>
+                {dayjs(transaction.date).format("DD-MM-YYYY")}
+              </TableDataCell>
+              <TableDataCell>{transaction.type}</TableDataCell>
+              <TableDataCell>{transaction.referenceNumber}</TableDataCell>
+              <TableDataCell>{transaction.description}</TableDataCell>
+              <TableDataCell>{}</TableDataCell>
+              <TableDataCell>500</TableDataCell>
+              <TableDataCell>0</TableDataCell>
+              <TableDataCell>5500</TableDataCell>
+              <TableDataCell>
+                {formatter.format(transaction.amount)}
+              </TableDataCell>
+            </TableDataRow>
+          );
+        })}
       </Table>
     </Wrapper>
   );

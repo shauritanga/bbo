@@ -1,6 +1,8 @@
 import mongoose from "mongoose";
+import ExpenseCounter from "./counter/expenseCounter.js";
 
 const expenseSchema = mongoose.Schema({
+  expenseId: { type: String, unique: true },
   date: {
     type: Date,
     default: Date.now,
@@ -28,6 +30,19 @@ const expenseSchema = mongoose.Schema({
   status: {
     type: String,
   },
+});
+
+expenseSchema.pre("save", async function (next) {
+  if (this.isNew) {
+    const expenseCounter = await ExpenseCounter.findByIdAndUpdate(
+      { _id: "expenseId" },
+      { $inc: { seq: 1 } },
+      { new: true, upsert: true }
+    );
+    const seq = String(expenseCounter.seq).padStart(5, "0");
+    this.expenseId = `AEX${seq}`;
+  }
+  next();
 });
 
 const Expense = mongoose.model("Expense", expenseSchema);

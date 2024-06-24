@@ -187,7 +187,7 @@ function Transaction() {
           </button>
           <button
             style={{ backgroundColor: "var(--color-reject)", color: "#fff" }}
-            onClick={() => updateTransaction(selected, { status: "approved" })}
+            onClick={() => updateTransaction(selected, { status: "rejected" })}
           >
             Reject
           </button>
@@ -221,7 +221,7 @@ function Transaction() {
           </thead>
           <tbody>
             {data.map((transaction) => (
-              <tr key={transaction._id}>
+              <TableDataRow key={transaction._id}>
                 <TableDataCell>
                   <CheckBox
                     name={transaction}
@@ -231,7 +231,7 @@ function Transaction() {
                     updateValue={handleSelect}
                   />
                 </TableDataCell>
-                <TableDataCell>{transaction._id}</TableDataCell>
+                <TableDataCell>{transaction.transactionId}</TableDataCell>
                 <TableDataCell>{transaction.payee?.name}</TableDataCell>
                 <TableDataCell>{transaction.description}</TableDataCell>
                 <TableDataCell>
@@ -269,7 +269,7 @@ function Transaction() {
                     {transaction.status}
                   </span>
                 </TableDataCell>
-              </tr>
+              </TableDataRow>
             ))}
           </tbody>
         </table>
@@ -294,6 +294,12 @@ const TableHeaderCell = styled.th`
   text-align: left;
   padding: 8px;
   text-transform: uppercase;
+`;
+const TableDataRow = styled.tr`
+  border-bottom: 0.5px solid #ccc;
+  &:nth-of-type(odd) {
+    background-color: hsl(250deg 50% 99%);
+  }
 `;
 const TableDataCell = styled.td`
   text-align: left;

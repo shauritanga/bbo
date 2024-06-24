@@ -1,5 +1,7 @@
 import mongoose from "mongoose";
-const receipSchema = mongoose.Schema({
+import PaymentCounter from "./counter/paymentCounter.js";
+const paymentSchema = mongoose.Schema({
+  paymentId: { type: String, unique: true },
   date: {
     type: Date,
     default: Date.now,
@@ -32,5 +34,18 @@ const receipSchema = mongoose.Schema({
   },
 });
 
-const Payment = mongoose.model("Payment", receipSchema);
+paymentSchema.pre("save", async function (next) {
+  if (this.isNew) {
+    const paymentCounter = await PaymentCounter.findByIdAndUpdate(
+      { _id: "paymentId" },
+      { $inc: { seq: 1 } },
+      { new: true, upsert: true }
+    );
+    const seq = String(paymentCounter.seq).padStart(5, "0");
+    this.paymentId = `PAY${seq}`;
+  }
+  next();
+});
+
+const Payment = mongoose.model("Payment", paymentSchema);
 export default Payment;

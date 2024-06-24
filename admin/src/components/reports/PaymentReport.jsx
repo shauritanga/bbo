@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   ChartContainer,
   LineChart,
@@ -10,8 +10,94 @@ import {
 } from "@mui/x-charts";
 import styled from "styled-components";
 import MyPieChart from "../pie/trial";
+import { Dropdown } from "rsuite";
+import axios from "axios";
+import * as XLSX from "xlsx";
 
 const PaymentReport = () => {
+  const [receipts, setReceipts] = useState([]);
+
+  useEffect(() => {
+    const fetchReceipts = async () => {
+      const response = await axios.get(
+        "http://localhost:5001/api/payments/all"
+      );
+      setReceipts(response.data);
+    };
+    fetchReceipts();
+  }, []);
+
+  if (receipts.length === 0) {
+    return <div>Loading...</div>;
+  }
+
+  //XLSX
+  const exportToExcel = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:5001/api/payments/all"
+      );
+      const data = response.data;
+
+      //xlsx
+      const worksheet = XLSX.utils.json_to_sheet(data);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+      XLSX.writeFile(workbook, "Payment_Report.xlsx");
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  const exportMonthlyVAT = async (monthName) => {
+    let month = null;
+    switch (monthName) {
+      case "January":
+        month = 0;
+        break;
+      case "February":
+        month = 1;
+        break;
+      case "March":
+        month = 2;
+        break;
+      case "April":
+        month = 3;
+        break;
+      case "May":
+        month = 4;
+        break;
+      case "June":
+        month = 5;
+        break;
+      case "July":
+        month = 6;
+        break;
+      case "August":
+        month = 7;
+        break;
+      case "September":
+        month = 8;
+        break;
+      case "October":
+        month = 9;
+        break;
+      case "November":
+        month = 10;
+        break;
+      case "December":
+        month = 11;
+        break;
+    }
+    const response = await axios.get(
+      `http://localhost:5001/api/payments/monthly/?month=${month}`
+    );
+    const data = response.data;
+    const worksheet = XLSX.utils.json_to_sheet(data);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+    XLSX.writeFile(workbook, `Payment_Report_${monthName}.xlsx`);
+  };
   return (
     <Wrapper>
       <GraphWrapper>
@@ -70,34 +156,75 @@ const PaymentReport = () => {
           <h5>Quarters</h5>
           <p>45,345,876</p>
         </div>
-        <div style={{ height: "90px", backgroundColor: "red", width: "100%" }}>
-          <ChartContainer
-            height={100}
-            series={[{ type: "line", data: pData }]}
-            xAxis={[{ scaleType: "point", data: xLabels }]}
-            sx={{
-              [`& .${lineElementClasses.root}`]: {
-                stroke: "#8884d8",
-                strokeWidth: 2,
-              },
-              [`& .${markElementClasses.root}`]: {
-                stroke: "#8884d8",
-                scale: "0.6",
-                fill: "#fff",
-                strokeWidth: 2,
-              },
-            }}
-            disableAxisListener
-          >
-            <LinePlot />
-            <MarkPlot />
-          </ChartContainer>
-        </div>
+        <div
+          style={{ height: "90px", backgroundColor: "red", width: "100%" }}
+        ></div>
       </Quarter>
       <Actions>
         <Button>Export Range</Button>
-        <Button>Export All</Button>
-        <Button>Export Document (Excel)</Button>
+        <Button onClick={exportToExcel}>Export All</Button>
+        <StyledDropdown title="Export Monthly">
+          <Dropdown.Item
+            onClick={(value) => exportMonthlyVAT(value.target.innerText)}
+          >
+            January
+          </Dropdown.Item>
+          <Dropdown.Item
+            onClick={(value) => exportMonthlyVAT(value.target.innerText)}
+          >
+            February
+          </Dropdown.Item>
+          <Dropdown.Item
+            onClick={(value) => exportMonthlyVAT(value.target.innerText)}
+          >
+            March
+          </Dropdown.Item>
+          <Dropdown.Item
+            onClick={(value) => exportMonthlyVAT(value.target.innerText)}
+          >
+            April
+          </Dropdown.Item>
+          <Dropdown.Item
+            onClick={(value) => exportMonthlyVAT(value.target.innerText)}
+          >
+            May
+          </Dropdown.Item>
+          <Dropdown.Item
+            onClick={(value) => exportMonthlyVAT(value.target.innerText)}
+          >
+            June
+          </Dropdown.Item>
+          <Dropdown.Item
+            onClick={(value) => exportMonthlyVAT(value.target.innerText)}
+          >
+            July
+          </Dropdown.Item>
+          <Dropdown.Item
+            onClick={(value) => exportMonthlyVAT(value.target.innerText)}
+          >
+            August
+          </Dropdown.Item>
+          <Dropdown.Item
+            onClick={(value) => exportMonthlyVAT(value.target.innerText)}
+          >
+            September
+          </Dropdown.Item>
+          <Dropdown.Item
+            onClick={(value) => exportMonthlyVAT(value.target.innerText)}
+          >
+            October
+          </Dropdown.Item>
+          <Dropdown.Item
+            onClick={(value) => exportMonthlyVAT(value.target.innerText)}
+          >
+            November
+          </Dropdown.Item>
+          <Dropdown.Item
+            onClick={(value) => exportMonthlyVAT(value.target.innerText)}
+          >
+            December
+          </Dropdown.Item>
+        </StyledDropdown>
       </Actions>
       <TableWrapper>
         <Table>
@@ -150,7 +277,7 @@ const Wrapper = styled.div`
   grid-gap: 20px;
 `;
 const Button = styled.button`
-  background-color: hsl(243, 50%, 21%);
+  background-color: #007bff;
   color: #fff;
   border: none;
   border-radius: 5px;
@@ -167,7 +294,7 @@ const Button = styled.button`
 `;
 const GraphWrapper = styled.div`
   grid-column: 1/3;
-  grid-row: 1/5;
+  grid-row: 2/6;
   background-color: #fff;
 `;
 const TableWrapper = styled.div`
@@ -177,7 +304,7 @@ const TableWrapper = styled.div`
 `;
 const Earning = styled.div`
   grid-column: 3/4;
-  grid-row: 1/3;
+  grid-row: 2/4;
   background-color: #fff;
   display: flex;
   justify-content: space-between;
@@ -188,7 +315,7 @@ const Earning = styled.div`
 `;
 const Quarter = styled.div`
   grid-column: 3/4;
-  grid-row: 3/5;
+  grid-row: 4/6;
   background-color: #fff;
   display: flex;
   flex-direction: column;
@@ -197,7 +324,7 @@ const Quarter = styled.div`
 `;
 const Actions = styled.div`
   grid-column: 1/4;
-  grid-row: 5/6;
+  grid-row: 1/2;
   background-color: #fff;
   display: flex;
   align-items: center;
@@ -223,6 +350,27 @@ const TableBodyCell = styled.td`
   text-align: left;
   font-size: 12px;
   padding: 10px;
+`;
+
+const StyledDropdown = styled(Dropdown)`
+  & .rs-dropdown-toggle {
+    width: 135px;
+  }
+  & .rs-btn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 10px;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #6662b2;
+    }
+  }
 `;
 
 export default PaymentReport;

@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
-import OrderCounter from "./orderCounter.js";
+import OrderCounter from "./counter/orderCounter.js";
 
 const orderSchema = mongoose.Schema({
-  orderId:{ type: String, unique: true },
+  orderId: { type: String, unique: true },
   customer: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Customer",
@@ -13,19 +13,22 @@ const orderSchema = mongoose.Schema({
     default: Date.now,
   },
   volume: {
-    type: String,
+    type: Number,
   },
   price: {
-    type: String,
+    type: Number,
   },
   amount: {
-    type: String,
+    type: Number,
   },
   fees: {
     type: Number,
   },
   total: {
     type: Number,
+  },
+  action: {
+    type: String,
   },
   type: {
     type: String,

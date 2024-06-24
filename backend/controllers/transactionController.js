@@ -68,3 +68,17 @@ export const updateTransaction = async (req, res) => {
 // - getTransactionById
 // - updateTransaction
 // - deleteTransaction (consider soft deletes)
+
+export const getTransactionByCustomerId = async (req, res) => {
+  const customerId = req.params.id;
+
+  try {
+    const transactions = await Transaction.find({ payee: customerId });
+    if (!transactions) {
+      return res.status(404).json({ message: "Transactions not found" });
+    }
+    res.status(200).json(transactions);
+  } catch (error) {
+    console.log(error);
+  }
+};

@@ -3,7 +3,8 @@ import styled from "styled-components";
 import Select from "../select";
 
 const Account = ({ customer }) => {
-  const [idValue, setIdValue] = useState("");
+  const [idValue, setIdValue] = useState(customer.idType);
+  const [idNumber, setIdNumber] = useState(customer.idNumber);
   const [country, setCountry] = useState(customer.country);
   const [category, setCategory] = useState("");
   const [name, setName] = useState(customer.name);
@@ -58,9 +59,9 @@ const Account = ({ customer }) => {
             <option value="" disabled>
               Select Country
             </option>
-            <option value="uganda">Uganda</option>
+            <option value="Uganda">Uganda</option>
             <option value="Tanzania">Tanzania</option>
-            <option value="kenya">Kenya</option>
+            <option value="Kenya">Kenya</option>
           </Select>
         </FormGroup>
         <FormGroup>
@@ -80,14 +81,19 @@ const Account = ({ customer }) => {
             </option>
             <option value="voter">Voter ID</option>
             <option value="passport">Passport</option>
-            <option value="national">National ID</option>
-            <option value="lisence">Driving Lisence</option>
+            <option value="national id">National ID</option>
+            <option value="driving license">Driving Lisence</option>
             <option value="lisence">Certificate of Incorporation</option>
           </Select>
         </FormGroup>
         <FormGroup>
           <Label htmlFor="identity-id">Identity ID</Label>
-          <TextInput type="text" id="identity-id" />
+          <TextInput
+            value={idNumber}
+            type="text"
+            id="identity-id"
+            onChange={(e) => setIdNumber(e.target.value)}
+          />
         </FormGroup>
         <FormGroup>
           <Label htmlFor="bank">Bank</Label>

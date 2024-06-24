@@ -7,6 +7,8 @@ import styled from "styled-components";
 import Select from "../../components/select";
 import PaymentForm from "../../components/forms/payment/PaymentForm";
 import { Button, ButtonGroup, ButtonToolbar } from "rsuite";
+import axios from "axios";
+import * as XLSX from "xlsx";
 
 function Payment() {
   const [query, setQuery] = useState("");
@@ -38,7 +40,23 @@ function Payment() {
         }
       );
       const json = await response.json();
-      console.log(json);
+    }
+  };
+
+  const exportToExcel = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:5001/api/payments/all"
+      );
+      const data = response.data;
+
+      //xlsx
+      const worksheet = XLSX.utils.json_to_sheet(data);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+      XLSX.writeFile(workbook, "Payments.xlsx");
+    } catch (error) {
+      console.error("Error fetching data:", error);
     }
   };
 
@@ -121,7 +139,7 @@ function Payment() {
           New Payment
         </button>
         <div className="payment-header-right">
-          <form>
+          {/* <form>
             <Select
               required
               value={clientId}
@@ -144,9 +162,10 @@ function Payment() {
             >
               Filter
             </button>
-          </form>
+          </form> */}
           <button
             style={{ backgroundColor: "var(--color-button)", color: "#fff" }}
+            onClick={exportToExcel}
           >
             Export Excel
           </button>
@@ -211,7 +230,7 @@ function Payment() {
           <tbody>
             {Array.isArray(data) &&
               data.map((expense, index) => (
-                <tr key={expense._id}>
+                <TableDataRow key={expense._id}>
                   <TableDataCell style={{ width: "50px" }}>
                     <CheckBox
                       name={expense}
@@ -221,7 +240,7 @@ function Payment() {
                       updateValue={handleSelect}
                     />
                   </TableDataCell>
-                  <TableDataCell>{expense._id}</TableDataCell>
+                  <TableDataCell>{expense.paymentId}</TableDataCell>
                   <TableDataCell>{expense.payee?.name}</TableDataCell>
                   <TableDataCell>{expense.description}</TableDataCell>
                   <TableDataCell>{expense.amount}</TableDataCell>
@@ -229,7 +248,7 @@ function Payment() {
                     {dayjs(expense.date).format("DD-MM-YYYY")}
                   </TableDataCell>
                   <TableDataCell>{expense.status}</TableDataCell>
-                </tr>
+                </TableDataRow>
               ))}
           </tbody>
         </Table>
@@ -285,7 +304,12 @@ const TableHeaderCell = styled.th`
   font-size: 0.75rem;
   padding: 10px 20px;
 `;
-const TableDataRow = styled.tr``;
+const TableDataRow = styled.tr`
+  border-bottom: 1px solid #ccc;
+  &:nth-of-type(odd) {
+    background-color: hsl(250deg 50% 99%);
+  }
+`;
 const TableDataCell = styled.td`
   font-size: 0.75rem;
   padding: 10px 20px;

@@ -1,5 +1,7 @@
 import mongoose from "mongoose";
-const receipSchema = mongoose.Schema({
+import ReceiptCounter from "./counter/receiptCounter.js";
+const receiptSchema = mongoose.Schema({
+  receiptId: { type: String, unique: true },
   date: {
     type: Date,
     default: Date.now,
@@ -32,5 +34,18 @@ const receipSchema = mongoose.Schema({
   },
 });
 
-const Receipt = mongoose.model("Receipt", receipSchema);
+receiptSchema.pre("save", async function (next) {
+  if (this.isNew) {
+    const receiptCounter = await ReceiptCounter.findByIdAndUpdate(
+      { _id: "transactionId" },
+      { $inc: { seq: 1 } },
+      { new: true, upsert: true }
+    );
+    const seq = String(receiptCounter.seq).padStart(5, "0");
+    this.receiptId = `REC${seq}`;
+  }
+  next();
+});
+
+const Receipt = mongoose.model("Receipt", receiptSchema);
 export default Receipt;

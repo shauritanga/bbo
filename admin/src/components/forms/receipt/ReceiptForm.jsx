@@ -77,12 +77,12 @@ const ReceiptForm = ({ open, setOpen }) => {
     });
     const res = await response.json();
     console.log(res);
-    setOpenReceiptForm(false);
+    setOpen(false);
   };
 
   const handleCancelFormSubmit = async (event) => {
     event.preventDefault();
-    setOpenReceiptForm(false);
+    setOpen(false);
   };
   return (
     <Modal backdrop="static" open={open} onClose={() => setOpen(false)}>

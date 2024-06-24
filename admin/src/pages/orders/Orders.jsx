@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import SummaryCard from "../../components/summary-card/SummaryCard";
 import dayjs from "dayjs";
@@ -6,6 +6,12 @@ import { IoTimerOutline } from "react-icons/io5";
 import { VscServerProcess } from "react-icons/vsc";
 import { BsExclamationOctagon } from "react-icons/bs";
 import { FiShoppingBag } from "react-icons/fi";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  fetchOrders,
+  setDateFilter,
+  setNameSearch,
+} from "../../reducers/orderSlice";
 import styled from "styled-components";
 import {
   Button,
@@ -25,68 +31,71 @@ import ModalView from "../../components/modals/Modal";
 import Breadcrumbs from "../../components/breadcrumbs/Breadcrumbs";
 import OrderForm from "../../components/forms/order/OrderForm";
 import FilterButton from "../../components/fiterButton/FilterButton";
+import axios from "axios";
 
 const summary = [
   {
     name: "New orders",
     total: 34,
-    icon: <IoTimerOutline />,
+    icon: <IoTimerOutline color="#000" />,
+    backgroundColor: "#000",
   },
   {
     name: "Processing",
     total: 74,
-    icon: <VscServerProcess />,
+    icon: <VscServerProcess color="#e71f27" />,
+    backgroundColor: "#e71f27",
   },
   {
     name: "Completed",
     total: 12,
-    icon: <BsExclamationOctagon />,
+    icon: <BsExclamationOctagon color="#33336a" />,
+    backgroundColor: "#33336a",
   },
   {
     name: "All orders",
     total: 349,
-    icon: <FiShoppingBag />,
+    icon: <FiShoppingBag color="#656281" />,
+    backgroundColor: "#656281",
   },
 ];
 
 const Orders = () => {
-  const [data, setData] = useState(null);
-  const [orders, setOrders] = useState([]);
-  const [activeFilter, setActiveFilter] = useState("today");
   const [clients, setClients] = useState([]);
   const [dateRange, setDateRange] = useState([]);
   const [open, setOpen] = useState(false);
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
   const [filter, setFilter] = useState(null);
   const [searchParams] = useSearchParams();
-  const [error, setError] = useState("");
+
   const [query, setQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
   const [activePage, setActivePage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [limit, setLimit] = useState(10);
   const [isLoading, setIsLoading] = useState(true);
-
+  const { orders, status, error, filters } = useSelector(
+    (state) => state.orders
+  );
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const itemsPerPage = 10; // Number of items to show per page
+
+  useEffect(() => {
+    dispatch(fetchOrders({ currentPage, itemsPerPage }));
+  }, [dispatch, currentPage]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [ordersResponse, clientsResponse] = await Promise.all([
-          fetch("http://localhost:5001/api/orders"),
-          fetch("http://localhost:5001/api/customers"),
-        ]);
+        const clientResponse = await axios.get(
+          "http://localhost:5001/api/customers"
+        );
 
-        if (!ordersResponse.ok) throw new Error("Error fetching orders");
-        if (!clientsResponse.ok) throw new Error("Error fetching customers");
-
-        const ordersData = await ordersResponse.json();
-        const clientsData = await clientsResponse.json();
-
-        setData(ordersData);
-        setOrders(ordersData);
-        setClients(clientsData);
+        if (clientResponse.statusText === "OK") {
+          setClients(clientResponse.data);
+        }
       } catch (err) {
-        setError(err.message);
         toaster.push(
           <Notification header="Error">
             Failed to fetch data: {err.message}
@@ -101,63 +110,49 @@ const Orders = () => {
     fetchData();
   }, []);
 
-  console.log(dateRange);
+  if (status === "loading") {
+    return <div>Loading</div>;
+  }
+  if (status === "failed") {
+    return <div>{error}</div>;
+  }
 
-  const filterOrders = useCallback(() => {
-    let filteredOrders = data ?? []; // Start with all data
+  const receivedOrders = orders.data || [];
 
-    if (activeFilter === "today") {
+  const filteredOrders = receivedOrders.filter((order) => {
+    if (filters.date === "today") {
       const today = dayjs();
-      filteredOrders = filteredOrders.filter((order) =>
-        dayjs(order.date).isSame(today, "day")
-      );
-    } else if (activeFilter === "weekly") {
+      return dayjs(order.date).isSame(today, "day");
+    } else if (filters.date === "weekly") {
       const startOfWeek = dayjs().startOf("week");
       const endOfWeek = dayjs().endOf("week");
-      filteredOrders = filteredOrders.filter((order) => {
-        const orderDate = dayjs(order.date);
-        return orderDate.isAfter(startOfWeek) && orderDate.isBefore(endOfWeek);
-      });
-    } else if (activeFilter === "monthly") {
+      const orderDate = dayjs(order.date);
+      return orderDate.isAfter(startOfWeek) && orderDate.isBefore(endOfWeek);
+    } else if (filters.date === "monthly") {
       const startOfMonth = dayjs().startOf("month");
       const endOfMonth = dayjs().endOf("month");
-      filteredOrders = filteredOrders.filter((order) => {
-        const orderDate = dayjs(order.date);
-        return (
-          orderDate.isAfter(startOfMonth) && orderDate.isBefore(endOfMonth)
-        );
-      });
-    } else if (activeFilter === "annually") {
+      const orderDate = dayjs(order.date);
+      return orderDate.isAfter(startOfMonth) && orderDate.isBefore(endOfMonth);
+    } else if (filters.date === "annually") {
       const startOfYear = dayjs().startOf("year");
       const endOfYear = dayjs().endOf("year");
-      filteredOrders = filteredOrders.filter((order) => {
-        const orderDate = dayjs(order.date);
-        return orderDate.isAfter(startOfYear) && orderDate.isBefore(endOfYear);
-      });
-    } else if (activeFilter === "custom" && dateRange) {
+      const orderDate = dayjs(order.date);
+      return orderDate.isAfter(startOfYear) && orderDate.isBefore(endOfYear);
+    } else if (filters.date === "custom" && dateRange) {
       const [startDate, endDate] = dateRange;
-      return orders.filter((order) => {
-        const orderDate = dayjs(order.date);
-        return (
-          orderDate.isSame(startDate, "day") ||
-          (orderDate.isAfter(startDate) && orderDate.isBefore(endDate)) ||
-          orderDate.isSame(endDate, "day")
-        );
-      });
-    }
-    if (filter) {
-      filteredOrders = filteredOrders.filter(
-        (order) => order.customer?.name === filter
+      const orderDate = dayjs(order.date);
+      return (
+        orderDate.isSame(startDate, "day") ||
+        (orderDate.isAfter(startDate) && orderDate.isBefore(endDate)) ||
+        orderDate.isSame(endDate, "day")
+      );
+    } else if (filters.nameSearch) {
+      return (
+        order.customer?.name.toLowerCase() === filters.nameSearch.toLowerCase()
       );
     }
-
-    return filteredOrders;
-  }, [data, filter, activeFilter, dateRange]);
-
-  useEffect(() => {
-    const filteredOrders = filterOrders();
-    setOrders(filteredOrders);
-  }, [filterOrders]);
+    return true;
+  });
 
   const renderButton = (props, ref) => {
     return (
@@ -170,12 +165,6 @@ const Orders = () => {
       </Button>
     );
   };
-  if (!data) {
-    return <div>Loading</div>;
-  }
-  if (!clients) {
-    return <div>Loading</div>;
-  }
 
   const customers = clients.map((item) => ({
     label: item.name,
@@ -185,13 +174,13 @@ const Orders = () => {
   let orderData = null;
   switch (q) {
     case "all":
-      orderData = orders;
+      orderData = filteredOrders;
       break;
     case "pending":
-      orderData = orders.filter((order) => order.status === "new");
+      orderData = filteredOrders.filter((order) => order.status === "new");
       break;
     case "complete":
-      orderData = orders.filter((order) => order.balance === 0);
+      orderData = filteredOrders.filter((order) => order.balance === 0);
       break;
   }
 
@@ -202,36 +191,36 @@ const Orders = () => {
         <Filters>
           <FilterButton
             name="today"
-            activeFilter={activeFilter}
-            onClick={setActiveFilter}
+            activeFilter={filters.date}
+            onClick={(e) => dispatch(setDateFilter(e))}
           >
             Today
           </FilterButton>
           <FilterButton
             name="weekly"
-            activeFilter={activeFilter}
-            onClick={setActiveFilter}
+            activeFilter={filters.date}
+            onClick={(e) => dispatch(setDateFilter(e))}
           >
             Weekly
           </FilterButton>
           <FilterButton
             name="monthly"
-            activeFilter={activeFilter}
-            onClick={setActiveFilter}
+            activeFilter={filters.date}
+            onClick={(e) => dispatch(setDateFilter(e))}
           >
             Monthly
           </FilterButton>
           <FilterButton
             name="annually"
-            activeFilter={activeFilter}
-            onClick={setActiveFilter}
+            activeFilter={filters.date}
+            onClick={(e) => dispatch(setDateFilter(e))}
           >
             Annually
           </FilterButton>
           <FilterButton
             name="custom"
-            activeFilter={activeFilter}
-            onClick={setActiveFilter}
+            activeFilter={filters.date}
+            onClick={(e) => dispatch(setDateFilter(e))}
             setOpen={setOpen}
           >
             <GrCalendar />
@@ -245,23 +234,24 @@ const Orders = () => {
             info={item.name}
             icon={item.icon}
             total={item.total}
+            backgroundColor={item.backgroundColor}
           />
         ))}
       </SummaryWrapper>
       <OrderAction>
         <InputPicker
           data={customers}
-          style={{ width: 250 }}
+          style={{ width: 250, marginRight: "auto" }}
           placeholder="Select Client"
-          onChange={(value) => setFilter(value)}
+          onChange={(value) => dispatch(setNameSearch(value))}
         />
-        <Input
+        {/* <Input
           size="small"
           placeholder="ID Client"
           style={{ width: "300px" }}
           onChange={(value) => console.log(value)}
-        />
-        <Button
+        /> */}
+        {/* <Button
           style={{
             marginRight: "auto",
             color: "#fff",
@@ -270,7 +260,7 @@ const Orders = () => {
           onClick={() => console.log("Hello world")}
         >
           Filter
-        </Button>
+        </Button> */}
         <Dropdown renderToggle={renderButton}>
           <Dropdown.Item>Export PDF</Dropdown.Item>
           <Dropdown.Item>Export EXCELL</Dropdown.Item>
@@ -331,17 +321,43 @@ const Orders = () => {
           ))}
         </Table>
         <Pagination>
-          <Counter>{orders.length} total orders</Counter>
+          <Counter>{orders.totalDocuments} total orders</Counter>
           <ButtonToolbar>
-            <Button style={{ color: "hsl(243deg, 50%, 50%)" }}>Prev</Button>
+            <Button
+              onClick={() =>
+                setCurrentPage(currentPage > 1 ? currentPage - 1 : currentPage)
+              }
+              style={{ color: "hsl(243deg, 50%, 50%)" }}
+            >
+              Prev
+            </Button>
             <ButtonGroup>
-              <Button>1</Button>
-              <Button>2</Button>
-              <Button>3</Button>
-              <Button>4</Button>
-              <Button>5</Button>
+              {Array.from(Array(orders.totalPages).keys())
+                .map((x) => x + 1)
+                .map((page) => (
+                  <Button
+                    style={{
+                      backgroundColor: currentPage === page ? "#33336a" : "",
+                      color: currentPage === page ? "white" : "grey",
+                    }}
+                    onClick={() => setCurrentPage(page)}
+                  >
+                    {page}
+                  </Button>
+                ))}
             </ButtonGroup>
-            <Button style={{ color: "hsl(243deg, 50%, 50%)" }}>Next</Button>
+            <Button
+              onClick={() =>
+                setCurrentPage(
+                  currentPage < orders.totalPages
+                    ? currentPage + 1
+                    : currentPage
+                )
+              }
+              style={{ color: "hsl(243deg, 50%, 50%)" }}
+            >
+              Next
+            </Button>
           </ButtonToolbar>
         </Pagination>
       </TableWrapper>
@@ -391,6 +407,10 @@ const OrderAction = styled.div`
 `;
 
 const TableWrapper = styled.div`
+  height: 600px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
   background-color: #fff;
   padding: 20px;
   border-radius: 7px;
@@ -408,12 +428,13 @@ const TableHeaderCell = styled.th`
   padding: 10px;
 `;
 const TableDataRow = styled.tr`
+  border-bottom: 0.5px solid #ccc;
   &:nth-of-type(odd) {
     background-color: hsl(250deg 50% 99%);
   }
 `;
 const TableDataCell = styled.td`
-  padding: 15px;
+  padding: 10px;
   font-size: 0.75rem;
   &:nth-of-type(3n),
   &:last-of-type {
@@ -430,3 +451,59 @@ const Counter = styled.p``;
 const Pages = styled.div``;
 
 export default Orders;
+
+// const filterOrders = useCallback(() => {
+//   let filteredOrders = data ?? []; // Start with all data
+
+//   if (activeFilter === "today") {
+//     const today = dayjs();
+//     filteredOrders = filteredOrders.filter((order) =>
+//       dayjs(order.date).isSame(today, "day")
+//     );
+//   } else if (activeFilter === "weekly") {
+//     const startOfWeek = dayjs().startOf("week");
+//     const endOfWeek = dayjs().endOf("week");
+//     filteredOrders = filteredOrders.filter((order) => {
+//       const orderDate = dayjs(order.date);
+//       return orderDate.isAfter(startOfWeek) && orderDate.isBefore(endOfWeek);
+//     });
+//   } else if (activeFilter === "monthly") {
+//     const startOfMonth = dayjs().startOf("month");
+//     const endOfMonth = dayjs().endOf("month");
+//     filteredOrders = filteredOrders.filter((order) => {
+//       const orderDate = dayjs(order.date);
+//       return (
+//         orderDate.isAfter(startOfMonth) && orderDate.isBefore(endOfMonth)
+//       );
+//     });
+//   } else if (activeFilter === "annually") {
+//     const startOfYear = dayjs().startOf("year");
+//     const endOfYear = dayjs().endOf("year");
+//     filteredOrders = filteredOrders.filter((order) => {
+//       const orderDate = dayjs(order.date);
+//       return orderDate.isAfter(startOfYear) && orderDate.isBefore(endOfYear);
+//     });
+//   } else if (activeFilter === "custom" && dateRange) {
+//     const [startDate, endDate] = dateRange;
+//     return orders.filter((order) => {
+//       const orderDate = dayjs(order.date);
+//       return (
+//         orderDate.isSame(startDate, "day") ||
+//         (orderDate.isAfter(startDate) && orderDate.isBefore(endDate)) ||
+//         orderDate.isSame(endDate, "day")
+//       );
+//     });
+//   }
+//   if (filter) {
+//     filteredOrders = filteredOrders.filter(
+//       (order) => order.customer?.name === filter
+//     );
+//   }
+
+//   return filteredOrders;
+// }, [data, filter, activeFilter, dateRange]);
+
+// useEffect(() => {
+//   const filteredOrders = filterOrders();
+//   // setOrders(filteredOrders);
+// }, [filterOrders]);

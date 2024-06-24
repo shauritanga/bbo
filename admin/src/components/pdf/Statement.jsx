@@ -1,19 +1,17 @@
 import { Document, Page, View, Text, StyleSheet } from "@react-pdf/renderer";
 import React from "react";
-import dayjs from "dayjs";
 
 const Statement = ({ data }) => {
-  console.log({ data });
   return (
     <Document pageMode="full-screen">
       <Page size="A4" orientation="landscape">
         <View fixed={true} style={{ flex: 1, paddingHorizontal: 65 }}>
           <Text style={styles.title}>CLIENT ACCOUNT STATEMENT</Text>
-          <Text style={styles.header}>Full name: Athanas Shauritanga</Text>
+          <Text style={styles.header}>Full name: {data.name}</Text>
           <Text style={styles.header}>CDS Number: 647482</Text>
-          <Text style={styles.header}>Telephone Number(s): +255629593331</Text>
-          <Text style={styles.header}>Identiication: NIDA</Text>
-          <Text style={styles.header}>ID Number: 19880222-43105-00001-28</Text>
+          <Text style={styles.header}>Telephone Number(s): {data.phone}</Text>
+          <Text style={styles.header}>Identiication: {data.idType}</Text>
+          <Text style={styles.header}>ID Number: {data.idNumber}</Text>
           <Text style={styles.header}>Nationality: Tanzania</Text>
 
           <View style={styles.table}>
@@ -33,26 +31,18 @@ const Statement = ({ data }) => {
               <Text style={styles.tableHeaderCell}>credit</Text>
               <Text style={styles.tableHeaderCell}>balance</Text>
             </View>
-            {data.map((item, index) => (
-              <View style={styles.tableData} key={index}>
-                <Text style={styles.tableDataCell}>
-                  {dayjs(item.date).format("DD-MM-YYYY")}
-                </Text>
-                <Text style={styles.tableDataCell}>{item.type}</Text>
-                {/* <Text style={styles.tableDataCell}>{item.category}</Text> */}
-                <Text style={[styles.tableDataCell, { flex: 2 }]}>
-                  {item.reference}
-                </Text>
-                <Text style={[styles.tableDataCell, { flex: 2 }]}>
-                  {item.particulars}
-                </Text>
-                <Text style={styles.tableDataCell}>{item.quantity}</Text>
-                <Text style={styles.tableDataCell}>{item.price}</Text>
-                <Text style={styles.tableDataCell}>{item.debit}</Text>
-                <Text style={styles.tableDataCell}>{item.credit}</Text>
-                <Text style={styles.tableDataCell}>{item.balance}</Text>
-              </View>
-            ))}
+            {/* <View style={styles.tableData}>
+              <Text style={styles.tableDataCell}></Text>
+              <Text style={styles.tableDataCell}>{item.type}</Text>
+              <Text style={styles.tableDataCell}>{item.category}</Text>
+              <Text style={[styles.tableDataCell, { flex: 2 }]}></Text>
+              <Text style={[styles.tableDataCell, { flex: 2 }]}></Text>
+              <Text style={styles.tableDataCell}></Text>
+              <Text style={styles.tableDataCell}></Text>
+              <Text style={styles.tableDataCell}></Text>
+              <Text style={styles.tableDataCell}></Text>
+              <Text style={styles.tableDataCell}></Text>
+            </View> */}
           </View>
         </View>
       </Page>

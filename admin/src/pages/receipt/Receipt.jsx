@@ -7,6 +7,8 @@ import ReceiptForm from "../../components/forms/receipt/ReceiptForm";
 import Select from "../../components/select";
 import styled from "styled-components";
 import { Button, ButtonGroup, ButtonToolbar } from "rsuite";
+import axios from "axios";
+import * as XLSX from "xlsx";
 
 function Receipt() {
   const [checked, setChecked] = useState(false);
@@ -39,7 +41,23 @@ function Receipt() {
         }
       );
       const json = await response.json();
-      console.log(json);
+    }
+  };
+
+  const exportToExcel = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:5001/api/receipts/all"
+      );
+      const data = response.data;
+
+      //xlsx
+      const worksheet = XLSX.utils.json_to_sheet(data);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+      XLSX.writeFile(workbook, "Receipts.xlsx");
+    } catch (error) {
+      console.error("Error fetching data:", error);
     }
   };
 
@@ -104,7 +122,6 @@ function Receipt() {
   if (!receipts) {
     return <div>Loading...</div>;
   }
-  console.log(receipts);
 
   const filtered = receipts.filter((expense) =>
     expense.payee?.name.toLowerCase().includes(query.toLowerCase())
@@ -120,7 +137,7 @@ function Receipt() {
           New Receipt
         </button>
         <div className="receipt-header-right">
-          <form>
+          {/* <form>
             <Select
               required
               value={clientId}
@@ -142,9 +159,10 @@ function Receipt() {
             >
               Filter
             </button>
-          </form>
+          </form> */}
           <button
             style={{ backgroundColor: "var(--color-button)", color: "#fff" }}
+            onClick={exportToExcel}
           >
             Export Excel
           </button>
@@ -226,7 +244,7 @@ function Receipt() {
                       updateValue={handleSelect}
                     />
                   </TableDataCell>
-                  <TableDataCell>{expense._id}</TableDataCell>
+                  <TableDataCell>{expense.receiptId}</TableDataCell>
                   <TableDataCell>{expense.payee?.name}</TableDataCell>
                   <TableDataCell>{expense.description}</TableDataCell>
                   <TableDataCell>{expense.amount}</TableDataCell>
@@ -291,7 +309,12 @@ const TableHeaderCell = styled.th`
   font-size: 0.75rem;
   padding: 10px 20px;
 `;
-const TableDataRow = styled.tr``;
+const TableDataRow = styled.tr`
+  border-bottom: 1px solid #ccc;
+  &:nth-of-type(odd) {
+    background-color: hsl(250deg 50% 99%);
+  }
+`;
 const TableDataCell = styled.td`
   font-size: 0.75rem;
   padding: 10px 20px;

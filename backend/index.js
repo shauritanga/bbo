@@ -21,7 +21,17 @@ import logger from "morgan";
 import dotenv from "dotenv";
 import helmet from "helmet";
 import passport from "passport";
+import errorHandler from "./middleware/error.js";
+import dseRoute from "./routes/dse.js";
+import cdsRoute from "./routes/cds.js";
+import csmaRoute from "./routes/csma.js";
+import vatRoute from "./routes/vat.js";
+import brokerageRoute from "./routes/brokerage.js";
+import fidelityRoute from "./routes/fidelity.js";
+import executionRoute from "./routes/execution.js";
 dotenv.config();
+
+import { protect } from "./middleware/auth.js";
 
 const app = express();
 // app.use(
@@ -70,6 +80,17 @@ app.use("/api/paymethods", paymentMethodRoute);
 app.use("/api/employees", employeeRoute);
 app.use("/api/receipts", receiptRoute);
 app.use("/api/roles", roleRoute);
+app.use("/api/v1/executions", executionRoute);
+
+//Fees
+app.use("/api/v1/dse", dseRoute);
+app.use("/api/v1/cds", cdsRoute);
+app.use("/api/v1/csma", csmaRoute);
+app.use("/api/v1/vat", vatRoute);
+app.use("/api/v1/brokerage", brokerageRoute);
+app.use("/api/v1/fidelity", fidelityRoute);
+
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 3000;
 mongoose

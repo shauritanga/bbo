@@ -1,6 +1,10 @@
 import express from "express";
 import Receipt from "../models/receipt.js";
+import { getAllReceipts, getReceiptMonthly } from "../controllers/receipts.js";
 const route = express.Router();
+
+route.get("/all", getAllReceipts);
+route.get("/monthly", getReceiptMonthly);
 
 route.get("/", async (req, res) => {
   try {

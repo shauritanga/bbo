@@ -2,6 +2,7 @@ import React from "react";
 import { DateRangePicker } from "rsuite";
 import { fetchDealings, setSearchFilter } from "../../reducers/dealingSlice";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import dayjs from "dayjs";
 
@@ -11,6 +12,7 @@ const DealingSheet = () => {
   );
   const [sort, setSort] = React.useState("all");
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   React.useEffect(() => {
     dispatch(fetchDealings());
@@ -83,18 +85,45 @@ const DealingSheet = () => {
             <TableBody>
               {filteredDealings.map((dealing) => (
                 <TableRow key={dealing._id}>
-                  <TableData>{dealing._id}</TableData>
+                  <TableData>{dealing.orderId}</TableData>
                   <TableData>
                     {dayjs(dealing.date).format("DD-MM-YYYY")}
                   </TableData>
-                  <TableData>{dealing.customer?.name}</TableData>
+                  <TableData
+                    style={{
+                      color: "#007bff",
+                      cursor: "pointer",
+                    }}
+                    onClick={() =>
+                      navigate(`/customers/${dealing.customer._id}`, {
+                        state: dealing.customer,
+                      })
+                    }
+                  >
+                    {dealing.customer?.name}
+                  </TableData>
                   <TableData>{dealing.security?.name}</TableData>
                   <TableData>{dealing.type}</TableData>
                   <TableData>{dealing.price}</TableData>
                   <TableData>{dealing.volume}</TableData>
                   <TableData>{dealing.executed}</TableData>
                   <TableData>{dealing.balance}</TableData>
-                  <TableData></TableData>
+                  <TableData>
+                    <span
+                      style={{
+                        color: "green",
+                        backgroundColor: "#f5f5f5",
+                        padding: "4px 6px",
+                        borderRadius: "5px",
+                        cursor: "pointer",
+                      }}
+                      onClick={() =>
+                        navigate(`/orders/${dealing}`, { state: dealing })
+                      }
+                    >
+                      view
+                    </span>
+                  </TableData>
                 </TableRow>
               ))}
             </TableBody>

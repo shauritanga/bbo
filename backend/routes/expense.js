@@ -1,6 +1,11 @@
 import express from "express";
 import Expense from "../models/expense.js";
+import { getAllExpenses, getExpenseMonthly } from "../controllers/expense.js";
 const route = express.Router();
+
+route.get("/monthly", getExpenseMonthly);
+
+route.get("/all", getAllExpenses);
 
 route.get("/", async (req, res) => {
   try {
@@ -27,6 +32,7 @@ route.get("/", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
+
 route.post("/", async (req, res) => {
   const expense = Expense({
     ...req.body,

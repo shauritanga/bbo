@@ -1,6 +1,10 @@
 import express from "express";
 import Order from "../models/order.js";
+import { getAllOrders } from "../controllers/order.js";
 const route = express.Router();
+
+//ADMIN ROUTE
+route.get("/all", getAllOrders);
 
 route.get("/", async (req, res) => {
   const orders = await Order.find({}, { password: 0 })
@@ -11,16 +15,14 @@ route.get("/", async (req, res) => {
 
 route.get("/all/:id", async (req, res) => {
   try {
-    const orders = await Order.find({ customer: req.params.id }).populate(
-      "security"
-    ).populate("customer");
-    if(!orders){
+    const orders = await Order.find({ customer: req.params.id })
+      .populate("security")
+      .populate("customer");
+    if (!orders) {
       res.status(404).json({ message: "No orders found" });
-    }else{
-     
+    } else {
       res.status(200).json(orders);
     }
-    
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: error.message });
@@ -28,17 +30,14 @@ route.get("/all/:id", async (req, res) => {
 });
 route.get("/buy/:id", async (req, res) => {
   try {
-    const orders = await Order.find({customer: req.params.id,type:"buy" }).populate(
-      "security"
-    ).populate("customer");
-    if(!orders){
+    const orders = await Order.find({ customer: req.params.id, type: "buy" })
+      .populate("security")
+      .populate("customer");
+    if (!orders) {
       res.status(404).json({ message: "No orders found" });
-    }else{
-     
+    } else {
       res.status(200).json(orders);
     }
-    
-    
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: error.message });
@@ -46,17 +45,14 @@ route.get("/buy/:id", async (req, res) => {
 });
 route.get("/sell/:id", async (req, res) => {
   try {
-    const orders = await Order.find({customer: req.params.id,type:"sell" }).populate(
-      "security"
-    ).populate("customer");
-    if(!orders){
+    const orders = await Order.find({ customer: req.params.id, type: "sell" })
+      .populate("security")
+      .populate("customer");
+    if (!orders) {
       res.status(404).json({ message: "No orders found" });
-    }else{
-     
+    } else {
       res.status(200).json(orders);
     }
-    
-    
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: error.message });

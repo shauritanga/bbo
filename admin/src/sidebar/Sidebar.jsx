@@ -23,7 +23,7 @@ import { HiOutlineSquaresPlus } from "react-icons/hi2";
 const Sidebar = ({ isActive, user, isSidebarOpen, setIsSidebarOpen }) => {
   const customersPath = new RegExp(`^customers(\/.*)?$`);
   const ordersPath = new RegExp(`^orders(\/.*)?$`);
-  console.log(isActive);
+
   return (
     <div className="aside">
       <div className="close">

@@ -34,6 +34,7 @@ import MarketReports from "./pages/reports/MarketReports";
 import EmailWithPDF from "./components/pdf/email";
 import Category from "./pages/category/Category";
 import Otp from "./pages/otp/Otp";
+import PrintContractPDF from "./components/pdf/PrintContractPDF";
 
 function App() {
   const signIn = false;
@@ -71,14 +72,13 @@ function App() {
               path="/securities"
               element={<Security backgroundColor="var(--color-white)" />}
             />
-
             <Route
               path="/transactions/:transactionId"
               element={<TransactionView />}
             />
           </Route>
-
-          <Route path="/statement" element={<EmailWithPDF />} />
+          <Route path="/contract" element={<PrintContractPDF />} />
+          <Route path="/statement" element={<PDF />} />
         </Routes>
       </AuthProvider>
     </BrowserRouter>

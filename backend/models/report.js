@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import Counter from "./counter.js";
+import Counter from "./counter/counter.js";
 const reportSchema = mongoose.Schema({
   orderId: { type: String, unique: true },
   title: String,
