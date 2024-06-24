@@ -3,6 +3,7 @@ import { Modal } from "rsuite";
 import axios from "axios";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import styled from "styled-components";
+import { set } from "date-fns";
 
 const CreateEmployeeForm = ({ open, setOpen }) => {
   const [roles, setRoles] = useState([]);
@@ -34,6 +35,7 @@ const CreateEmployeeForm = ({ open, setOpen }) => {
           }}
           onSubmit={async (values, { setSubmitting }) => {
             await axios.post("http://localhost:5001/api/employees", values);
+            setOpen(false);
             setSubmitting(false);
           }}
         >
